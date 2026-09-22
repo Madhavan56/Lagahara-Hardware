@@ -1,5 +1,6 @@
 import { ShoppingBag, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
 import { QuantityStepper } from '@/components/product/QuantityStepper'
 import { buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -63,7 +64,11 @@ export default function CartPage() {
                   to={`/product/${line.product.slug}`}
                   className="size-24 shrink-0 overflow-hidden rounded-lg bg-sand-100"
                 >
-                  {imageUrl ? <img src={imageUrl} alt="" className="size-full object-cover" /> : null}
+                  {imageUrl ? (
+                    <img src={imageUrl} alt="" className="size-full object-cover" />
+                  ) : (
+                    <ProductImagePlaceholder size="sm" />
+                  )}
                 </Link>
 
                 <div className="flex min-w-0 flex-1 flex-col justify-between">

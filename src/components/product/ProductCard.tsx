@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Heart, Minus, Plus, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
 import { Badge } from '@/components/ui/badge'
 import { useCartStore } from '@/features/cart/store'
 import { useIsWishlisted, useWishlistStore } from '@/features/wishlist/store'
@@ -36,9 +37,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
               className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="flex size-full items-center justify-center text-sm text-sand-400">
-              No image
-            </div>
+            <ProductImagePlaceholder size="md" />
           )}
 
           <div className="absolute top-3 left-3 flex flex-col gap-1.5">

@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { OrderStatusBadge } from '@/components/orders/OrderStatusBadge'
 import { OrderStatusTimeline } from '@/components/orders/OrderStatusTimeline'
+import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCancelOrder, useOrder } from '@/features/orders/queries'
@@ -70,7 +71,11 @@ export default function OrderDetailPage() {
                 return (
                   <li key={item.id} className="flex items-center gap-4 rounded-card border border-sand-200 bg-white p-4">
                     <div className="size-16 shrink-0 overflow-hidden rounded-lg bg-sand-100">
-                      {imageUrl ? <img src={imageUrl} alt="" className="size-full object-cover" /> : null}
+                      {imageUrl ? (
+                        <img src={imageUrl} alt="" className="size-full object-cover" />
+                      ) : (
+                        <ProductImagePlaceholder size="sm" />
+                      )}
                     </div>
                     <div className="min-w-0 flex-1">
                       {item.productSlug ? (

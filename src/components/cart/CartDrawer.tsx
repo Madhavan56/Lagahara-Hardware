@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ShoppingBag, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
 import { buttonVariants } from '@/components/ui/button'
 import { useCartLines } from '@/features/cart/useCartLines'
 import { useCartStore } from '@/features/cart/store'
@@ -63,7 +64,9 @@ export function CartDrawer() {
                         <div className="size-16 shrink-0 overflow-hidden rounded-lg bg-sand-100">
                           {imageUrl ? (
                             <img src={imageUrl} alt="" className="size-full object-cover" />
-                          ) : null}
+                          ) : (
+                            <ProductImagePlaceholder size="sm" />
+                          )}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="line-clamp-2 text-sm font-medium text-sand-900">

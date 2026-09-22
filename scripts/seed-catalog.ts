@@ -231,12 +231,6 @@ const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
   },
 }
 
-const PLACEHOLDER_PALETTES: [string, string][] = [
-  ['0e4c42', 'f5f1ea'],
-  ['6b3712', 'fdf6ec'],
-  ['1f1b17', 'e9e2d6'],
-]
-
 function seededRandom(seed: number) {
   let state = seed
   return () => {
@@ -284,17 +278,6 @@ function generateAttributeValue(
   return `Standard`
 }
 
-async function fetchPlaceholderImage(text: string, paletteIndex: number): Promise<Uint8Array> {
-  const [bg, fg] = PLACEHOLDER_PALETTES[paletteIndex % PLACEHOLDER_PALETTES.length] as [string, string]
-  const url = `https://placehold.co/900x900/${bg}/${fg}/png?text=${encodeURIComponent(text)}&font=roboto`
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error(`Placeholder image fetch failed (${response.status}) for "${text}"`)
-  }
-  const buffer = await response.arrayBuffer()
-  return new Uint8Array(buffer)
-}
-
 async function main() {
   console.log('Fetching categories and attribute schemas…')
   const { data: categories, error: categoriesError } = await supabaseAdmin
@@ -326,9 +309,8 @@ async function main() {
   }
 
   let totalProducts = 0
-  let totalImages = 0
 
-  for (const [categoryIndex, category] of (categories as CategoryRow[]).entries()) {
+  for (const category of categories as CategoryRow[]) {
     const config = CATEGORY_CONFIG[category.slug]
     if (!config) {
       console.warn(`No seed config for category "${category.slug}" — skipping`)
@@ -398,36 +380,12 @@ async function main() {
 
     console.log(`  ${category.slug}: ${upserted?.length ?? 0} products upserted`)
     totalProducts += upserted?.length ?? 0
-
-    for (const product of upserted ?? []) {
-      try {
-        const imageBytes = await fetchPlaceholderImage(product.name.split(' — ')[0] ?? product.name, categoryIndex)
-        const storagePath = `${category.slug}/${product.slug}.png`
-
-        const { error: uploadError } = await supabaseAdmin.storage
-          .from('product-images')
-          .upload(storagePath, imageBytes, { contentType: 'image/png', upsert: true })
-
-        if (uploadError) throw uploadError
-
-        await supabaseAdmin.from('product_images').delete().eq('product_id', product.id)
-        const { error: imageRowError } = await supabaseAdmin.from('product_images').insert({
-          product_id: product.id,
-          storage_path: storagePath,
-          alt_text: product.name,
-          sort_order: 0,
-          is_primary: true,
-        })
-        if (imageRowError) throw imageRowError
-
-        totalImages += 1
-      } catch (err) {
-        console.error(`  Image failed for ${product.sku}:`, (err as Error).message)
-      }
-    }
   }
 
-  console.log(`\nDone. ${totalProducts} products, ${totalImages} images uploaded.`)
+  // No image upload here by design — fabricated product photos aren't
+  // real photos of anything. Products are created imageless and show the
+  // "no image yet" state until a real photo is uploaded via /admin.
+  console.log(`\nDone. ${totalProducts} products upserted (no images — upload real photos via admin).`)
 }
 
 main().catch((err) => {

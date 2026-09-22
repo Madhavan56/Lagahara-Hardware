@@ -1,6 +1,7 @@
 import { Plus, Search } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { buttonVariants } from '@/components/ui/button'
@@ -60,7 +61,11 @@ export default function AdminProductsPage() {
                     <td className="px-4 py-3">
                       <Link to={`/admin/products/${product.id}`} className="flex items-center gap-3">
                         <div className="size-10 shrink-0 overflow-hidden rounded-lg bg-sand-100">
-                          {imageUrl ? <img src={imageUrl} alt="" className="size-full object-cover" /> : null}
+                          {imageUrl ? (
+                            <img src={imageUrl} alt="" className="size-full object-cover" />
+                          ) : (
+                            <ProductImagePlaceholder size="sm" />
+                          )}
                         </div>
                         <div>
                           <p className="font-medium text-sand-900">{product.name}</p>

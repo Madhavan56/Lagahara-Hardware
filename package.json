@@ -12,7 +12,8 @@
     "verify:rls": "tsx scripts/verify-rls.ts",
     "audit:security": "tsx scripts/security-audit.ts",
     "generate:sitemap": "tsx scripts/generate-sitemap.ts",
-    "apply:real-images": "tsx scripts/apply-real-images.ts"
+    "apply:real-images": "tsx scripts/apply-real-images.ts",
+    "remove:placeholder-images": "tsx scripts/remove-placeholder-images.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

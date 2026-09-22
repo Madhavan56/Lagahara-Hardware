@@ -2,6 +2,7 @@ import { Check, CheckCircle2, ChevronLeft, Plus, Truck } from 'lucide-react'
 import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { AddressForm } from '@/components/account/AddressForm'
+import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
 import { Button } from '@/components/ui/button'
 import { useAddresses, useCreateAddress } from '@/features/account/queries'
 import { useAuth } from '@/features/auth/AuthProvider'
@@ -209,7 +210,11 @@ export default function CheckoutPage() {
                   return (
                     <li key={line.product.id} className="flex items-center gap-3 rounded-card border border-sand-200 bg-white p-3">
                       <div className="size-14 shrink-0 overflow-hidden rounded-lg bg-sand-100">
-                        {imageUrl ? <img src={imageUrl} alt="" className="size-full object-cover" /> : null}
+                        {imageUrl ? (
+                          <img src={imageUrl} alt="" className="size-full object-cover" />
+                        ) : (
+                          <ProductImagePlaceholder size="sm" />
+                        )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="line-clamp-1 text-sm font-medium text-sand-900">{line.product.name}</p>

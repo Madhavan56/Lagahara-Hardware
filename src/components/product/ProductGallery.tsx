@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
 import { productImageUrl } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 import type { ProductImage } from '@/types/catalog'
@@ -37,7 +38,7 @@ export function ProductGallery({ images, productName }: { images: ProductImage[]
             style={{ transformOrigin: zoomOrigin }}
           />
         ) : (
-          <div className="flex size-full items-center justify-center text-sand-400">No image</div>
+          <ProductImagePlaceholder size="lg" />
         )}
       </div>
 

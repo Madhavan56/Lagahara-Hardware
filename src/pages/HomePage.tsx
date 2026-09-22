@@ -1,11 +1,11 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, Clock3, ShieldCheck, Truck, Zap } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { CategoryTile } from '@/components/catalog/CategoryTile'
 import { ProductGrid } from '@/components/product/ProductGrid'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCategories, useFeaturedProducts, useNewArrivals } from '@/features/catalog/queries'
 import { useDocumentHead } from '@/hooks/useDocumentHead'
-import { getCategoryVisual } from '@/lib/categoryVisuals'
 
 const TRUST_POINTS = [
   { icon: Zap, label: 'Quick delivery in 2 days' },
@@ -104,9 +104,9 @@ export default function HomePage() {
             Categories could not be loaded. Confirm the database migrations have been applied.
           </p>
         ) : isLoading ? (
-          <div className="grid grid-cols-4 gap-4 sm:grid-cols-6 lg:grid-cols-7">
-            {Array.from({ length: 13 }).map((_, index) => (
-              <Skeleton key={index} className="aspect-square rounded-3xl" />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <Skeleton key={index} className="aspect-[4/3] rounded-card" />
             ))}
           </div>
         ) : (
@@ -114,29 +114,17 @@ export default function HomePage() {
             initial="hidden"
             animate="visible"
             variants={{ visible: { transition: { staggerChildren: 0.03 } } }}
-            className="grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-7"
+            className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4"
           >
-            {categories?.map((category) => {
-              const visual = getCategoryVisual(category.slug)
-              return (
-                <motion.div
-                  key={category.id}
-                  variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
-                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  <Link to={`/category/${category.slug}`} className="group flex flex-col items-center gap-2 text-center">
-                    <span
-                      className={`flex aspect-square w-full items-center justify-center rounded-3xl ${visual.bg} transition-transform duration-200 group-hover:-translate-y-1 group-hover:shadow-lift`}
-                    >
-                      <visual.icon className={`size-7 sm:size-8 ${visual.fg}`} />
-                    </span>
-                    <span className="line-clamp-2 text-xs leading-tight font-semibold text-sand-800 sm:text-sm">
-                      {category.name}
-                    </span>
-                  </Link>
-                </motion.div>
-              )
-            })}
+            {categories?.map((category) => (
+              <motion.div
+                key={category.id}
+                variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <CategoryTile category={category} />
+              </motion.div>
+            ))}
           </motion.div>
         )}
       </section>
