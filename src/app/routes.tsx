@@ -23,6 +23,7 @@ const AccountLayout = lazy(() => import('@/pages/account/AccountLayout'))
 const ProfileTab = lazy(() => import('@/pages/account/ProfileTab'))
 const AddressesTab = lazy(() => import('@/pages/account/AddressesTab'))
 const OrdersTab = lazy(() => import('@/pages/account/OrdersTab'))
+const OrderDetailPage = lazy(() => import('@/pages/account/OrderDetailPage'))
 
 export const router = createBrowserRouter([
   {
@@ -54,6 +55,7 @@ export const router = createBrowserRouter([
               { index: true, element: <ProfileTab /> },
               { path: 'addresses', element: <AddressesTab /> },
               { path: 'orders', element: <OrdersTab /> },
+              { path: 'orders/:orderId', element: <OrderDetailPage /> },
             ],
           },
         ],
