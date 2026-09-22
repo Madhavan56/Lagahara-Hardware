@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "seed:catalog": "tsx scripts/seed-catalog.ts",
-    "verify:rls": "tsx scripts/verify-rls.ts"
+    "verify:rls": "tsx scripts/verify-rls.ts",
+    "audit:security": "tsx scripts/security-audit.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

@@ -34,6 +34,14 @@ Verify RLS policies with a deliberate cross-user negative test:
 npm run verify:rls
 ```
 
+Run the full security audit (21-point RLS matrix across every table — anon /
+customer / cross-customer / admin, plus storage and the verified-purchaser
+review gate):
+
+```bash
+npm run audit:security
+```
+
 ## Making yourself an admin
 
 The admin dashboard (Phase 10) gates on `profiles.role = 'admin'`. Customers cannot self-promote
