@@ -1,10 +1,10 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Warm stone neutrals — the base surface language of the storefront */
-  --color-sand-50: #fbf9f6;
-  --color-sand-100: #f5f1ea;
-  --color-sand-200: #e9e2d6;
+  /* Warm neutrals — clean, bright canvas in the quick-commerce spirit */
+  --color-sand-50: #fefcfa;
+  --color-sand-100: #f7f3ed;
+  --color-sand-200: #ece5d9;
   --color-sand-300: #d8cdbb;
   --color-sand-400: #b5a791;
   --color-sand-500: #8e8170;
@@ -14,7 +14,7 @@
   --color-sand-900: #1f1b17;
   --color-sand-950: #12100d;
 
-  /* Brand — deep pine, used for structure, headers and primary actions */
+  /* Brand — deep pine, used for structure, headers and secondary emphasis */
   --color-brand-50: #ecf6f2;
   --color-brand-100: #d0e9e0;
   --color-brand-200: #a2d3c3;
@@ -27,32 +27,36 @@
   --color-brand-900: #082c27;
   --color-brand-950: #041a17;
 
-  /* Brass — accent for emphasis, prices, badges and hover states */
-  --color-brass-50: #fdf6ec;
-  --color-brass-100: #fae8ce;
-  --color-brass-200: #f3ce97;
-  --color-brass-300: #ebb162;
-  --color-brass-400: #e39735;
-  --color-brass-500: #d77e16;
-  --color-brass-600: #b66210;
-  --color-brass-700: #904a11;
-  --color-brass-800: #6b3712;
-  --color-brass-900: #4c2810;
+  /* Brass — vivid orange, the primary CTA/energy colour across the app */
+  --color-brass-50: #fff6ed;
+  --color-brass-100: #ffe9d3;
+  --color-brass-200: #ffcd9e;
+  --color-brass-300: #ffab5c;
+  --color-brass-400: #ff8a2b;
+  --color-brass-500: #ff6f0f;
+  --color-brass-600: #f05505;
+  --color-brass-700: #c73f04;
+  --color-brass-800: #9e330b;
+  --color-brass-900: #7f2c0c;
 
-  --color-success: #1a7f4b;
+  /* Add — the "quick add" green, distinct from the orange brand accent */
+  --color-add-50: #eafcf1;
+  --color-add-500: #12b76a;
+  --color-add-600: #039754;
+
+  --color-success: #12b76a;
   --color-warning: #b45309;
-  --color-danger: #b42318;
+  --color-danger: #e11d48;
 
-  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
 
-  --radius-card: 0.875rem;
-  --radius-panel: 1.25rem;
+  --radius-card: 1.25rem;
+  --radius-panel: 1.5rem;
 
-  /* Warm-tinted elevation rather than neutral black shadows */
-  --shadow-card: 0 1px 2px rgb(31 27 23 / 0.04), 0 4px 16px rgb(31 27 23 / 0.06);
-  --shadow-lift: 0 2px 4px rgb(31 27 23 / 0.05), 0 12px 32px rgb(31 27 23 / 0.1);
-  --shadow-float: 0 8px 24px rgb(31 27 23 / 0.1), 0 24px 64px rgb(31 27 23 / 0.14);
+  --shadow-card: 0 1px 2px rgb(31 27 23 / 0.05), 0 4px 16px rgb(31 27 23 / 0.07);
+  --shadow-lift: 0 2px 4px rgb(31 27 23 / 0.06), 0 12px 32px rgb(31 27 23 / 0.12);
+  --shadow-float: 0 8px 24px rgb(31 27 23 / 0.12), 0 24px 64px rgb(31 27 23 / 0.16);
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1);
@@ -76,7 +80,7 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    font-optical-sizing: auto;
+    font-weight: 800;
     letter-spacing: -0.02em;
     text-wrap: balance;
   }
@@ -86,7 +90,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brand-600);
+    outline: 2px solid var(--color-brass-600);
     outline-offset: 2px;
     border-radius: 2px;
   }

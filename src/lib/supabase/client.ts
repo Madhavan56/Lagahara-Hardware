@@ -10,7 +10,21 @@ export const supabase = createClient<Database>(env.VITE_SUPABASE_URL, env.VITE_S
   },
 })
 
-export function productImageUrl(storagePath: string | null | undefined) {
+/**
+ * Requests a resized/compressed render rather than the original — some
+ * source photos (real product photography, not the placeholder generator)
+ * come in well over 1MB, which is a real Core Web Vitals cost otherwise.
+ */
+export function productImageUrl(
+  storagePath: string | null | undefined,
+  options: { width?: number; quality?: number } = {},
+) {
   if (!storagePath) return null
-  return supabase.storage.from('product-images').getPublicUrl(storagePath).data.publicUrl
+  return supabase.storage.from('product-images').getPublicUrl(storagePath, {
+    transform: {
+      width: options.width ?? 800,
+      quality: options.quality ?? 75,
+      resize: 'cover',
+    },
+  }).data.publicUrl
 }

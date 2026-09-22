@@ -67,7 +67,7 @@ export default function ProductPage() {
   }, [product])
 
   useDocumentHead({
-    title: product ? `${product.name} — Dhuraj Interiors` : 'Product — Dhuraj Interiors',
+    title: product ? `${product.name} — Laghara Hardwares` : 'Product — Laghara Hardwares',
     description: product?.description ?? undefined,
     jsonLd,
   })
@@ -189,7 +189,7 @@ export default function ProductPage() {
                 setJustAdded(true)
                 window.setTimeout(() => setJustAdded(false), 1800)
               }}
-              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-brand-800 px-6 text-sm font-medium text-sand-50 transition-colors hover:bg-brand-700 disabled:pointer-events-none disabled:opacity-40"
+              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-brass-500 px-6 text-sm font-bold text-white transition-colors hover:bg-brass-600 disabled:pointer-events-none disabled:opacity-40"
             >
               {justAdded ? <Check className="size-4" /> : <ShoppingBag className="size-4" />}
               {justAdded ? 'Added to cart' : 'Add to cart'}

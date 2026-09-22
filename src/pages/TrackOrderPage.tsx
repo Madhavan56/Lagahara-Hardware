@@ -41,7 +41,7 @@ export default function TrackOrderPage() {
         <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="DHJ-2026-001000" />
         <button
           type="submit"
-          className="flex h-11 shrink-0 items-center gap-2 rounded-xl bg-brand-800 px-5 text-sm font-medium text-sand-50 hover:bg-brand-700"
+          className="flex h-11 shrink-0 items-center gap-2 rounded-2xl bg-brass-500 px-5 text-sm font-bold text-white hover:bg-brass-600"
         >
           <Search className="size-4" />
           Track

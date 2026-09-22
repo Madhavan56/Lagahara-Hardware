@@ -237,7 +237,7 @@ export default function AdminProductFormPage() {
             <h2 className="mb-4 text-sm font-semibold tracking-wide text-sand-900 uppercase">Images</h2>
             <div className="flex flex-wrap gap-3">
               {existing.images.map((image) => {
-                const url = productImageUrl(image.storagePath)
+                const url = productImageUrl(image.storagePath, { width: 200 })
                 return (
                   <div key={image.id} className="relative size-24 overflow-hidden rounded-lg border border-sand-200">
                     {url ? <img src={url} alt="" className="size-full object-cover" /> : null}

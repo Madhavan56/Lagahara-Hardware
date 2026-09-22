@@ -53,7 +53,7 @@ export const useCartStore = create<CartState>()(
 
       clear: () => set({ lines: {} }),
     }),
-    { name: 'dhuraj-cart' },
+    { name: 'laghara-cart' },
   ),
 )
 

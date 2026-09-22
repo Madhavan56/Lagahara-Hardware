@@ -24,7 +24,7 @@ export const useWishlistStore = create<WishlistState>()(
           productIds: state.productIds.filter((id) => id !== productId),
         })),
     }),
-    { name: 'dhuraj-wishlist' },
+    { name: 'laghara-wishlist' },
   ),
 )
 

@@ -205,7 +205,7 @@ export default function CheckoutPage() {
             <div className="mt-6 space-y-6">
               <ul className="space-y-3">
                 {lines.map((line) => {
-                  const imageUrl = productImageUrl(line.product.primaryImagePath)
+                  const imageUrl = productImageUrl(line.product.primaryImagePath, { width: 150 })
                   return (
                     <li key={line.product.id} className="flex items-center gap-3 rounded-card border border-sand-200 bg-white p-3">
                       <div className="size-14 shrink-0 overflow-hidden rounded-lg bg-sand-100">
@@ -282,7 +282,7 @@ function StepHeader({ current }: { current: Step }) {
           <span
             className={cn(
               'flex size-6 items-center justify-center rounded-full text-xs font-semibold',
-              index <= currentIndex ? 'bg-brand-800 text-sand-50' : 'bg-sand-200 text-sand-500',
+              index <= currentIndex ? 'bg-brass-500 text-white' : 'bg-sand-200 text-sand-500',
             )}
           >
             {index + 1}

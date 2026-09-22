@@ -46,7 +46,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50">
-      <div className="bg-brand-900 text-center text-xs tracking-wide text-brand-100">
+      <div className="bg-brass-600 text-center text-xs font-semibold tracking-wide text-white">
         <p className="container-page py-2">
           Trade pricing available · Standard delivery in 4–6 days, Quick delivery in 2
         </p>
@@ -64,11 +64,11 @@ export function Header() {
           </button>
 
           <Link to="/" className="shrink-0">
-            <span className="font-display text-xl leading-none font-semibold tracking-tight text-brand-900 lg:text-2xl">
-              Dhuraj
+            <span className="font-display text-xl leading-none font-extrabold tracking-tight text-brand-900 lg:text-2xl">
+              Laghara
             </span>
-            <span className="ml-1 font-display text-xl leading-none text-brass-600 lg:text-2xl">
-              Interiors
+            <span className="ml-1 font-display text-xl leading-none font-extrabold text-brass-600 lg:text-2xl">
+              Hardwares
             </span>
           </Link>
 
@@ -143,7 +143,7 @@ export function Header() {
             >
               <ShoppingBag className="size-5" />
               {cartCount > 0 ? (
-                <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-brass-500 text-[0.625rem] font-semibold text-sand-950">
+                <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-add-500 text-[0.625rem] font-bold text-white">
                   {cartCount}
                 </span>
               ) : null}

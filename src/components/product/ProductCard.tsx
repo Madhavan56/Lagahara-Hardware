@@ -1,17 +1,21 @@
 import { motion } from 'framer-motion'
-import { Heart, Star } from 'lucide-react'
+import { Heart, Minus, Plus, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
+import { useCartStore } from '@/features/cart/store'
 import { useIsWishlisted, useWishlistStore } from '@/features/wishlist/store'
 import { productImageUrl } from '@/lib/supabase/client'
 import { cn, formatPrice } from '@/lib/utils'
 import type { ProductListItem } from '@/types/catalog'
 
 export function ProductCard({ product }: { product: ProductListItem }) {
-  const imageUrl = productImageUrl(product.primaryImagePath)
+  const imageUrl = productImageUrl(product.primaryImagePath, { width: 400 })
   const outOfStock = product.stockQuantity === 0
   const wishlisted = useIsWishlisted(product.id)
   const toggleWishlist = useWishlistStore((state) => state.toggle)
+  const quantityInCart = useCartStore((state) => state.lines[product.id]?.quantity ?? 0)
+  const addItem = useCartStore((state) => state.addItem)
+  const setQuantity = useCartStore((state) => state.setQuantity)
   const discountPct =
     product.compareAtPrice && product.compareAtPrice > product.price
       ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
@@ -62,6 +66,41 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           >
             <Heart className={cn('size-4', wishlisted && 'fill-danger text-danger')} />
           </button>
+
+          {!outOfStock ? (
+            <div className="absolute right-3 bottom-3 z-10" onClick={(event) => event.preventDefault()}>
+              {quantityInCart === 0 ? (
+                <button
+                  type="button"
+                  onClick={() => addItem(product.id, 1, product.stockQuantity)}
+                  className="rounded-xl border border-add-500 bg-white px-4 py-1.5 text-xs font-extrabold tracking-wide text-add-600 shadow-lift transition-transform active:scale-95"
+                >
+                  ADD
+                </button>
+              ) : (
+                <div className="flex items-center overflow-hidden rounded-xl border border-add-500 bg-add-500 text-white shadow-lift">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(product.id, quantityInCart - 1, product.stockQuantity)}
+                    aria-label="Decrease quantity"
+                    className="flex h-8 w-7 items-center justify-center transition-colors hover:bg-add-600"
+                  >
+                    <Minus className="size-3.5" />
+                  </button>
+                  <span className="w-5 text-center text-xs font-bold">{quantityInCart}</span>
+                  <button
+                    type="button"
+                    onClick={() => addItem(product.id, 1, product.stockQuantity)}
+                    disabled={quantityInCart >= product.stockQuantity}
+                    aria-label="Increase quantity"
+                    className="flex h-8 w-7 items-center justify-center transition-colors hover:bg-add-600 disabled:opacity-50"
+                  >
+                    <Plus className="size-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : null}
         </div>
 
         <div className="flex flex-1 flex-col gap-1.5 p-4">
@@ -83,7 +122,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           ) : null}
 
           <div className="mt-auto flex items-baseline gap-2 pt-2">
-            <span className="text-base font-semibold text-sand-900">
+            <span className="text-base font-extrabold text-sand-900">
               {formatPrice(product.price)}
             </span>
             {product.compareAtPrice ? (

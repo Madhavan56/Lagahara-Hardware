@@ -6,7 +6,7 @@ import { writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { supabaseAdmin } from './lib/admin-client'
 
-const SITE_URL = process.env.SITE_URL ?? 'https://dhurajinteriors.com'
+const SITE_URL = process.env.SITE_URL ?? 'https://lagharahardwares.com'
 
 function urlEntry(path: string, priority: string, changefreq: string) {
   return `  <url>\n    <loc>${SITE_URL}${path}</loc>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`
@@ -28,6 +28,8 @@ async function main() {
   const entries = [
     urlEntry('/', '1.0', 'daily'),
     urlEntry('/shop', '0.9', 'daily'),
+    urlEntry('/about', '0.5', 'monthly'),
+    urlEntry('/contact', '0.5', 'monthly'),
     ...(categories ?? []).map((c) => urlEntry(`/category/${c.slug}`, '0.8', 'weekly')),
     ...(products ?? []).map((p) => urlEntry(`/product/${p.slug}`, '0.6', 'weekly')),
   ]

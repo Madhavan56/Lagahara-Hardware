@@ -9,7 +9,7 @@ export function ProductGallery({ images, productName }: { images: ProductImage[]
   const [zoomOrigin, setZoomOrigin] = useState('50% 50%')
 
   const active = images[activeIndex]
-  const activeUrl = active ? productImageUrl(active.storagePath) : null
+  const activeUrl = active ? productImageUrl(active.storagePath, { width: 1000, quality: 85 }) : null
 
   function handleMouseMove(event: React.MouseEvent<HTMLDivElement>) {
     const rect = event.currentTarget.getBoundingClientRect()
@@ -44,7 +44,7 @@ export function ProductGallery({ images, productName }: { images: ProductImage[]
       {images.length > 1 ? (
         <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
           {images.map((image, index) => {
-            const thumbUrl = productImageUrl(image.storagePath)
+            const thumbUrl = productImageUrl(image.storagePath, { width: 150 })
             return (
               <button
                 key={image.id}

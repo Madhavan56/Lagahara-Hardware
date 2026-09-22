@@ -53,7 +53,7 @@ export default function CartPage() {
       <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
         <ul className="space-y-4">
           {lines.map((line) => {
-            const imageUrl = productImageUrl(line.product.primaryImagePath)
+            const imageUrl = productImageUrl(line.product.primaryImagePath, { width: 200 })
             return (
               <li
                 key={line.product.id}

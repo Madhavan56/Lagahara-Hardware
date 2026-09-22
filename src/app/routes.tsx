@@ -5,6 +5,8 @@ import { AdminRoute } from '@/features/auth/AdminRoute'
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute'
 
 const HomePage = lazy(() => import('@/pages/HomePage'))
+const AboutPage = lazy(() => import('@/pages/AboutPage'))
+const ContactPage = lazy(() => import('@/pages/ContactPage'))
 const ShopPage = lazy(() => import('@/pages/ShopPage'))
 const CategoryPage = lazy(() => import('@/pages/CategoryPage'))
 const ProductPage = lazy(() => import('@/pages/ProductPage'))
@@ -35,6 +37,7 @@ const AdminInventoryPage = lazy(() => import('@/pages/admin/AdminInventoryPage')
 const AdminOrdersPage = lazy(() => import('@/pages/admin/AdminOrdersPage'))
 const AdminShippingPage = lazy(() => import('@/pages/admin/AdminShippingPage'))
 const AdminReviewsPage = lazy(() => import('@/pages/admin/AdminReviewsPage'))
+const AdminMessagesPage = lazy(() => import('@/pages/admin/AdminMessagesPage'))
 
 export const router = createBrowserRouter([
   {
@@ -42,6 +45,8 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'about', element: <AboutPage /> },
+      { path: 'contact', element: <ContactPage /> },
       { path: 'shop', element: <ShopPage /> },
       { path: 'category/:slug', element: <CategoryPage /> },
       { path: 'product/:slug', element: <ProductPage /> },
@@ -91,6 +96,7 @@ export const router = createBrowserRouter([
           { path: 'orders', element: <AdminOrdersPage /> },
           { path: 'shipping', element: <AdminShippingPage /> },
           { path: 'reviews', element: <AdminReviewsPage /> },
+          { path: 'messages', element: <AdminMessagesPage /> },
         ],
       },
     ],

@@ -33,7 +33,7 @@ export default function CategoryPage() {
   })
 
   useDocumentHead({
-    title: category ? `${category.name} — Dhuraj Interiors` : 'Category — Dhuraj Interiors',
+    title: category ? `${category.name} — Laghara Hardwares` : 'Category — Laghara Hardwares',
     description: category?.description ?? undefined,
   })
 
@@ -99,7 +99,7 @@ export default function CategoryPage() {
               <SlidersHorizontal className="size-4" />
               Filters
               {activeFilterCount > 0 ? (
-                <span className="rounded-full bg-brand-800 px-1.5 py-0.5 text-xs text-white">
+                <span className="rounded-full bg-brass-500 px-1.5 py-0.5 text-xs text-white">
                   {activeFilterCount}
                 </span>
               ) : null}

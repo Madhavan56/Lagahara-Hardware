@@ -33,7 +33,7 @@ export function Input({ className, label, error, hint, leadingIcon, id, ...props
           aria-describedby={describedBy}
           className={cn(
             'h-11 w-full rounded-xl border bg-white px-3.5 text-sm text-sand-900 transition-colors duration-200 placeholder:text-sand-400',
-            'focus:border-brand-600 focus:outline-none',
+            'focus:border-brass-600 focus:outline-none',
             leadingIcon && 'pl-10',
             error ? 'border-danger' : 'border-sand-300 hover:border-sand-400',
             className,

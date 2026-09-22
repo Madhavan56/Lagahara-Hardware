@@ -6,6 +6,7 @@ import {
   createCategoryAttribute,
   createProduct,
   deleteCategoryAttribute,
+  deleteContactMessage,
   deleteProduct,
   deleteProductImage,
   deleteReview,
@@ -13,6 +14,8 @@ import {
   fetchAdminProduct,
   fetchAdminProducts,
   fetchAdminReviews,
+  fetchContactMessages,
+  setMessageRead,
   setPrimaryImage,
   setReviewApproval,
   updateCategory,
@@ -199,6 +202,26 @@ export function useDeleteReview() {
   return useMutation({
     mutationFn: (id: string) => deleteReview(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.reviews }),
+  })
+}
+
+export function useContactMessages() {
+  return useQuery({ queryKey: ['admin', 'messages'], queryFn: fetchContactMessages })
+}
+
+export function useSetMessageRead() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, isRead }: { id: string; isRead: boolean }) => setMessageRead(id, isRead),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin', 'messages'] }),
+  })
+}
+
+export function useDeleteContactMessage() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => deleteContactMessage(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin', 'messages'] }),
   })
 }
 

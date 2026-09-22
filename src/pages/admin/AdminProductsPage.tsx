@@ -54,7 +54,7 @@ export default function AdminProductsPage() {
             ) : (
               products?.map((product) => {
                 const primaryImage = product.images.find((img) => img.isPrimary) ?? product.images[0]
-                const imageUrl = productImageUrl(primaryImage?.storagePath)
+                const imageUrl = productImageUrl(primaryImage?.storagePath, { width: 100 })
                 return (
                   <tr key={product.id} className="border-b border-sand-100 last:border-0">
                     <td className="px-4 py-3">

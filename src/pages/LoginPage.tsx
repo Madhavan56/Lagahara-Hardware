@@ -41,7 +41,7 @@ export default function LoginPage() {
     <div className="container-page flex min-h-[70vh] items-center justify-center py-16">
       <div className="w-full max-w-sm">
         <h1 className="font-display text-2xl font-semibold text-sand-900">Sign in</h1>
-        <p className="mt-1.5 text-sm text-sand-600">Welcome back to Dhuraj Interiors.</p>
+        <p className="mt-1.5 text-sm text-sand-600">Welcome back to Laghara Hardwares.</p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
           <Input label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />

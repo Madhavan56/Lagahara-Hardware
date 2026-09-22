@@ -5,4 +5,4 @@ Disallow: /admin
 Disallow: /checkout
 Disallow: /cart
 
-Sitemap: https://dhurajinteriors.com/sitemap.xml
+Sitemap: https://lagharahardwares.com/sitemap.xml

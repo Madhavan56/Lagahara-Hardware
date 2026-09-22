@@ -1,4 +1,4 @@
-# Dhuraj Interiors
+# Laghara Hardwares
 
 E-commerce storefront for an interior & furniture-materials business. React + TypeScript + Vite,
 Supabase (Postgres/Auth/Storage/RLS), Razorpay, deployed on Vercel.

@@ -57,7 +57,7 @@ export function CartDrawer() {
               ) : (
                 <ul className="space-y-4">
                   {lines.map((line) => {
-                    const imageUrl = productImageUrl(line.product.primaryImagePath)
+                    const imageUrl = productImageUrl(line.product.primaryImagePath, { width: 150 })
                     return (
                       <li key={line.product.id} className="flex gap-3">
                         <div className="size-16 shrink-0 overflow-hidden rounded-lg bg-sand-100">

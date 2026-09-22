@@ -1,6 +1,7 @@
 import {
   LayoutGrid,
   ListTree,
+  Mail,
   Package,
   ShoppingCart,
   Star,
@@ -18,6 +19,7 @@ const NAV = [
   { to: '/admin/orders', label: 'Orders', icon: ShoppingCart, end: false },
   { to: '/admin/shipping', label: 'Shipping', icon: Truck, end: false },
   { to: '/admin/reviews', label: 'Reviews', icon: Star, end: false },
+  { to: '/admin/messages', label: 'Messages', icon: Mail, end: false },
 ]
 
 export default function AdminLayout() {
@@ -26,7 +28,7 @@ export default function AdminLayout() {
       <aside className="hidden w-60 shrink-0 border-r border-sand-200 bg-white lg:block">
         <div className="p-5">
           <p className="font-display text-lg font-semibold text-brand-900">Admin</p>
-          <p className="text-xs text-sand-500">Dhuraj Interiors</p>
+          <p className="text-xs text-sand-500">Laghara Hardwares</p>
         </div>
         <nav className="space-y-0.5 px-3">
           {NAV.map((item) => (

@@ -66,7 +66,7 @@ export default function OrderDetailPage() {
             <h2 className="mb-4 text-sm font-semibold tracking-wide text-sand-900 uppercase">Items</h2>
             <ul className="space-y-3">
               {order.items.map((item) => {
-                const imageUrl = productImageUrl(item.productImagePath)
+                const imageUrl = productImageUrl(item.productImagePath, { width: 150 })
                 return (
                   <li key={item.id} className="flex items-center gap-4 rounded-card border border-sand-200 bg-white p-4">
                     <div className="size-16 shrink-0 overflow-hidden rounded-lg bg-sand-100">

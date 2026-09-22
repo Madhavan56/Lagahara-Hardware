@@ -364,3 +364,43 @@ export async function deleteReview(id: string): Promise<void> {
   const { error } = await supabase.from('reviews').delete().eq('id', id)
   if (error) throw error
 }
+
+// -------------------------------------------------------------- messages
+
+export type AdminContactMessage = {
+  id: string
+  name: string
+  email: string
+  phone: string | null
+  message: string
+  isRead: boolean
+  createdAt: string
+}
+
+export async function fetchContactMessages(): Promise<AdminContactMessage[]> {
+  const { data, error } = await supabase
+    .from('contact_messages')
+    .select('id, name, email, phone, message, is_read, created_at')
+    .order('created_at', { ascending: false })
+    .limit(200)
+  if (error) throw error
+  return (data ?? []).map((row) => ({
+    id: asString(row.id),
+    name: asString(row.name),
+    email: asString(row.email),
+    phone: asNullableString(row.phone),
+    message: asString(row.message),
+    isRead: row.is_read === true,
+    createdAt: asString(row.created_at),
+  }))
+}
+
+export async function setMessageRead(id: string, isRead: boolean): Promise<void> {
+  const { error } = await supabase.from('contact_messages').update({ is_read: isRead }).eq('id', id)
+  if (error) throw error
+}
+
+export async function deleteContactMessage(id: string): Promise<void> {
+  const { error } = await supabase.from('contact_messages').delete().eq('id', id)
+  if (error) throw error
+}
