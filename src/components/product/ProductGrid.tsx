@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { Skeleton } from '@/components/ui/skeleton'
+import { cn } from '@/lib/utils'
 import type { ProductListItem } from '@/types/catalog'
 import { ProductCard } from './ProductCard'
 
@@ -8,11 +9,14 @@ export function ProductGrid({
   isLoading,
   isError,
   skeletonCount = 8,
+  compact = false,
 }: {
   products: ProductListItem[] | undefined
   isLoading?: boolean
   isError?: boolean
   skeletonCount?: number
+  /** Denser browsing grid for large catalog sweeps. */
+  compact?: boolean
 }) {
   if (isError) {
     return (
@@ -24,7 +28,12 @@ export function ProductGrid({
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div
+        className={cn(
+          'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4',
+          compact && 'sm:grid-cols-4 lg:grid-cols-5',
+        )}
+      >
         {Array.from({ length: skeletonCount }).map((_, index) => (
           <Skeleton key={index} className="aspect-[3/4] rounded-card" />
         ))}
@@ -46,7 +55,10 @@ export function ProductGrid({
       whileInView="visible"
       viewport={{ once: true, margin: '-40px' }}
       variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
-      className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
+      className={cn(
+        'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4',
+        compact && 'sm:grid-cols-4 lg:grid-cols-5',
+      )}
     >
       {products.map((product) => (
         <motion.div

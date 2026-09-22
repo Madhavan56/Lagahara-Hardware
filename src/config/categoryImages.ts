@@ -5,10 +5,11 @@
  * public/images/categories/ at two widths (480w/960w) for srcset.
  * Credits live in IMAGE_CREDITS.md.
  *
- * Categories without a photo fall back to a branded gradient tile — the grid
- * still renders one consistent system (same ratio, radius, scrim, label).
- * To upgrade a fallback to a photo: drop `<slug>-480.jpg` and `<slug>-960.jpg`
- * into public/images/categories/ and add a `photo` entry below.
+ * Every category currently has a photo. Categories without a photo fall back
+ * to a branded gradient tile — the grid still renders one consistent system
+ * (same ratio, radius, scrim, label). To upgrade a fallback to a photo: drop
+ * `<slug>-480.jpg` and `<slug>-960.jpg` into public/images/categories/ and add
+ * a `photo` entry below.
  */
 
 export type CategoryPhoto = {
@@ -51,15 +52,19 @@ export const CATEGORY_TILES: Record<string, CategoryTile> = {
     fallbackGradient: 'from-sky-600 to-sky-900',
   },
   hinges: {
+    photo: photo('hinges', 'Soft-close hinge fitted to a kitchen cabinet door'),
     fallbackGradient: 'from-violet-600 to-violet-900',
   },
   'drawer-systems': {
+    photo: photo('drawer-systems', 'Pair of drawer slide rails, extended view'),
     fallbackGradient: 'from-amber-600 to-amber-900',
   },
   'drawer-channels': {
+    photo: photo('drawer-channels', 'Drawer slide rails with mounting wheel detail'),
     fallbackGradient: 'from-teal-600 to-teal-900',
   },
   'handles-knobs': {
+    photo: photo('handles-knobs', 'Collection of brass door handles and knobs'),
     fallbackGradient: 'from-rose-600 to-rose-900',
   },
   'sliding-systems': {
@@ -71,6 +76,7 @@ export const CATEGORY_TILES: Record<string, CategoryTile> = {
     fallbackGradient: 'from-indigo-600 to-indigo-900',
   },
   'aluminium-profiles': {
+    photo: photo('aluminium-profiles', 'Stacked extruded aluminium profiles'),
     fallbackGradient: 'from-lime-700 to-lime-900',
   },
   'interior-hardware': {

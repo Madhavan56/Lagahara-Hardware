@@ -56,19 +56,19 @@ export default function CategoryPage() {
 
   return (
     <div className="container-page py-10 lg:py-14">
-      <nav className="mb-4 text-xs text-sand-500">
+      <nav className="mb-4 flex items-center gap-1.5 text-xs font-medium text-sand-500">
         <Link to="/" className="hover:text-brand-700">
           Home
         </Link>
-        <span className="mx-1.5">/</span>
+        <span>/</span>
         <Link to="/shop" className="hover:text-brand-700">
           Shop
         </Link>
-        <span className="mx-1.5">/</span>
+        <span>/</span>
         <span className="text-sand-700">{category.name}</span>
       </nav>
 
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="font-display text-3xl font-semibold text-sand-900 lg:text-4xl">
           {category.name}
         </h1>
@@ -79,33 +79,35 @@ export default function CategoryPage() {
 
       <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
         <aside className="hidden lg:block">
-          <FilterPanel
-            attributes={attributes}
-            filters={filters}
-            onToggleSelect={toggleSelectValue}
-            onToggleBoolean={toggleBoolean}
-            onClear={clearAll}
-            activeFilterCount={activeFilterCount}
-          />
+          <div className="sticky top-31 max-h-[calc(100vh-9rem)] overflow-y-auto">
+            <FilterPanel
+              attributes={attributes}
+              filters={filters}
+              onToggleSelect={toggleSelectValue}
+              onToggleBoolean={toggleBoolean}
+              onClear={clearAll}
+              activeFilterCount={activeFilterCount}
+            />
+          </div>
         </aside>
 
         <div>
-          <div className="mb-6 flex items-center justify-between gap-3">
+          <div className="sticky top-31 z-20 -mx-1 mb-6 flex items-center justify-between gap-3 rounded-2xl border border-sand-200 bg-white/95 px-4 py-2.5 shadow-card backdrop-blur-md">
             <button
               type="button"
               onClick={() => setMobileFiltersOpen(true)}
-              className="flex items-center gap-2 rounded-lg border border-sand-300 px-3.5 py-2 text-sm font-medium text-sand-700 lg:hidden"
+              className="flex items-center gap-2 rounded-lg border border-sand-300 px-3.5 py-2 text-sm font-bold text-sand-700 lg:hidden"
             >
               <SlidersHorizontal className="size-4" />
               Filters
               {activeFilterCount > 0 ? (
-                <span className="rounded-full bg-brass-500 px-1.5 py-0.5 text-xs text-white">
+                <span className="rounded-full bg-brass-500 px-1.5 py-0.5 text-xs font-bold text-white">
                   {activeFilterCount}
                 </span>
               ) : null}
             </button>
-            <p className="hidden text-sm text-sand-500 sm:block">
-              {productsQuery.data?.total ?? 0} products
+            <p className="text-sm font-semibold text-sand-700">
+              {productsQuery.data?.total ?? 0} <span className="font-normal text-sand-500">products</span>
             </p>
             <div className="ml-auto">
               <SortSelect value={sort} onChange={setSort} />

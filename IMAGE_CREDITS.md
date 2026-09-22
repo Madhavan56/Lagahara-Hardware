@@ -18,14 +18,15 @@ referenced via `src/config/categoryImages.ts`.
 | Locks & Security | [Deadbolt Door Lock.jpg](https://commons.wikimedia.org/wiki/File:Deadbolt_Door_Lock_(48650623173).jpg) | Tony Webster | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/) |
 | Interior Hardware | [Old tools on personal workshop wall.jpg](https://commons.wikimedia.org/wiki/File:Old_tools_on_personal_workshop_wall.jpg) | Syced | CC0 (public domain) |
 | Furniture Accessories | [Carpentry workshop, Qom, Iran 01.jpg](https://commons.wikimedia.org/wiki/File:Carpentry_workshop._Iran._Qom_city_%DA%A9%D8%A7%D8%B1%DA%AF%D8%A7%D9%87_%D9%86%D8%AC%D8%A7%D8%B1%DB%8C_%D8%A8%D8%B1%D8%A7%D8%AF%D8%B1%D8%A7%D9%86_%D8%AD%D8%A7%D8%AC_%D9%85%D8%AD%D9%85%D8%AF%DB%8C._%D8%A7%DB%8C%D8%B1%D8%A7%D9%86%D8%8C_%D9%82%D9%85_01.jpg) | Mostafameraji | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| Hinges | [Hinge on kitchen cabinet with soft closing mechanism.jpg](https://commons.wikimedia.org/wiki/File:Hinge_on_kitchen_cabinet_with_soft_closing_mechanism.jpg) | Shixart1985 | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/) |
+| Drawer Systems | [Bottom mounting wheel drawer slide rails - 50 cm - B.jpg](https://commons.wikimedia.org/wiki/File:Bottom_mounting_wheel_drawer_slide_rails_-_50_cm_-_B.jpg) | Fructibus | CC0 (public domain) |
+| Drawer Channels & Runners | [Bottom mounting wheel drawer slide rails - 50 cm - A.jpg](https://commons.wikimedia.org/wiki/File:Bottom_mounting_wheel_drawer_slide_rails_-_50_cm_-_A.jpg) | Fructibus | CC0 (public domain) |
+| Handles & Knobs | [021026344837 dörrknäppe.jpg](https://commons.wikimedia.org/wiki/File:021026344837_d%C3%B6rrkn%C3%A4ppe.jpg) | Digitalt Museum | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| Aluminium Profiles | [Thöni Aluminium-Profile.jpg](https://commons.wikimedia.org/wiki/File:Th%C3%B6ni_Aluminium-Profile.jpg) | Thöni Gruppe | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 
-**Without a photo yet:** Hinges, Drawer Systems, Drawer Channels & Runners,
-Handles & Knobs, Aluminium Profiles. These render a branded gradient tile with
-the category icon — same aspect ratio, radius, scrim and label as the photo
-tiles. Free-licensed archives have no usable modern photography for these
-specific hardware components (searched across four rounds). To upgrade one:
-drop `<slug>-480.jpg` and `<slug>-960.jpg` into `public/images/categories/`
-and add a `photo` entry in `src/config/categoryImages.ts`.
+All thirteen categories now render real photography — no gradient fallbacks
+remain in the live catalog. The fallback system is kept for any future
+additions.
 
 ## Product photography
 

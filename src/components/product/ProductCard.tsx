@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Heart, Minus, Plus, Star } from 'lucide-react'
+import { Heart, Minus, Plus, Star, Zap } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
 import { Badge } from '@/components/ui/badge'
@@ -9,9 +9,12 @@ import { productImageUrl } from '@/lib/supabase/client'
 import { cn, formatPrice } from '@/lib/utils'
 import type { ProductListItem } from '@/types/catalog'
 
+const LOW_STOCK_THRESHOLD = 5
+
 export function ProductCard({ product }: { product: ProductListItem }) {
   const imageUrl = productImageUrl(product.primaryImagePath, { width: 400 })
   const outOfStock = product.stockQuantity === 0
+  const lowStock = !outOfStock && product.stockQuantity <= LOW_STOCK_THRESHOLD
   const wishlisted = useIsWishlisted(product.id)
   const toggleWishlist = useWishlistStore((state) => state.toggle)
   const quantityInCart = useCartStore((state) => state.lines[product.id]?.quantity ?? 0)
@@ -40,7 +43,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
             <ProductImagePlaceholder size="md" />
           )}
 
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5">
             {discountPct ? (
               <Badge variant="accent" size="sm">
                 {discountPct}% off
@@ -67,32 +70,34 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           </button>
 
           {!outOfStock ? (
-            <div className="absolute right-3 bottom-3 z-10" onClick={(event) => event.preventDefault()}>
+            <div className="absolute inset-x-3 bottom-3 z-10" onClick={(event) => event.preventDefault()}>
               {quantityInCart === 0 ? (
                 <button
                   type="button"
                   onClick={() => addItem(product.id, 1, product.stockQuantity)}
-                  className="rounded-xl border border-add-500 bg-white px-4 py-1.5 text-xs font-extrabold tracking-wide text-add-600 shadow-lift transition-transform active:scale-95"
+                  className="w-full rounded-xl border border-add-500 bg-white/95 px-4 py-2 text-xs font-extrabold tracking-widest text-add-600 shadow-lift backdrop-blur-sm transition-all hover:bg-add-50 active:scale-95"
                 >
                   ADD
                 </button>
               ) : (
-                <div className="flex items-center overflow-hidden rounded-xl border border-add-500 bg-add-500 text-white shadow-lift">
+                <div className="flex items-stretch overflow-hidden rounded-xl border border-add-500 bg-add-500 text-white shadow-lift">
                   <button
                     type="button"
                     onClick={() => setQuantity(product.id, quantityInCart - 1, product.stockQuantity)}
                     aria-label="Decrease quantity"
-                    className="flex h-8 w-7 items-center justify-center transition-colors hover:bg-add-600"
+                    className="flex h-9 flex-1 items-center justify-center transition-colors hover:bg-add-600"
                   >
                     <Minus className="size-3.5" />
                   </button>
-                  <span className="w-5 text-center text-xs font-bold">{quantityInCart}</span>
+                  <span className="flex w-8 items-center justify-center text-sm font-bold">
+                    {quantityInCart}
+                  </span>
                   <button
                     type="button"
                     onClick={() => addItem(product.id, 1, product.stockQuantity)}
                     disabled={quantityInCart >= product.stockQuantity}
                     aria-label="Increase quantity"
-                    className="flex h-8 w-7 items-center justify-center transition-colors hover:bg-add-600 disabled:opacity-50"
+                    className="flex h-9 flex-1 items-center justify-center transition-colors hover:bg-add-600 disabled:opacity-50"
                   >
                     <Plus className="size-3.5" />
                   </button>
@@ -102,34 +107,50 @@ export function ProductCard({ product }: { product: ProductListItem }) {
           ) : null}
         </div>
 
-        <div className="flex flex-1 flex-col gap-1.5 p-4">
-          {product.brand ? (
-            <p className="text-xs font-semibold tracking-wide text-sand-500 uppercase">
-              {product.brand}
-            </p>
-          ) : null}
-          <h3 className="line-clamp-2 text-sm leading-snug font-medium text-sand-900">
+        <div className="flex flex-1 flex-col gap-1 p-4">
+          <div className="flex items-center justify-between gap-2">
+            {product.brand ? (
+              <p className="truncate text-[0.6875rem] font-bold tracking-widest text-sand-500 uppercase">
+                {product.brand}
+              </p>
+            ) : (
+              <span />
+            )}
+            {product.ratingCount > 0 ? (
+              <span className="flex shrink-0 items-center gap-1 rounded-full bg-sand-100 px-1.5 py-0.5 text-[0.6875rem] font-semibold text-sand-700">
+                <Star className="size-3 fill-brand-600 text-brand-600" />
+                {product.ratingAvg.toFixed(1)}
+              </span>
+            ) : null}
+          </div>
+
+          <h3 className="line-clamp-2 min-h-10 text-sm leading-snug font-semibold text-sand-900">
             {product.name}
           </h3>
 
-          {product.ratingCount > 0 ? (
-            <div className="flex items-center gap-1 text-xs text-sand-500">
-              <Star className="size-3.5 fill-brass-500 text-brass-500" />
-              <span>{product.ratingAvg.toFixed(1)}</span>
-              <span>({product.ratingCount})</span>
-            </div>
-          ) : null}
-
-          <div className="mt-auto flex items-baseline gap-2 pt-2">
+          <div className="mt-auto flex items-baseline gap-2 pt-1.5">
             <span className="text-base font-extrabold text-sand-900">
               {formatPrice(product.price)}
             </span>
             {product.compareAtPrice ? (
-              <span className="text-sm text-sand-400 line-through">
+              <span className="text-xs text-sand-400 line-through">
                 {formatPrice(product.compareAtPrice)}
               </span>
             ) : null}
-            <span className="text-xs text-sand-500">/ {product.unitLabel}</span>
+            <span className="text-[0.6875rem] text-sand-500">/ {product.unitLabel}</span>
+          </div>
+
+          <div className="flex min-h-4 items-center gap-1 text-[0.6875rem] font-semibold">
+            {lowStock ? (
+              <span className="text-danger">
+                Only {product.stockQuantity} left
+              </span>
+            ) : (
+              <>
+                <Zap className="size-3 fill-brass-500 text-brass-500" aria-hidden />
+                <span className="text-brand-700">Quick delivery · 2 days</span>
+              </>
+            )}
           </div>
         </div>
       </Link>
