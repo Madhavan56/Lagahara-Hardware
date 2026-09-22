@@ -36,7 +36,6 @@ export const router = createBrowserRouter([
       { path: 'search', element: <SearchPage /> },
       { path: 'cart', element: <CartPage /> },
       { path: 'wishlist', element: <WishlistPage /> },
-      { path: 'checkout', element: <CheckoutPage /> },
       { path: 'track', element: <TrackOrderPage /> },
 
       { path: 'login', element: <LoginPage /> },
@@ -47,6 +46,7 @@ export const router = createBrowserRouter([
       {
         element: <ProtectedRoute />,
         children: [
+          { path: 'checkout', element: <CheckoutPage /> },
           {
             path: 'account',
             element: <AccountLayout />,

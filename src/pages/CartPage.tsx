@@ -131,14 +131,9 @@ export default function CartPage() {
             <span>Total</span>
             <span>{formatPrice(subtotal)}</span>
           </div>
-          <button
-            type="button"
-            disabled
-            title="Checkout arrives in Phase 7"
-            className={`mt-6 ${buttonVariants({ variant: 'primary', block: true })} disabled:pointer-events-none disabled:opacity-40`}
-          >
+          <Link to="/checkout" className={`mt-6 ${buttonVariants({ variant: 'primary', block: true })}`}>
             Proceed to checkout
-          </button>
+          </Link>
         </div>
       </div>
     </div>
