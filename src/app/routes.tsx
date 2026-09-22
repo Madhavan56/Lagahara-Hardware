@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import { RootLayout } from '@/components/layout/RootLayout'
+import { AdminRoute } from '@/features/auth/AdminRoute'
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute'
 
 const HomePage = lazy(() => import('@/pages/HomePage'))
@@ -24,6 +25,16 @@ const ProfileTab = lazy(() => import('@/pages/account/ProfileTab'))
 const AddressesTab = lazy(() => import('@/pages/account/AddressesTab'))
 const OrdersTab = lazy(() => import('@/pages/account/OrdersTab'))
 const OrderDetailPage = lazy(() => import('@/pages/account/OrderDetailPage'))
+
+const AdminLayout = lazy(() => import('@/pages/admin/AdminLayout'))
+const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'))
+const AdminProductsPage = lazy(() => import('@/pages/admin/AdminProductsPage'))
+const AdminProductFormPage = lazy(() => import('@/pages/admin/AdminProductFormPage'))
+const AdminCategoriesPage = lazy(() => import('@/pages/admin/AdminCategoriesPage'))
+const AdminInventoryPage = lazy(() => import('@/pages/admin/AdminInventoryPage'))
+const AdminOrdersPage = lazy(() => import('@/pages/admin/AdminOrdersPage'))
+const AdminShippingPage = lazy(() => import('@/pages/admin/AdminShippingPage'))
+const AdminReviewsPage = lazy(() => import('@/pages/admin/AdminReviewsPage'))
 
 export const router = createBrowserRouter([
   {
@@ -62,6 +73,26 @@ export const router = createBrowserRouter([
       },
 
       { path: '*', element: <NotFoundPage /> },
+    ],
+  },
+  {
+    path: '/admin',
+    element: <AdminRoute />,
+    children: [
+      {
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <AdminDashboardPage /> },
+          { path: 'products', element: <AdminProductsPage /> },
+          { path: 'products/new', element: <AdminProductFormPage /> },
+          { path: 'products/:productId', element: <AdminProductFormPage /> },
+          { path: 'categories', element: <AdminCategoriesPage /> },
+          { path: 'inventory', element: <AdminInventoryPage /> },
+          { path: 'orders', element: <AdminOrdersPage /> },
+          { path: 'shipping', element: <AdminShippingPage /> },
+          { path: 'reviews', element: <AdminReviewsPage /> },
+        ],
+      },
     ],
   },
 ])

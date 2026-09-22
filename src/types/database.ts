@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       addresses: {
@@ -291,6 +316,8 @@ export type Database = {
         Row: {
           created_at: string
           currency: string
+          customer_email: string | null
+          customer_name: string | null
           customer_note: string | null
           discount_amount: number
           id: string
@@ -317,6 +344,8 @@ export type Database = {
         Insert: {
           created_at?: string
           currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
           customer_note?: string | null
           discount_amount?: number
           id?: string
@@ -343,6 +372,8 @@ export type Database = {
         Update: {
           created_at?: string
           currency?: string
+          customer_email?: string | null
+          customer_name?: string | null
           customer_note?: string | null
           discount_amount?: number
           id?: string
@@ -659,6 +690,8 @@ export type Database = {
         Returns: {
           created_at: string
           currency: string
+          customer_email: string | null
+          customer_name: string | null
           customer_note: string | null
           discount_amount: number
           id: string
@@ -838,6 +871,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       attribute_data_type: ["text", "number", "boolean", "select"],

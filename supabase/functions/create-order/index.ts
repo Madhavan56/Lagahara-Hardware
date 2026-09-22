@@ -117,10 +117,18 @@ export default {
     const shippingAmount = shippingMethod.price;
     const total = subtotal + shippingAmount;
 
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("full_name")
+      .eq("id", userId)
+      .maybeSingle();
+
     const { data: order, error: orderError } = await admin
       .from("orders")
       .insert({
         user_id: userId,
+        customer_email: userData.user.email ?? null,
+        customer_name: profile?.full_name ?? null,
         status: "pending",
         payment_status: "pending",
         subtotal,
