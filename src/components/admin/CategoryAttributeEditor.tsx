@@ -138,6 +138,7 @@ export function CategoryAttributeEditor({ categoryId }: { categoryId: string }) 
                     }
                   }}
                   className="text-xs font-medium text-danger hover:underline"
+                  aria-label={`Delete attribute ${attr.label}`}
                 >
                   <Trash2 className="inline size-3.5" />
                 </button>

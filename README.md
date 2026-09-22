@@ -34,6 +34,14 @@ Verify RLS policies with a deliberate cross-user negative test:
 npm run verify:rls
 ```
 
+Regenerate `public/sitemap.xml` from live categories/products before each
+production build (set `SITE_URL` once the real domain is chosen; defaults to
+a placeholder):
+
+```bash
+SITE_URL=https://yourdomain.com npm run generate:sitemap
+```
+
 Run the full security audit (21-point RLS matrix across every table — anon /
 customer / cross-customer / admin, plus storage and the verified-purchaser
 review gate):

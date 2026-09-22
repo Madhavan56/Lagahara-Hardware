@@ -62,6 +62,7 @@ export default function AdminCategoriesPage() {
               <button
                 type="button"
                 onClick={() => setExpandedId(expandedId === category.id ? null : category.id)}
+                aria-expanded={expandedId === category.id}
                 className="flex w-full items-center justify-between p-4 text-left"
               >
                 <div>

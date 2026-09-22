@@ -55,6 +55,7 @@ export default function AdminReviewsPage() {
                     onClick={() => {
                       if (confirm('Delete this review?')) deleteReview.mutate(review.id)
                     }}
+                    aria-label="Delete review"
                     className="text-sand-400 hover:text-danger"
                   >
                     <Trash2 className="size-4" />

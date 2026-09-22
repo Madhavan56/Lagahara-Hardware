@@ -5,6 +5,7 @@ import { ProductGrid } from '@/components/product/ProductGrid'
 import { buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCategories, useFeaturedProducts, useNewArrivals } from '@/features/catalog/queries'
+import { useDocumentHead } from '@/hooks/useDocumentHead'
 
 const TRUST_POINTS = [
   { icon: Truck, title: 'Two delivery speeds', body: 'Standard in 4–6 days, or Quick within 2.' },
@@ -16,6 +17,23 @@ export default function HomePage() {
   const { data: categories, isLoading, isError } = useCategories()
   const featured = useFeaturedProducts(8)
   const newArrivals = useNewArrivals(8)
+
+  useDocumentHead({
+    title: 'Dhuraj Interiors — Interior & Furniture Materials',
+    description:
+      'Plywood, laminates, kitchen and wardrobe hardware, hinges, drawer systems, handles and more. Trade-grade interior materials with fast delivery.',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Dhuraj Interiors',
+      url: window.location.origin,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${window.location.origin}/search?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  })
 
   return (
     <>

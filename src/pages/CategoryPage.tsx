@@ -12,6 +12,7 @@ import {
   useProductsPage,
 } from '@/features/catalog/queries'
 import { useProductFilterState } from '@/features/catalog/useProductFilterState'
+import { useDocumentHead } from '@/hooks/useDocumentHead'
 
 const PAGE_SIZE = 12
 
@@ -29,6 +30,11 @@ export default function CategoryPage() {
     sort,
     page,
     pageSize: PAGE_SIZE,
+  })
+
+  useDocumentHead({
+    title: category ? `${category.name} — Dhuraj Interiors` : 'Category — Dhuraj Interiors',
+    description: category?.description ?? undefined,
   })
 
   if (categoryLoading) {

@@ -50,6 +50,8 @@ export function ProductGallery({ images, productName }: { images: ProductImage[]
                 key={image.id}
                 type="button"
                 onClick={() => setActiveIndex(index)}
+                aria-label={`View image ${index + 1} of ${images.length}`}
+                aria-pressed={index === activeIndex}
                 className={cn(
                   'size-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors',
                   index === activeIndex ? 'border-brand-700' : 'border-transparent hover:border-sand-300',
