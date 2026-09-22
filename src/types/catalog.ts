@@ -74,6 +74,24 @@ export type ProductListItem = Pick<
   primaryImagePath: string | null
 }
 
+export type Review = {
+  id: string
+  productId: string
+  userId: string
+  rating: number
+  title: string | null
+  body: string | null
+  createdAt: string
+  authorName: string | null
+}
+
+export type RatingSummary = {
+  average: number
+  count: number
+  /** Count of reviews at each star rating, 1..5 */
+  histogram: Record<1 | 2 | 3 | 4 | 5, number>
+}
+
 export type ShippingMethod = {
   id: string
   code: string

@@ -5,7 +5,10 @@ import {
   fetchCategoryBySlug,
   fetchFeaturedProducts,
   fetchNewArrivals,
+  fetchProductBySlug,
+  fetchProductReviews,
   fetchProductsPage,
+  fetchRelatedProducts,
   fetchShippingMethods,
   searchProducts,
   type ProductsPageParams,
@@ -18,6 +21,9 @@ export const catalogKeys = {
   featured: ['products', 'featured'] as const,
   newArrivals: ['products', 'new-arrivals'] as const,
   productsPage: (params: ProductsPageParams) => ['products', 'page', params] as const,
+  productBySlug: (slug: string) => ['product', slug] as const,
+  related: (categoryId: string, excludeId: string) => ['products', 'related', categoryId, excludeId] as const,
+  reviews: (productId: string) => ['reviews', productId] as const,
   search: (query: string) => ['products', 'search', query] as const,
   shippingMethods: ['shipping-methods'] as const,
 }
@@ -79,6 +85,33 @@ export function useProductSearch(query: string) {
     queryFn: () => searchProducts(query),
     enabled: query.trim().length > 1,
     staleTime: 30 * 1000,
+  })
+}
+
+export function useProductBySlug(slug: string | undefined) {
+  return useQuery({
+    queryKey: catalogKeys.productBySlug(slug ?? ''),
+    queryFn: () => fetchProductBySlug(slug as string),
+    enabled: Boolean(slug),
+    staleTime: 60 * 1000,
+  })
+}
+
+export function useRelatedProducts(categoryId: string | undefined, excludeId: string | undefined, limit?: number) {
+  return useQuery({
+    queryKey: catalogKeys.related(categoryId ?? '', excludeId ?? ''),
+    queryFn: () => fetchRelatedProducts(categoryId as string, excludeId as string, limit),
+    enabled: Boolean(categoryId && excludeId),
+    staleTime: 5 * 60 * 1000,
+  })
+}
+
+export function useProductReviews(productId: string | undefined) {
+  return useQuery({
+    queryKey: catalogKeys.reviews(productId ?? ''),
+    queryFn: () => fetchProductReviews(productId as string),
+    enabled: Boolean(productId),
+    staleTime: 60 * 1000,
   })
 }
 

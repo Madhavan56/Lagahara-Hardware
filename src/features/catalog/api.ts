@@ -1,5 +1,15 @@
 import { supabase } from '@/lib/supabase/client'
-import type { Category, CategoryAttribute, ProductListItem, ShippingMethod } from '@/types/catalog'
+import type {
+  AttributeValue,
+  Category,
+  CategoryAttribute,
+  Product,
+  ProductImage,
+  ProductListItem,
+  RatingSummary,
+  Review,
+  ShippingMethod,
+} from '@/types/catalog'
 
 type Row = Record<string, unknown>
 
@@ -63,6 +73,62 @@ function mapProductListItem(row: Row): ProductListItem {
     ratingCount: asNumber(row.rating_count),
     categoryId: asString(row.category_id),
     primaryImagePath: primary ? asNullableString(primary.storage_path) : null,
+  }
+}
+
+function mapProductImage(row: Row): ProductImage {
+  return {
+    id: asString(row.id),
+    storagePath: asString(row.storage_path),
+    altText: asNullableString(row.alt_text),
+    sortOrder: asNumber(row.sort_order),
+    isPrimary: row.is_primary === true,
+  }
+}
+
+function mapProduct(row: Row): Product {
+  const images = Array.isArray(row.product_images) ? (row.product_images as Row[]) : []
+  const attributes =
+    row.attributes && typeof row.attributes === 'object' && !Array.isArray(row.attributes)
+      ? (row.attributes as Record<string, AttributeValue>)
+      : {}
+
+  return {
+    id: asString(row.id),
+    categoryId: asString(row.category_id),
+    slug: asString(row.slug),
+    sku: asString(row.sku),
+    name: asString(row.name),
+    brand: asNullableString(row.brand),
+    description: asNullableString(row.description),
+    price: asNumber(row.price),
+    compareAtPrice: row.compare_at_price == null ? null : asNumber(row.compare_at_price),
+    gstRate: asNumber(row.gst_rate),
+    unitLabel: asString(row.unit_label) || 'piece',
+    stockQuantity: asNumber(row.stock_quantity),
+    lowStockThreshold: asNumber(row.low_stock_threshold),
+    attributes,
+    isActive: row.is_active === true,
+    isFeatured: row.is_featured === true,
+    ratingAvg: asNumber(row.rating_avg),
+    ratingCount: asNumber(row.rating_count),
+    createdAt: asString(row.created_at),
+    images: images
+      .map(mapProductImage)
+      .sort((a, b) => (b.isPrimary ? 1 : 0) - (a.isPrimary ? 1 : 0) || a.sortOrder - b.sortOrder),
+  }
+}
+
+function mapReview(row: Row): Review {
+  return {
+    id: asString(row.id),
+    productId: asString(row.product_id),
+    userId: asString(row.user_id),
+    rating: asNumber(row.rating),
+    title: asNullableString(row.title),
+    body: asNullableString(row.body),
+    createdAt: asString(row.created_at),
+    authorName: asNullableString(row.reviewer_name),
   }
 }
 
@@ -138,6 +204,67 @@ export async function fetchNewArrivals(limit = 8): Promise<ProductListItem[]> {
 
   if (error) throw error
   return (data ?? []).map(mapProductListItem)
+}
+
+const PRODUCT_DETAIL_SELECT =
+  'id, category_id, slug, sku, name, brand, description, price, compare_at_price, gst_rate, unit_label, stock_quantity, low_stock_threshold, attributes, is_active, is_featured, rating_avg, rating_count, created_at, product_images(id, storage_path, alt_text, sort_order, is_primary)'
+
+export async function fetchProductBySlug(slug: string): Promise<Product | null> {
+  const { data, error } = await supabase
+    .from('products')
+    .select(PRODUCT_DETAIL_SELECT)
+    .eq('slug', slug)
+    .eq('is_active', true)
+    .maybeSingle()
+
+  if (error) throw error
+  return data ? mapProduct(data) : null
+}
+
+export async function fetchRelatedProducts(
+  categoryId: string,
+  excludeProductId: string,
+  limit = 4,
+): Promise<ProductListItem[]> {
+  const { data, error } = await supabase
+    .from('products')
+    .select(PRODUCT_LIST_SELECT)
+    .eq('category_id', categoryId)
+    .eq('is_active', true)
+    .neq('id', excludeProductId)
+    .limit(limit)
+
+  if (error) throw error
+  return (data ?? []).map(mapProductListItem)
+}
+
+export async function fetchProductReviews(productId: string): Promise<Review[]> {
+  const { data, error } = await supabase
+    .from('reviews')
+    .select('id, product_id, user_id, rating, title, body, created_at, reviewer_name')
+    .eq('product_id', productId)
+    .eq('is_approved', true)
+    .order('created_at', { ascending: false })
+
+  if (error) throw error
+  return (data ?? []).map(mapReview)
+}
+
+export function summarizeRatings(reviews: Review[]): RatingSummary {
+  const histogram: RatingSummary['histogram'] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+  let total = 0
+
+  for (const review of reviews) {
+    const bucket = Math.min(5, Math.max(1, Math.round(review.rating))) as 1 | 2 | 3 | 4 | 5
+    histogram[bucket] += 1
+    total += review.rating
+  }
+
+  return {
+    average: reviews.length ? total / reviews.length : 0,
+    count: reviews.length,
+    histogram,
+  }
 }
 
 export type ProductSort = 'newest' | 'price_asc' | 'price_desc' | 'rating'
