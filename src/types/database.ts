@@ -688,6 +688,13 @@ export type Database = {
       }
       is_admin: { Args: never; Returns: boolean }
       next_order_number: { Args: never; Returns: string }
+      search_products: {
+        Args: { result_limit?: number; search_query: string }
+        Returns: {
+          id: string
+          rank: number
+        }[]
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }

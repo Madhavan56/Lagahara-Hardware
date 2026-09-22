@@ -90,6 +90,18 @@ export async function fetchCategories(): Promise<Category[]> {
   return (data ?? []).map(mapCategory)
 }
 
+export async function fetchCategoryBySlug(slug: string): Promise<Category | null> {
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id, slug, name, description, image_url, sort_order')
+    .eq('slug', slug)
+    .eq('is_active', true)
+    .maybeSingle()
+
+  if (error) throw error
+  return data ? mapCategory(data) : null
+}
+
 export async function fetchCategoryAttributes(categoryId: string): Promise<CategoryAttribute[]> {
   const { data, error } = await supabase
     .from('category_attributes')
@@ -126,6 +138,116 @@ export async function fetchNewArrivals(limit = 8): Promise<ProductListItem[]> {
 
   if (error) throw error
   return (data ?? []).map(mapProductListItem)
+}
+
+export type ProductSort = 'newest' | 'price_asc' | 'price_desc' | 'rating'
+
+export type ProductAttributeFilters = {
+  /** Select-type attributes: key -> allowed values (OR'd together). */
+  select: Record<string, string[]>
+  /** Boolean-type attributes: key -> required value. */
+  boolean: Record<string, boolean>
+}
+
+export type ProductsPageParams = {
+  categoryId?: string
+  searchQuery?: string
+  filters?: ProductAttributeFilters
+  sort?: ProductSort
+  page?: number
+  pageSize?: number
+}
+
+export type ProductsPage = {
+  items: ProductListItem[]
+  total: number
+}
+
+export async function fetchProductsPage({
+  categoryId,
+  searchQuery,
+  filters,
+  sort = 'newest',
+  page = 1,
+  pageSize = 12,
+}: ProductsPageParams): Promise<ProductsPage> {
+  let query = supabase
+    .from('products')
+    .select(PRODUCT_LIST_SELECT, { count: 'exact' })
+    .eq('is_active', true)
+
+  if (categoryId) {
+    query = query.eq('category_id', categoryId)
+  }
+
+  if (searchQuery?.trim()) {
+    query = query.textSearch('search_vector', searchQuery.trim(), {
+      type: 'websearch',
+      config: 'english',
+    })
+  }
+
+  for (const [key, values] of Object.entries(filters?.select ?? {})) {
+    if (!values.length) continue
+    if (values.length === 1) {
+      query = query.eq(`attributes->>${key}`, values[0] as string)
+    } else {
+      query = query.or(values.map((value) => `attributes->>${key}.eq.${value}`).join(','))
+    }
+  }
+
+  for (const [key, value] of Object.entries(filters?.boolean ?? {})) {
+    query = query.eq(`attributes->>${key}`, value ? 'true' : 'false')
+  }
+
+  switch (sort) {
+    case 'price_asc':
+      query = query.order('price', { ascending: true })
+      break
+    case 'price_desc':
+      query = query.order('price', { ascending: false })
+      break
+    case 'rating':
+      query = query.order('rating_avg', { ascending: false })
+      break
+    default:
+      query = query.order('created_at', { ascending: false })
+  }
+
+  const from = (page - 1) * pageSize
+  const { data, error, count } = await query.range(from, from + pageSize - 1)
+
+  if (error) throw error
+  return { items: (data ?? []).map(mapProductListItem), total: count ?? 0 }
+}
+
+/**
+ * Ranked full-text + trigram word-similarity search via the search_products
+ * RPC, so typos ("plywod", "hetich") still resolve. The RPC returns ids only
+ * (Postgres functions can't return embedded relations), so full rows —
+ * including joined images — are re-fetched and re-ordered by rank.
+ */
+export async function searchProducts(query: string, limit = 24): Promise<ProductListItem[]> {
+  const trimmed = query.trim()
+  if (!trimmed) return []
+
+  const { data: ranked, error: rankError } = await supabase.rpc('search_products', {
+    search_query: trimmed,
+    result_limit: limit,
+  })
+
+  if (rankError) throw rankError
+  const ids = (ranked ?? []).map((row) => row.id)
+  if (!ids.length) return []
+
+  const { data, error } = await supabase.from('products').select(PRODUCT_LIST_SELECT).in('id', ids)
+  if (error) throw error
+
+  const byId = new Map((data ?? []).map((row) => [row.id, row]))
+  return ids
+    .map((id) => byId.get(id))
+    .filter((row): row is NonNullable<typeof row> => Boolean(row))
+    .map(mapProductListItem)
 }
 
 export async function fetchShippingMethods(): Promise<ShippingMethod[]> {
