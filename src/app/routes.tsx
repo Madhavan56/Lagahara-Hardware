@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import { RootLayout } from '@/components/layout/RootLayout'
+import { ProtectedRoute } from '@/features/auth/ProtectedRoute'
 
 const HomePage = lazy(() => import('@/pages/HomePage'))
 const ShopPage = lazy(() => import('@/pages/ShopPage'))
@@ -10,8 +11,18 @@ const SearchPage = lazy(() => import('@/pages/SearchPage'))
 const CartPage = lazy(() => import('@/pages/CartPage'))
 const WishlistPage = lazy(() => import('@/pages/WishlistPage'))
 const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'))
-const AccountPage = lazy(() => import('@/pages/AccountPage'))
+const TrackOrderPage = lazy(() => import('@/pages/TrackOrderPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
+
+const LoginPage = lazy(() => import('@/pages/LoginPage'))
+const SignupPage = lazy(() => import('@/pages/SignupPage'))
+const ForgotPasswordPage = lazy(() => import('@/pages/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('@/pages/ResetPasswordPage'))
+
+const AccountLayout = lazy(() => import('@/pages/account/AccountLayout'))
+const ProfileTab = lazy(() => import('@/pages/account/ProfileTab'))
+const AddressesTab = lazy(() => import('@/pages/account/AddressesTab'))
+const OrdersTab = lazy(() => import('@/pages/account/OrdersTab'))
 
 export const router = createBrowserRouter([
   {
@@ -26,7 +37,28 @@ export const router = createBrowserRouter([
       { path: 'cart', element: <CartPage /> },
       { path: 'wishlist', element: <WishlistPage /> },
       { path: 'checkout', element: <CheckoutPage /> },
-      { path: 'account', element: <AccountPage /> },
+      { path: 'track', element: <TrackOrderPage /> },
+
+      { path: 'login', element: <LoginPage /> },
+      { path: 'signup', element: <SignupPage /> },
+      { path: 'forgot-password', element: <ForgotPasswordPage /> },
+      { path: 'reset-password', element: <ResetPasswordPage /> },
+
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: 'account',
+            element: <AccountLayout />,
+            children: [
+              { index: true, element: <ProfileTab /> },
+              { path: 'addresses', element: <AddressesTab /> },
+              { path: 'orders', element: <OrdersTab /> },
+            ],
+          },
+        ],
+      },
+
       { path: '*', element: <NotFoundPage /> },
     ],
   },

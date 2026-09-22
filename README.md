@@ -1,32 +1,56 @@
-# React + TypeScript + Vite
+# Dhuraj Interiors
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+E-commerce storefront for an interior & furniture-materials business. React + TypeScript + Vite,
+Supabase (Postgres/Auth/Storage/RLS), Razorpay, deployed on Vercel.
 
-Currently, two official plugins are available:
+## Setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+cp .env.example .env   # fill in your Supabase project values
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Database
+
+Migrations live in `supabase/migrations/`. To apply them to a linked project:
+
+```bash
+npx supabase login
+npx supabase link --project-ref <your-project-ref>
+npx supabase db push
+npx supabase gen types typescript --linked > src/types/database.ts
+```
+
+Seed the catalog with placeholder products (idempotent, upserts by SKU):
+
+```bash
+npm run seed:catalog
+```
+
+Verify RLS policies with a deliberate cross-user negative test:
+
+```bash
+npm run verify:rls
+```
+
+## Making yourself an admin
+
+The admin dashboard (Phase 10) gates on `profiles.role = 'admin'`. Customers cannot self-promote
+(enforced by `prevent_role_escalation()` — verified by `npm run verify:rls`), so the first admin
+must be set directly in the database:
+
+1. Sign up through the app normally (`/signup`).
+2. In the Supabase SQL Editor, run:
+   ```sql
+   update public.profiles set role = 'admin' where id = (
+     select id from auth.users where email = 'your-email@example.com'
+   );
+   ```
+3. Sign out and back in so the new role takes effect.
+
+## Environment variables
+
+See `.env.example`. `VITE_`-prefixed values are bundled into the client and must never include
+secrets. `SUPABASE_SERVICE_ROLE_KEY` is for `scripts/` only (service role key, bypasses RLS) —
+never import it from `src/`.
