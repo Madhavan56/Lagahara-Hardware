@@ -1,9 +1,10 @@
 import { motion } from 'framer-motion'
 import { ArrowRight, PackageCheck, ShieldCheck, Truck } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { ProductGrid } from '@/components/product/ProductGrid'
 import { buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useCategories } from '@/features/catalog/queries'
+import { useCategories, useFeaturedProducts, useNewArrivals } from '@/features/catalog/queries'
 
 const TRUST_POINTS = [
   { icon: Truck, title: 'Two delivery speeds', body: 'Standard in 4–6 days, or Quick within 2.' },
@@ -13,6 +14,8 @@ const TRUST_POINTS = [
 
 export default function HomePage() {
   const { data: categories, isLoading, isError } = useCategories()
+  const featured = useFeaturedProducts(8)
+  const newArrivals = useNewArrivals(8)
 
   return (
     <>
@@ -137,6 +140,49 @@ export default function HomePage() {
             ))}
           </motion.div>
         )}
+      </section>
+
+      <section className="border-t border-sand-200 bg-sand-100/60 py-16 lg:py-24">
+        <div className="container-page">
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="font-display text-3xl font-semibold text-sand-900 lg:text-4xl">
+                Featured products
+              </h2>
+              <p className="mt-2 text-sand-600">A pick of what moves fastest on site.</p>
+            </div>
+            <Link
+              to="/shop"
+              className="group inline-flex items-center gap-1.5 text-sm font-medium text-brand-800"
+            >
+              Shop all
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
+          <ProductGrid
+            products={featured.data}
+            isLoading={featured.isLoading}
+            isError={featured.isError}
+          />
+        </div>
+      </section>
+
+      <section className="py-16 lg:py-24">
+        <div className="container-page">
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="font-display text-3xl font-semibold text-sand-900 lg:text-4xl">
+                New arrivals
+              </h2>
+              <p className="mt-2 text-sand-600">Freshly added to the catalogue.</p>
+            </div>
+          </div>
+          <ProductGrid
+            products={newArrivals.data}
+            isLoading={newArrivals.isLoading}
+            isError={newArrivals.isError}
+          />
+        </div>
       </section>
     </>
   )
