@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getCategoryTile } from '@/config/categoryImages'
 import { getCategoryVisual } from '@/lib/categoryVisuals'
@@ -9,13 +10,14 @@ const SIZES = '(min-width: 1024px) 16vw, (min-width: 640px) 25vw, 33vw'
 export function CategoryTile({ category }: { category: Category }) {
   const tile = getCategoryTile(category.slug)
   const visual = getCategoryVisual(category.slug)
+  const [imageFailed, setImageFailed] = useState(false)
 
   return (
     <Link
       to={`/category/${category.slug}`}
       className="group relative block aspect-square overflow-hidden rounded-card border border-sand-200 bg-white shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift"
     >
-      {tile.photo ? (
+      {tile.photo && !imageFailed ? (
         <img
           src={tile.photo.src}
           srcSet={tile.photo.srcSet}
@@ -23,6 +25,7 @@ export function CategoryTile({ category }: { category: Category }) {
           alt={tile.photo.alt}
           loading="lazy"
           decoding="async"
+          onError={() => setImageFailed(true)}
           className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       ) : (

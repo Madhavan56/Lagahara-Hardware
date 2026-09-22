@@ -57,7 +57,7 @@ export function Header() {
         </p>
       </div>
 
-      <div className="border-b border-sand-200 bg-sand-50/95 backdrop-blur-md">
+      <div className="relative border-b border-sand-200 bg-sand-50/95 backdrop-blur-md">
         <div className="container-page flex h-16 items-center gap-4 lg:h-18">
           <button
             type="button"
@@ -168,7 +168,7 @@ export function Header() {
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
             onMouseLeave={() => setShopOpen(false)}
-            className="absolute inset-x-0 top-[9.75rem] hidden border-b border-sand-200 bg-white shadow-lift lg:block"
+            className="absolute inset-x-0 top-full hidden border-b border-sand-200 bg-white shadow-lift lg:block"
           >
             <div className="container-page grid grid-cols-4 gap-x-8 gap-y-1 py-8">
               {categories.map((category) => (

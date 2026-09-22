@@ -189,6 +189,7 @@ export async function fetchFeaturedProducts(limit = 8): Promise<ProductListItem[
     .select(PRODUCT_LIST_SELECT)
     .eq('is_active', true)
     .eq('is_featured', true)
+    .order('id', { ascending: true })
     .limit(limit)
 
   if (error) throw error
@@ -201,6 +202,7 @@ export async function fetchNewArrivals(limit = 8): Promise<ProductListItem[]> {
     .select(PRODUCT_LIST_SELECT)
     .eq('is_active', true)
     .order('created_at', { ascending: false })
+    .order('id', { ascending: true })
     .limit(limit)
 
   if (error) throw error
@@ -233,6 +235,7 @@ export async function fetchRelatedProducts(
     .eq('category_id', categoryId)
     .eq('is_active', true)
     .neq('id', excludeProductId)
+    .order('id', { ascending: true })
     .limit(limit)
 
   if (error) throw error
@@ -341,6 +344,11 @@ export async function fetchProductsPage({
     default:
       query = query.order('created_at', { ascending: false })
   }
+
+  // Deterministic tiebreaker: seeded products share identical created_at (and
+  // often price/rating) values, and Postgres makes no ordering promise among
+  // ties — without this, page 2 can reshuffle rows already shown on page 1.
+  query = query.order('id', { ascending: true })
 
   const from = (page - 1) * pageSize
   const { data, error, count } = await query.range(from, from + pageSize - 1)

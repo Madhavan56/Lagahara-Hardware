@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getCategoryTile } from '@/config/categoryImages'
 import { useCategories } from '@/features/catalog/queries'
@@ -9,12 +10,23 @@ import { cn } from '@/lib/utils'
  */
 export function CategoryRail() {
   const { data: categories = [] } = useCategories()
+  const [failedSlugs, setFailedSlugs] = useState<Set<string>>(() => new Set())
+
+  function markFailed(slug: string) {
+    setFailedSlugs((prev) => {
+      if (prev.has(slug)) return prev
+      const next = new Set(prev)
+      next.add(slug)
+      return next
+    })
+  }
 
   return (
     <nav aria-label="Shop categories" className="border-b border-sand-200 bg-white">
       <div className="container-page flex gap-4 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {categories.map((category) => {
           const tile = getCategoryTile(category.slug)
+          const imageFailed = failedSlugs.has(category.slug)
           return (
             <Link
               key={category.id}
@@ -23,7 +35,7 @@ export function CategoryRail() {
               title={category.name}
             >
               <span className="block size-14 overflow-hidden rounded-2xl border border-sand-200 bg-sand-100 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-brass-400 group-hover:shadow-card">
-                {tile.photo ? (
+                {tile.photo && !imageFailed ? (
                   <img
                     src={tile.photo.src}
                     srcSet={tile.photo.srcSet}
@@ -31,6 +43,7 @@ export function CategoryRail() {
                     alt=""
                     loading="lazy"
                     decoding="async"
+                    onError={() => markFailed(category.slug)}
                     className="size-full object-cover"
                   />
                 ) : (
