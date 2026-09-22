@@ -2,7 +2,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Heart, Menu, Search, ShoppingBag, User, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useCartCount } from '@/features/cart/store'
+import { useCartUiStore } from '@/features/cart/uiStore'
 import { useCategories } from '@/features/catalog/queries'
+import { useWishlistCount } from '@/features/wishlist/store'
 import { cn } from '@/lib/utils'
 
 const PRIMARY_LINKS = [
@@ -18,6 +21,9 @@ export function Header() {
   const [query, setQuery] = useState('')
   const navigate = useNavigate()
   const location = useLocation()
+  const cartCount = useCartCount()
+  const wishlistCount = useWishlistCount()
+  const openCartDrawer = useCartUiStore((state) => state.openDrawer)
 
   useEffect(() => {
     setMobileOpen(false)
@@ -112,10 +118,15 @@ export function Header() {
           <div className="ml-auto flex items-center gap-1 md:ml-0">
             <Link
               to="/wishlist"
-              className="rounded-lg p-2.5 text-sand-700 transition-colors hover:bg-sand-100 hover:text-brand-800"
+              className="relative rounded-lg p-2.5 text-sand-700 transition-colors hover:bg-sand-100 hover:text-brand-800"
               aria-label="Wishlist"
             >
               <Heart className="size-5" />
+              {wishlistCount > 0 ? (
+                <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-brass-500 text-[0.625rem] font-semibold text-sand-950">
+                  {wishlistCount}
+                </span>
+              ) : null}
             </Link>
             <Link
               to="/account"
@@ -124,13 +135,19 @@ export function Header() {
             >
               <User className="size-5" />
             </Link>
-            <Link
-              to="/cart"
-              className="rounded-lg p-2.5 text-sand-700 transition-colors hover:bg-sand-100 hover:text-brand-800"
+            <button
+              type="button"
+              onClick={openCartDrawer}
+              className="relative rounded-lg p-2.5 text-sand-700 transition-colors hover:bg-sand-100 hover:text-brand-800"
               aria-label="Cart"
             >
               <ShoppingBag className="size-5" />
-            </Link>
+              {cartCount > 0 ? (
+                <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-brass-500 text-[0.625rem] font-semibold text-sand-950">
+                  {cartCount}
+                </span>
+              ) : null}
+            </button>
           </div>
         </div>
 

@@ -7,6 +7,7 @@ import {
   fetchNewArrivals,
   fetchProductBySlug,
   fetchProductReviews,
+  fetchProductsByIds,
   fetchProductsPage,
   fetchRelatedProducts,
   fetchShippingMethods,
@@ -23,6 +24,7 @@ export const catalogKeys = {
   productsPage: (params: ProductsPageParams) => ['products', 'page', params] as const,
   productBySlug: (slug: string) => ['product', slug] as const,
   related: (categoryId: string, excludeId: string) => ['products', 'related', categoryId, excludeId] as const,
+  byIds: (ids: string[]) => ['products', 'by-ids', [...ids].sort()] as const,
   reviews: (productId: string) => ['reviews', productId] as const,
   search: (query: string) => ['products', 'search', query] as const,
   shippingMethods: ['shipping-methods'] as const,
@@ -111,6 +113,15 @@ export function useProductReviews(productId: string | undefined) {
     queryKey: catalogKeys.reviews(productId ?? ''),
     queryFn: () => fetchProductReviews(productId as string),
     enabled: Boolean(productId),
+    staleTime: 60 * 1000,
+  })
+}
+
+export function useProductsByIds(ids: string[]) {
+  return useQuery({
+    queryKey: catalogKeys.byIds(ids),
+    queryFn: () => fetchProductsByIds(ids),
+    enabled: ids.length > 0,
     staleTime: 60 * 1000,
   })
 }

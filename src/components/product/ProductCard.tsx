@@ -1,14 +1,17 @@
 import { motion } from 'framer-motion'
-import { Star } from 'lucide-react'
+import { Heart, Star } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
+import { useIsWishlisted, useWishlistStore } from '@/features/wishlist/store'
 import { productImageUrl } from '@/lib/supabase/client'
-import { formatPrice } from '@/lib/utils'
+import { cn, formatPrice } from '@/lib/utils'
 import type { ProductListItem } from '@/types/catalog'
 
 export function ProductCard({ product }: { product: ProductListItem }) {
   const imageUrl = productImageUrl(product.primaryImagePath)
   const outOfStock = product.stockQuantity === 0
+  const wishlisted = useIsWishlisted(product.id)
+  const toggleWishlist = useWishlistStore((state) => state.toggle)
   const discountPct =
     product.compareAtPrice && product.compareAtPrice > product.price
       ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
@@ -46,6 +49,19 @@ export function ProductCard({ product }: { product: ProductListItem }) {
               </Badge>
             ) : null}
           </div>
+
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault()
+              toggleWishlist(product.id)
+            }}
+            aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+            aria-pressed={wishlisted}
+            className="absolute top-3 right-3 flex size-8 items-center justify-center rounded-full bg-white/90 text-sand-600 shadow-card backdrop-blur-sm transition-colors hover:text-danger"
+          >
+            <Heart className={cn('size-4', wishlisted && 'fill-danger text-danger')} />
+          </button>
         </div>
 
         <div className="flex flex-1 flex-col gap-1.5 p-4">

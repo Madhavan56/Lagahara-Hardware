@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
 import { Suspense } from 'react'
 import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom'
+import { CartDrawer } from '@/components/cart/CartDrawer'
 import { Footer } from './Footer'
 import { Header } from './Header'
 
@@ -31,6 +32,7 @@ export function RootLayout() {
         </Suspense>
       </main>
       <Footer />
+      <CartDrawer />
       <ScrollRestoration />
     </div>
   )

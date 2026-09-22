@@ -65,6 +65,7 @@ export type ProductListItem = Pick<
   | 'brand'
   | 'price'
   | 'compareAtPrice'
+  | 'gstRate'
   | 'unitLabel'
   | 'stockQuantity'
   | 'ratingAvg'

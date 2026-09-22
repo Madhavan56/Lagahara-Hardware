@@ -67,6 +67,7 @@ function mapProductListItem(row: Row): ProductListItem {
     brand: asNullableString(row.brand),
     price: asNumber(row.price),
     compareAtPrice: row.compare_at_price == null ? null : asNumber(row.compare_at_price),
+    gstRate: asNumber(row.gst_rate),
     unitLabel: asString(row.unit_label) || 'piece',
     stockQuantity: asNumber(row.stock_quantity),
     ratingAvg: asNumber(row.rating_avg),
@@ -180,7 +181,7 @@ export async function fetchCategoryAttributes(categoryId: string): Promise<Categ
 }
 
 const PRODUCT_LIST_SELECT =
-  'id, slug, name, brand, price, compare_at_price, unit_label, stock_quantity, rating_avg, rating_count, category_id, product_images(storage_path, is_primary)'
+  'id, slug, name, brand, price, compare_at_price, gst_rate, unit_label, stock_quantity, rating_avg, rating_count, category_id, product_images(storage_path, is_primary)'
 
 export async function fetchFeaturedProducts(limit = 8): Promise<ProductListItem[]> {
   const { data, error } = await supabase
@@ -375,6 +376,13 @@ export async function searchProducts(query: string, limit = 24): Promise<Product
     .map((id) => byId.get(id))
     .filter((row): row is NonNullable<typeof row> => Boolean(row))
     .map(mapProductListItem)
+}
+
+export async function fetchProductsByIds(ids: string[]): Promise<ProductListItem[]> {
+  if (!ids.length) return []
+  const { data, error } = await supabase.from('products').select(PRODUCT_LIST_SELECT).in('id', ids)
+  if (error) throw error
+  return (data ?? []).map(mapProductListItem)
 }
 
 export async function fetchShippingMethods(): Promise<ShippingMethod[]> {

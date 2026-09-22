@@ -1,4 +1,4 @@
-import { Heart, ShoppingBag, Star } from 'lucide-react'
+import { Check, Heart, ShoppingBag, Star } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ProductGallery } from '@/components/product/ProductGallery'
@@ -8,6 +8,7 @@ import { ReviewsSection } from '@/components/product/ReviewsSection'
 import { SpecTable } from '@/components/product/SpecTable'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useCartStore } from '@/features/cart/store'
 import {
   useCategories,
   useCategoryAttributes,
@@ -15,14 +16,19 @@ import {
   useProductReviews,
   useRelatedProducts,
 } from '@/features/catalog/queries'
+import { useIsWishlisted, useWishlistStore } from '@/features/wishlist/store'
 import { useDocumentHead } from '@/hooks/useDocumentHead'
-import { extractGst, formatPrice } from '@/lib/utils'
+import { cn, extractGst, formatPrice } from '@/lib/utils'
 
 export default function ProductPage() {
   const { slug } = useParams<{ slug: string }>()
   const [quantity, setQuantity] = useState(1)
+  const [justAdded, setJustAdded] = useState(false)
 
   const { data: product, isLoading, isError } = useProductBySlug(slug)
+  const addToCart = useCartStore((state) => state.addItem)
+  const wishlisted = useIsWishlisted(product?.id ?? '')
+  const toggleWishlist = useWishlistStore((state) => state.toggle)
   const { data: attributes = [] } = useCategoryAttributes(product?.categoryId)
   const { data: related } = useRelatedProducts(product?.categoryId, product?.id, 4)
   const { data: reviews, isLoading: reviewsLoading } = useProductReviews(product?.id)
@@ -178,19 +184,24 @@ export default function ProductPage() {
             <button
               type="button"
               disabled={outOfStock}
-              title="Cart arrives in Phase 5"
+              onClick={() => {
+                addToCart(product.id, quantity, product.stockQuantity)
+                setJustAdded(true)
+                window.setTimeout(() => setJustAdded(false), 1800)
+              }}
               className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-brand-800 px-6 text-sm font-medium text-sand-50 transition-colors hover:bg-brand-700 disabled:pointer-events-none disabled:opacity-40"
             >
-              <ShoppingBag className="size-4" />
-              Add to cart
+              {justAdded ? <Check className="size-4" /> : <ShoppingBag className="size-4" />}
+              {justAdded ? 'Added to cart' : 'Add to cart'}
             </button>
             <button
               type="button"
-              title="Wishlist arrives in Phase 5"
+              onClick={() => toggleWishlist(product.id)}
               className="flex size-12 items-center justify-center rounded-xl border border-sand-300 text-sand-600 transition-colors hover:border-brand-600 hover:text-brand-800"
-              aria-label="Add to wishlist"
+              aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+              aria-pressed={wishlisted}
             >
-              <Heart className="size-5" />
+              <Heart className={cn('size-5', wishlisted && 'fill-danger text-danger')} />
             </button>
           </div>
 
