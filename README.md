@@ -1,7 +1,12 @@
 # Laghara Hardwares
 
-E-commerce storefront for an interior & furniture-materials business. React + TypeScript + Vite,
-Supabase (Postgres/Auth/Storage/RLS), Razorpay, deployed on Vercel.
+E-commerce storefront for an interior & furniture-materials business, covering 13 categories
+(plywood, laminates, kitchen/wardrobe hardware, hinges, drawer systems and more). React +
+TypeScript + Vite, Tailwind CSS, Supabase (Postgres/Auth/Storage/RLS), Razorpay, deployed on
+Vercel.
+
+Uses a dynamic attribute schema, so each category defines its own spec fields without needing a
+separate table per category.
 
 ## Setup
 
