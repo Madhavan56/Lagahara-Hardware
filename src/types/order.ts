@@ -69,4 +69,8 @@ export type OrderListItem = Pick<
   'id' | 'orderNumber' | 'status' | 'paymentStatus' | 'total' | 'createdAt'
 > & {
   itemCount: number
+  /** First items for the overview card (product names + thumbnails). */
+  previewItems: { name: string; imagePath: string | null; quantity: number }[]
+  /** Items beyond the preview window. */
+  moreCount: number
 }

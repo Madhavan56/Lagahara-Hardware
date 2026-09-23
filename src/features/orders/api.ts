@@ -85,19 +85,30 @@ function mapOrder(row: Row): Order {
 export async function fetchMyOrders(): Promise<OrderListItem[]> {
   const { data, error } = await supabase
     .from('orders')
-    .select('id, order_number, status, payment_status, total, created_at, order_items(id)')
+    .select(
+      'id, order_number, status, payment_status, total, created_at, order_items(id, product_name, product_image_path, quantity)',
+    )
     .order('created_at', { ascending: false })
 
   if (error) throw error
-  return (data ?? []).map((row) => ({
-    id: asString(row.id),
-    orderNumber: asString(row.order_number),
-    status: asString(row.status) as OrderListItem['status'],
-    paymentStatus: asString(row.payment_status) as OrderListItem['paymentStatus'],
-    total: asNumber(row.total),
-    createdAt: asString(row.created_at),
-    itemCount: Array.isArray(row.order_items) ? row.order_items.length : 0,
-  }))
+  return (data ?? []).map((row) => {
+    const items = Array.isArray(row.order_items) ? (row.order_items as Row[]) : []
+    return {
+      id: asString(row.id),
+      orderNumber: asString(row.order_number),
+      status: asString(row.status) as OrderListItem['status'],
+      paymentStatus: asString(row.payment_status) as OrderListItem['paymentStatus'],
+      total: asNumber(row.total),
+      createdAt: asString(row.created_at),
+      itemCount: items.length,
+      previewItems: items.slice(0, 3).map((item) => ({
+        name: asString(item.product_name),
+        imagePath: asNullableString(item.product_image_path),
+        quantity: asNumber(item.quantity),
+      })),
+      moreCount: Math.max(0, items.length - 3),
+    }
+  })
 }
 
 export async function fetchOrderById(orderId: string): Promise<Order | null> {
