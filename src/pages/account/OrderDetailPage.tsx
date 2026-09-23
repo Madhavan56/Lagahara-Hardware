@@ -1,6 +1,6 @@
 import { ChevronLeft } from 'lucide-react'
 import { useState } from 'react'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { OrderStatusBadge } from '@/components/orders/OrderStatusBadge'
 import { OrderStatusTimeline } from '@/components/orders/OrderStatusTimeline'
 import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
@@ -11,6 +11,7 @@ import { productImageUrl } from '@/lib/supabase/client'
 import { extractGst, formatDate, formatPrice } from '@/lib/utils'
 
 export default function OrderDetailPage() {
+  const navigate = useNavigate()
   const { orderId } = useParams<{ orderId: string }>()
   const { data: order, isLoading, isError } = useOrder(orderId)
   const cancelOrder = useCancelOrder()
@@ -34,11 +35,17 @@ export default function OrderDetailPage() {
     0,
   )
 
+  const unpaid = order.paymentStatus === 'pending'
+
   async function handleCancel() {
     if (!order) return
     setCancelError(null)
     try {
-      await cancelOrder.mutateAsync(order.id)
+      const result = await cancelOrder.mutateAsync(order.id)
+      if (result.removed) {
+        // Order was deleted — it no longer exists, so leave the detail page.
+        navigate('/account/orders', { replace: true })
+      }
     } catch (err) {
       setCancelError(err instanceof Error ? err.message : 'Could not cancel order')
     }
@@ -128,8 +135,13 @@ export default function OrderDetailPage() {
               <div className="mt-6">
                 {cancelError ? <p className="mb-2 text-sm text-danger">{cancelError}</p> : null}
                 <Button variant="danger" block loading={cancelOrder.isPending} onClick={handleCancel}>
-                  Cancel order
+                  {unpaid ? 'Cancel & remove order' : 'Cancel order'}
                 </Button>
+                {unpaid ? (
+                  <p className="mt-2 text-center text-xs text-sand-500">
+                    Unpaid orders are removed from your history when cancelled.
+                  </p>
+                ) : null}
               </div>
             ) : null}
           </div>

@@ -9,7 +9,9 @@ import { useAuth } from '@/features/auth/AuthProvider'
 import { useCartStore } from '@/features/cart/store'
 import { useCartLines } from '@/features/cart/useCartLines'
 import { useShippingMethods } from '@/features/catalog/queries'
-import { useCreateOrder } from '@/features/checkout/queries'
+import { useCreateOrder, useVerifyPayment } from '@/features/checkout/queries'
+import { cancelOrderById } from '@/features/checkout/api'
+import { loadRazorpay } from '@/lib/razorpay'
 import { productImageUrl } from '@/lib/supabase/client'
 import { cn, extractGst, formatEta, formatPrice } from '@/lib/utils'
 import type { AddressInput } from '@/types/account'
@@ -28,12 +30,16 @@ export default function CheckoutPage() {
   const createAddress = useCreateAddress(user?.id)
   const { data: shippingMethods = [], isLoading: shippingLoading } = useShippingMethods()
   const createOrder = useCreateOrder()
+  const verifyPayment = useVerifyPayment()
 
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
   const [addingAddress, setAddingAddress] = useState(false)
   const [selectedShippingCode, setSelectedShippingCode] = useState<string | null>(null)
   const [orderError, setOrderError] = useState<string | null>(null)
   const [placedOrder, setPlacedOrder] = useState<{ orderNumber: string; total: number } | null>(null)
+  // Order created in the DB but awaiting the gateway — cancelled (and removed
+  // from history) if the user dismisses or the payment fails.
+  const [pendingPayment, setPendingPayment] = useState<{ orderId: string; razorpayOrderId: string; total: number } | null>(null)
 
   const defaultAddress = addresses.find((a) => a.isDefault) ?? addresses[0]
   const activeAddressId = selectedAddressId ?? defaultAddress?.id ?? null
@@ -47,37 +53,95 @@ export default function CheckoutPage() {
   )
   const total = subtotal + (selectedShipping?.price ?? 0)
 
+  async function discardPendingPayment(orderId: string) {
+    try {
+      await cancelOrderById(orderId)
+    } catch {
+      // Best-effort: the order stays pending and can be paid from order history.
+    }
+  }
+
   async function handlePlaceOrder() {
     if (!activeAddressId || !activeShippingCode) return
     setOrderError(null)
+
+    let created: Awaited<ReturnType<typeof createOrder.mutateAsync>> | null = null
     try {
-      const result = await createOrder.mutateAsync({
+      created = await createOrder.mutateAsync({
         addressId: activeAddressId,
         shippingMethodCode: activeShippingCode,
         items: lines.map((line) => ({ productId: line.product.id, quantity: line.quantity })),
       })
-      clearCart()
-      setPlacedOrder({ orderNumber: result.orderNumber, total: result.total })
-      window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
       setOrderError(err instanceof Error ? err.message : 'Could not place order')
+      return
     }
+
+    // Open Razorpay's branded checkout — the user leaves the page context and
+    // pays on the gateway UI, exactly as requested.
+    try {
+      const Razorpay = await loadRazorpay()
+      const address = addresses.find((a) => a.id === activeAddressId)
+      const rzp = new Razorpay({
+        key: created.razorpay.keyId,
+        order_id: created.razorpay.orderId,
+        amount: created.razorpay.amountInPaise,
+        currency: created.razorpay.currency,
+        name: 'Laghara Hardwares',
+        description: `Order ${created.orderNumber}`,
+        prefill: address
+          ? { name: address.fullName, contact: address.phone }
+          : undefined,
+        notes: { order_number: created.orderNumber },
+        theme: { color: '#ff6f0f' },
+        modal: {
+          // User closed the Razorpay sheet without paying → remove the order.
+          ondismiss: () => {
+            void discardPendingPayment(created!.orderId)
+            setPendingPayment(null)
+          },
+        },
+        handler: (response) => {
+          void (async () => {
+            try {
+              await verifyPayment.mutateAsync(response)
+              clearCart()
+              setPendingPayment(null)
+              setPlacedOrder({ orderNumber: created!.orderNumber, total: created!.total })
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            } catch {
+              await discardPendingPayment(created!.orderId)
+              setPendingPayment(null)
+              setOrderError('Payment succeeded but could not be confirmed. The order was removed — please try again.')
+            }
+          })()
+        },
+      })
+      setPendingPayment({ orderId: created.orderId, razorpayOrderId: created.razorpay.orderId, total: created.total })
+      rzp.open()
+    } catch (err) {
+      // Gateway never opened (load error, etc.) → clean up the pending order.
+      await discardPendingPayment(created.orderId)
+      setOrderError(err instanceof Error ? err.message : 'Could not start payment')
+    }
+  }
+
+  function handleRetryAfterDismiss() {
+    setPendingPayment(null)
+    setOrderError('Payment was cancelled — your order has been removed. Adjust your cart and place the order again.')
   }
 
   if (placedOrder) {
     return (
       <div className="container-page flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
         <CheckCircle2 className="size-14 text-success" />
-        <h1 className="mt-4 font-display text-2xl font-semibold text-sand-900">Order placed</h1>
+        <h1 className="mt-4 font-display text-2xl font-semibold text-sand-900">Payment successful — order confirmed</h1>
         <p className="mt-2 text-sand-600">
           Order <span className="font-medium text-sand-900">{placedOrder.orderNumber}</span> for{' '}
-          {formatPrice(placedOrder.total)} has been created and is awaiting payment.
+          {formatPrice(placedOrder.total)} is confirmed and heading to dispatch.
         </p>
-        <p className="mt-1 text-sm text-sand-500">
-          Payment collection (Razorpay) arrives in Phase 8 — this order will stay pending until then.
-        </p>
-        <Link to="/shop" className="mt-6 text-sm font-medium text-brand-700 hover:text-brand-900">
-          Continue shopping
+        <Link to="/account/orders" className="mt-6 text-sm font-medium text-brand-700 hover:text-brand-900">
+          View your orders
         </Link>
       </div>
     )
@@ -280,15 +344,25 @@ export default function CheckoutPage() {
             size="lg"
             className="mt-5"
             disabled={!readyToPlace}
-            loading={createOrder.isPending}
+            loading={createOrder.isPending || verifyPayment.isPending}
             onClick={handlePlaceOrder}
           >
-            Place order
+            Pay now with Razorpay
           </Button>
+
+          {pendingPayment ? (
+            <button
+              type="button"
+              onClick={handleRetryAfterDismiss}
+              className="mt-2 w-full text-center text-xs font-semibold text-sand-500 hover:text-sand-700"
+            >
+              Payment window closed — order removed, tap to continue
+            </button>
+          ) : null}
 
           <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-sand-500">
             <ShieldCheck className="size-4 text-brand-600" aria-hidden />
-            GST invoice · Secure checkout
+            GST invoice · Secure Razorpay checkout
           </p>
         </div>
       </div>

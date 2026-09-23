@@ -2,6 +2,39 @@ import "@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "@supabase/server";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
+// Razorpay order creation via the REST API. Key pair comes from function
+// secrets (RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET).
+async function createRazorpayOrder(params: {
+  amountInPaise: number;
+  receipt: string;
+}): Promise<{ id: string }> {
+  const keyId = Deno.env.get("RAZORPAY_KEY_ID");
+  const keySecret = Deno.env.get("RAZORPAY_KEY_SECRET");
+  if (!keyId || !keySecret) {
+    throw new Error("Payment gateway is not configured");
+  }
+  const auth = btoa(`${keyId}:${keySecret}`);
+  const resp = await fetch("https://api.razorpay.com/v1/orders", {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      amount: params.amountInPaise,
+      currency: "INR",
+      receipt: params.receipt,
+      // Auto-expire the gateway order so abandoned checkouts don't linger.
+      // Optional per API; omit if the account disallows the field.
+    }),
+  });
+  if (!resp.ok) {
+    const detail = await resp.text();
+    throw new Error(`Razorpay order creation failed (${resp.status}): ${detail.slice(0, 300)}`);
+  }
+  return (await resp.json()) as { id: string };
+}
+
 type OrderItemInput = { productId: string; quantity: number };
 type RequestBody = {
   addressId: string;
@@ -154,6 +187,37 @@ export default {
       return Response.json({ error: "Could not create order", details: orderError?.message }, { status: 500 });
     }
 
+    // Create the matching Razorpay order so the client can open the branded
+    // checkout. Amounts go to the gateway in paise.
+    let razorpayOrderId: string;
+    try {
+      const rzp = await createRazorpayOrder({
+        amountInPaise: Math.round(total * 100),
+        receipt: order.order_number,
+      });
+      razorpayOrderId = rzp.id;
+    } catch (rzpError) {
+      // No gateway order → no local order; roll back cleanly so the user can
+      // retry without littering their order history.
+      await admin.from("orders").delete().eq("id", order.id);
+      const message =
+        rzpError instanceof Error ? rzpError.message : "Could not initiate payment";
+      return Response.json({ error: message }, { status: 502 });
+    }
+
+    const { error: rzpLinkError } = await admin
+      .from("orders")
+      .update({ razorpay_order_id: razorpayOrderId })
+      .eq("id", order.id);
+
+    if (rzpLinkError) {
+      await admin.from("orders").delete().eq("id", order.id);
+      return Response.json(
+        { error: "Could not link payment to order", details: rzpLinkError.message },
+        { status: 500 },
+      );
+    }
+
     const orderItems = body.items.map((item) => {
       const product = productById.get(item.productId)!;
       const images = (product.product_images ?? []) as { storage_path: string; is_primary: boolean }[];
@@ -188,6 +252,12 @@ export default {
       subtotal,
       shippingAmount,
       total,
+      razorpay: {
+        orderId: razorpayOrderId,
+        amountInPaise: Math.round(total * 100),
+        currency: "INR",
+        keyId: Deno.env.get("RAZORPAY_KEY_ID") ?? "",
+      },
     });
   }),
 };

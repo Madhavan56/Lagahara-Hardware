@@ -116,7 +116,10 @@ export async function fetchOrderByNumber(orderNumber: string): Promise<Order | n
   return data ? mapOrder(data) : null
 }
 
-export async function cancelOrder(orderId: string): Promise<void> {
-  const { error } = await supabase.rpc('cancel_order', { p_order_id: orderId })
-  if (error) throw error
+export async function cancelOrder(orderId: string): Promise<{ removed: boolean }> {
+  // Delegates to the shared implementation (RPC with edge-function fallback):
+  // unpaid pending orders are removed from history entirely, paid ones are
+  // flagged cancelled.
+  const { cancelOrderById } = await import('@/features/checkout/api')
+  return cancelOrderById(orderId)
 }
