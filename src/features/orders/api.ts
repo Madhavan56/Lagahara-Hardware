@@ -115,6 +115,7 @@ export async function fetchMyOrders(view: OrdersViewFilter = 'active'): Promise<
       ? query.eq('status', 'cancelled')
       : query.in('status', [...ACTIVE_STATUSES])
 
+  const { data, error } = await query
   if (error) throw error
   return (data ?? []).map((row) => {
     const items = Array.isArray(row.order_items) ? (row.order_items as Row[]) : []
