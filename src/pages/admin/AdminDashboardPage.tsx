@@ -1,6 +1,8 @@
 import { AlertTriangle, Package, ShoppingCart, Star } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useAdminOrders, useAdminProducts, useAdminReviews } from '@/features/admin/queries'
+import { AnimatedNumber } from '@/components/ui/animated-number'
 import { formatPrice } from '@/lib/utils'
 
 function StatCard({
@@ -11,7 +13,7 @@ function StatCard({
 }: {
   icon: typeof Package
   label: string
-  value: string | number
+  value: ReactNode
   to: string
 }) {
   return (
@@ -43,7 +45,16 @@ export default function AdminDashboardPage() {
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={Package} label="Total products" value={products?.length ?? 0} to="/admin/products" />
         <StatCard icon={ShoppingCart} label="Pending orders" value={pendingOrders?.length ?? 0} to="/admin/orders" />
-        <StatCard icon={AlertTriangle} label="Low / out of stock" value={`${lowStockCount} / ${outOfStockCount}`} to="/admin/inventory" />
+        <StatCard
+          icon={AlertTriangle}
+          label="Low / out of stock"
+          value={
+            <>
+              <AnimatedNumber value={lowStockCount} /> / <AnimatedNumber value={outOfStockCount} />
+            </>
+          }
+          to="/admin/inventory"
+        />
         <StatCard icon={Star} label="Reviews awaiting approval" value={pendingReviewCount} to="/admin/reviews" />
       </div>
 
