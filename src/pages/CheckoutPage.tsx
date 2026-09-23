@@ -89,14 +89,21 @@ export default function CheckoutPage() {
 
     // Open Razorpay's branded checkout — the user leaves the page context and
     // pays on the gateway UI, exactly as requested.
+    const rzpParams = created.razorpay
+    if (!rzpParams) {
+      await discardPendingPayment(created.orderId)
+      setOrderError('Payment setup failed — the order was removed. Please try again.')
+      return
+    }
+
     try {
       const Razorpay = await loadRazorpay()
       const address = addresses.find((a) => a.id === activeAddressId)
       const rzp = new Razorpay({
-        key: created.razorpay.keyId,
-        order_id: created.razorpay.orderId,
-        amount: created.razorpay.amountInPaise,
-        currency: created.razorpay.currency,
+        key: rzpParams.keyId,
+        order_id: rzpParams.orderId,
+        amount: rzpParams.amountInPaise,
+        currency: rzpParams.currency,
         name: 'Laghara Hardwares',
         description: `Order ${created.orderNumber}`,
         prefill: address
@@ -114,7 +121,11 @@ export default function CheckoutPage() {
         handler: (response) => {
           void (async () => {
             try {
-              await verifyPayment.mutateAsync(response)
+              await verifyPayment.mutateAsync({
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              })
               clearCart()
               setPendingPayment(null)
               setPlacedOrder({ orderNumber: created!.orderNumber, total: created!.total, cod: false })
@@ -127,7 +138,7 @@ export default function CheckoutPage() {
           })()
         },
       })
-      setPendingPayment({ orderId: created.orderId, razorpayOrderId: created.razorpay.orderId, total: created.total })
+      setPendingPayment({ orderId: created.orderId, razorpayOrderId: rzpParams.orderId, total: created.total })
       rzp.open()
     } catch (err) {
       // Gateway never opened (load error, etc.) → clean up the pending order.
