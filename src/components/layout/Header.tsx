@@ -127,9 +127,15 @@ export function Header() {
             >
               <Heart className="size-5" />
               {wishlistCount > 0 ? (
-                <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-brass-500 text-[0.625rem] font-semibold text-sand-950">
+                <motion.span
+                  key={wishlistCount}
+                  initial={{ scale: 0.4, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 22 }}
+                  className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-brass-500 text-[0.625rem] font-semibold text-sand-950"
+                >
                   {wishlistCount}
-                </span>
+                </motion.span>
               ) : null}
             </Link>
             <Link
@@ -145,11 +151,24 @@ export function Header() {
               className="relative rounded-lg p-2.5 text-sand-700 transition-colors hover:bg-sand-100 hover:text-brand-800"
               aria-label="Cart"
             >
-              <ShoppingBag className="size-5" />
+              <motion.span
+                key={cartCount}
+                className="block"
+                animate={cartCount > 0 ? { rotate: [0, -10, 8, 0] } : { rotate: 0 }}
+                transition={{ duration: 0.45, ease: 'easeInOut' }}
+              >
+                <ShoppingBag className="size-5" />
+              </motion.span>
               {cartCount > 0 ? (
-                <span className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-add-500 text-[0.625rem] font-bold text-white">
+                <motion.span
+                  key={cartCount}
+                  initial={{ scale: 0.4, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 22 }}
+                  className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-add-500 text-[0.625rem] font-bold text-white"
+                >
                   {cartCount}
-                </span>
+                </motion.span>
               ) : null}
             </button>
           </div>

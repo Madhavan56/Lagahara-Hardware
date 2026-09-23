@@ -56,18 +56,20 @@ export function ProductCard({ product }: { product: ProductListItem }) {
             ) : null}
           </div>
 
-          <button
+          <motion.button
             type="button"
             onClick={(event) => {
               event.preventDefault()
               toggleWishlist(product.id)
             }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.85 }}
             aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
             aria-pressed={wishlisted}
             className="absolute top-3 right-3 flex size-8 items-center justify-center rounded-full bg-white/90 text-sand-600 shadow-card backdrop-blur-sm transition-colors hover:text-danger"
           >
             <Heart className={cn('size-4', wishlisted && 'fill-danger text-danger')} />
-          </button>
+          </motion.button>
 
           {!outOfStock ? (
             <div className="absolute inset-x-3 bottom-3 z-10" onClick={(event) => event.preventDefault()}>
@@ -124,7 +126,7 @@ export function ProductCard({ product }: { product: ProductListItem }) {
             ) : null}
           </div>
 
-          <h3 className="line-clamp-2 min-h-10 text-sm leading-snug font-semibold text-sand-900">
+          <h3 className="line-clamp-2 min-h-10 text-sm leading-snug font-semibold text-sand-900 transition-colors duration-300 group-hover:text-brand-800">
             {product.name}
           </h3>
 

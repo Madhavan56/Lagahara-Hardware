@@ -8,8 +8,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: 'bg-brass-500 text-white hover:bg-brass-600 shadow-card hover:shadow-lift font-bold',
-        accent: 'bg-brand-800 text-sand-50 hover:bg-brand-700 shadow-card hover:shadow-lift',
+        primary: 'sheen-sweep bg-brass-500 text-white hover:bg-brass-600 shadow-card hover:shadow-lift font-bold',
+        accent: 'sheen-sweep bg-brand-800 text-sand-50 hover:bg-brand-700 shadow-card hover:shadow-lift',
         outline: 'border-2 border-sand-300 bg-transparent text-sand-800 hover:border-brass-500 hover:text-brass-600',
         ghost: 'bg-transparent text-sand-700 hover:bg-sand-100 hover:text-sand-900',
         subtle: 'bg-sand-100 text-sand-800 hover:bg-sand-200',

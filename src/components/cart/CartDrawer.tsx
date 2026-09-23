@@ -95,10 +95,19 @@ export function CartDrawer() {
                 </div>
               ) : (
                 <ul className="space-y-4">
+                  <AnimatePresence initial={false}>
                   {lines.map((line) => {
                     const imageUrl = productImageUrl(line.product.primaryImagePath, { width: 150 })
                     return (
-                      <li key={line.product.id} className="flex gap-3">
+                      <motion.li
+                        key={line.product.id}
+                        layout
+                        initial={{ opacity: 0, height: 0, marginTop: '-1rem' }}
+                        animate={{ opacity: 1, height: 'auto', marginTop: 0 }}
+                        exit={{ opacity: 0, height: 0, marginTop: '-1rem' }}
+                        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+                        className="flex gap-3 overflow-hidden"
+                      >
                         <Link
                           to={`/product/${line.product.slug}`}
                           onClick={closeDrawer}
@@ -153,12 +162,19 @@ export function CartDrawer() {
                             </button>
                           </div>
                         </div>
-                        <span className="shrink-0 text-sm font-bold text-sand-900">
+                        <motion.span
+                          key={line.lineTotal}
+                          initial={{ opacity: 0, y: 4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="shrink-0 text-sm font-bold text-sand-900"
+                        >
                           {formatPrice(line.lineTotal)}
-                        </span>
-                      </li>
+                        </motion.span>
+                      </motion.li>
                     )
                   })}
+                  </AnimatePresence>
                 </ul>
               )}
             </div>
