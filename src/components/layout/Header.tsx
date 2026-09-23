@@ -132,7 +132,7 @@ export function Header() {
                   initial={{ scale: 0.4, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 22 }}
-                  className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-brass-500 text-[0.625rem] font-semibold text-sand-950"
+                  className="absolute -top-1 -right-1 z-10 flex h-4 min-w-4 items-center justify-center rounded-full bg-brass-500 px-1 text-[0.625rem] font-semibold leading-none text-sand-950"
                 >
                   {wishlistCount}
                 </motion.span>
@@ -165,7 +165,9 @@ export function Header() {
                   initial={{ scale: 0.4, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 22 }}
-                  className="absolute top-1 right-1 flex size-4 items-center justify-center rounded-full bg-add-500 text-[0.625rem] font-bold text-white"
+                  aria-live="polite"
+                  aria-label={`${cartCount} ${cartCount === 1 ? 'item' : 'items'} in cart`}
+                  className="absolute -top-1 -right-1 z-10 flex h-4 min-w-4 items-center justify-center rounded-full bg-add-500 px-1 text-[0.625rem] font-bold leading-none text-white"
                 >
                   {cartCount}
                 </motion.span>
