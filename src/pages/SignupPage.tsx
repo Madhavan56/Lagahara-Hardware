@@ -2,9 +2,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { AuthLayout } from '@/components/auth/AuthLayout'
 import { useAuth } from '@/features/auth/AuthProvider'
 
 const schema = z.object({
@@ -41,32 +43,45 @@ export default function SignupPage() {
     }
   }
 
+  const fieldVariants = {
+    hidden: { opacity: 0, y: 16 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: 0.55 + i * 0.1, duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+    }),
+  }
+
   if (needsConfirmation) {
     return (
-      <div className="container-page flex min-h-[70vh] items-center justify-center py-16 text-center">
-        <div className="max-w-sm">
-          <h1 className="font-display text-2xl font-semibold text-sand-900">Check your email</h1>
-          <p className="mt-3 text-sand-600">
-            We've sent a confirmation link to finish setting up your account. Once confirmed, you can
-            sign in.
+      <AuthLayout title="Check your email" subtitle="Confirm your account to continue">
+        <div className="text-center">
+          <p className="text-sm text-sand-600">
+            We've sent a confirmation link. Once confirmed, you can sign in.
           </p>
-          <Link to="/login" className="mt-6 inline-block text-sm font-medium text-brand-700">
+          <Link to="/login" className="mt-4 inline-block text-sm font-semibold text-brand-700 hover:text-brand-900">
             Back to sign in
           </Link>
         </div>
-      </div>
+      </AuthLayout>
     )
   }
 
   return (
-    <div className="container-page flex min-h-[70vh] items-center justify-center py-16">
-      <div className="w-full max-w-sm">
-        <h1 className="font-display text-2xl font-semibold text-sand-900">Create an account</h1>
-        <p className="mt-1.5 text-sm text-sand-600">Track orders, save addresses, and more.</p>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
+    <AuthLayout title="Create an account" subtitle="Join Laghara for exclusive access">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {/* Full name field */}
+        <motion.div custom={0} variants={fieldVariants} initial="hidden" animate="visible">
           <Input label="Full name" autoComplete="name" error={errors.fullName?.message} {...register('fullName')} />
+        </motion.div>
+
+        {/* Email field */}
+        <motion.div custom={1} variants={fieldVariants} initial="hidden" animate="visible">
           <Input label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
+        </motion.div>
+
+        {/* Password field */}
+        <motion.div custom={2} variants={fieldVariants} initial="hidden" animate="visible">
           <Input
             label="Password"
             type="password"
@@ -75,21 +90,36 @@ export default function SignupPage() {
             error={errors.password?.message}
             {...register('password')}
           />
+        </motion.div>
 
-          {formError ? <p className="text-sm text-danger">{formError}</p> : null}
+        {/* Error message */}
+        {formError ? (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <p className="text-sm text-danger">{formError}</p>
+          </motion.div>
+        ) : null}
 
+        {/* Submit button */}
+        <motion.div custom={3} variants={fieldVariants} initial="hidden" animate="visible">
           <Button type="submit" block loading={isSubmitting}>
             Create account
           </Button>
-        </form>
+        </motion.div>
 
-        <p className="mt-6 text-center text-sm text-sand-600">
-          Already have an account?{' '}
-          <Link to="/login" className="font-medium text-brand-700 hover:text-brand-900">
-            Sign in
-          </Link>
-        </p>
-      </div>
-    </div>
+        {/* Sign in link */}
+        <motion.div className="text-center" custom={4} variants={fieldVariants} initial="hidden" animate="visible">
+          <p className="text-sm text-sand-600">
+            Already have an account?{' '}
+            <Link to="/login" className="font-semibold text-brand-700 hover:text-brand-900">
+              Sign in
+            </Link>
+          </p>
+        </motion.div>
+      </form>
+    </AuthLayout>
   )
 }
