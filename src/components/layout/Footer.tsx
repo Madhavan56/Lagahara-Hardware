@@ -34,9 +34,16 @@ export function Footer() {
       <div className="container-page grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
         {/* Brand + description */}
         <div className="lg:pr-4">
-          <p className="font-display text-2xl font-extrabold text-sand-50">
-            Laghara <span className="text-brass-400">Hardwares</span>
-          </p>
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo-mark.svg"
+              alt="Laghara Hardwares logo icon"
+              className="h-12 w-12 rounded-xl object-cover ring-1 ring-white/10"
+            />
+            <p className="font-display text-2xl font-extrabold text-sand-50">
+              Laghara <span className="text-brass-400">Hardwares</span>
+            </p>
+          </div>
           <p className="mt-3 text-sm leading-relaxed text-sand-400">
             Interior and furniture materials for builders, carpenters and designers. Trade-grade
             stock, honest pricing, delivered on schedule across Tamil Nadu.

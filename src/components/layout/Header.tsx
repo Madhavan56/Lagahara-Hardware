@@ -67,13 +67,20 @@ export function Header() {
             <Menu className="size-5" />
           </button>
 
-          <Link to="/" className="shrink-0">
-            <span className="font-display text-xl leading-none font-extrabold tracking-tight text-brand-900 lg:text-2xl">
-              Laghara
-            </span>
-            <span className="ml-1 font-display text-xl leading-none font-extrabold text-brass-600 lg:text-2xl">
-              Hardwares
-            </span>
+          <Link to="/" className="flex shrink-0 items-center gap-3" aria-label="Laghara Hardwares home">
+            <img
+              src="/logo-mark.svg"
+              alt="Laghara Hardwares logo icon"
+              className="h-10 w-10 rounded-xl object-cover shadow-sm ring-1 ring-brand-900/10 lg:h-12 lg:w-12"
+            />
+            <div className="leading-none">
+              <span className="block font-display text-xl font-extrabold tracking-tight text-brand-900 lg:text-2xl">
+                Laghara
+              </span>
+              <span className="mt-0.5 block font-display text-[0.7rem] font-bold tracking-[0.2em] text-brass-600 uppercase lg:text-xs">
+                Hardwares
+              </span>
+            </div>
           </Link>
 
           <nav className="ml-6 hidden items-center gap-1 lg:flex">

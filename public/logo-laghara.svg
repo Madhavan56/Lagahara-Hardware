@@ -1,0 +1,21 @@
+<svg width="760" height="220" viewBox="0 0 760 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="brand-gold" x1="72" y1="32" x2="166" y2="180" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E9D7A6"/>
+      <stop offset="1" stop-color="#C79C52"/>
+    </linearGradient>
+    <linearGradient id="brand-green" x1="20" y1="16" x2="220" y2="208" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#18342A"/>
+      <stop offset="1" stop-color="#0D241D"/>
+    </linearGradient>
+  </defs>
+  <rect x="22" y="30" width="160" height="160" rx="38" fill="url(#brand-green)"/>
+  <path d="M74 60H102V148H164V176H74V60Z" fill="url(#brand-gold)"/>
+  <path d="M104 82H136V148H170V176H104V82Z" fill="#F6F1E8" fill-opacity="0.25"/>
+  <path d="M153 60H181V176C181 187.046 172.046 196 161 196H131V167H150C152.209 167 154 165.209 154 163V60H153Z" fill="#D9AF5B"/>
+  <path d="M60 183L130 116H161L92 183H60Z" fill="#D9AF5B" fill-opacity="0.9"/>
+  <path d="M89 58C104 47 149 47 169 58" stroke="#F3E7C6" stroke-width="8" stroke-linecap="round" opacity="0.75"/>
+  <text x="220" y="112" fill="#142F27" font-family="Georgia, 'Times New Roman', serif" font-size="62" font-weight="700" letter-spacing="0.5">Laghara</text>
+  <text x="221" y="164" fill="#B57D2D" font-family="Georgia, 'Times New Roman', serif" font-size="42" font-weight="700" letter-spacing="1.2">HARDWARES</text>
+  <path d="M221 178H536" stroke="#D8B46A" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+</svg>
