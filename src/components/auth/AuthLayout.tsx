@@ -9,23 +9,21 @@ type AuthLayoutProps = {
 
 export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen">
+    <div className="relative isolate flex min-h-[calc(100dvh-2px)] items-center justify-center overflow-hidden bg-brand-950 px-4 py-8 sm:px-6 lg:px-8">
       {/* Interior design image background with dark overlay */}
       <div
-        className="fixed inset-0 bg-cover bg-center bg-fixed"
+        className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: "url('/images/categories/interior-hardware-960.jpg')" }}
         aria-hidden="true"
       />
-      <div className="fixed inset-0 bg-gradient-to-br from-brand-950/85 via-brand-900/80 to-brand-950/90" />
-      <div className="fixed inset-0 bg-gradient-to-t from-brand-950/60 via-transparent to-brand-950/40" />
+      <div className="absolute inset-0 bg-brand-950/90" />
 
       {/* Subtle warm brass accent light */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
         <div className="absolute -top-32 -right-32 size-[24rem] rounded-full bg-brass-500/10 blur-3xl" />
-        <div className="absolute bottom-0 left-0 size-[20rem] rounded-full bg-brass-400/8 blur-3xl" />
       </div>
 
-      <div className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 flex w-full items-center justify-center">
         <motion.div
           className="relative w-full max-w-sm"
           initial={{ opacity: 0, y: 24 }}

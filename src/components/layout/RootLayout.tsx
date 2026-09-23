@@ -57,6 +57,7 @@ function RouteFallback() {
 export function RootLayout() {
   const location = useLocation()
   const navigate = useNavigate()
+  const isAuthRoute = /^\/(login|signup|forgot-password|reset-password)$/.test(location.pathname)
   const [authMessage, setAuthMessage] = useState<string | null>(null)
   // A short brand veil on first paint: hides font/route hydration flicker and
   // sets the premium tone. Capped at 500ms so it never feels like a delay.
@@ -100,8 +101,8 @@ export function RootLayout() {
       </AnimatePresence>
 
       <div className="flex min-h-dvh flex-col">
-        <Header />
-        {authMessage ? (
+        {!isAuthRoute ? <Header /> : null}
+        {authMessage && !isAuthRoute ? (
           <div className="container-page pt-4" role="status" aria-live="polite">
             <p className="rounded-xl bg-add-50 px-4 py-3 text-sm font-semibold text-add-600">
               {authMessage}
@@ -120,8 +121,8 @@ export function RootLayout() {
             </motion.div>
           </Suspense>
         </main>
-        <Footer />
-        <CartDrawer />
+        {!isAuthRoute ? <Footer /> : null}
+        {!isAuthRoute ? <CartDrawer /> : null}
         <ScrollRestoration />
       </div>
     </MotionConfig>
