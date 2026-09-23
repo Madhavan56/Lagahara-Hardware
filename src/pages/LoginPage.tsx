@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -33,13 +33,16 @@ export default function LoginPage() {
     try {
       await signIn(values.email, values.password)
       const redirect = searchParams.get('redirect')
-      navigate(redirect ? decodeURIComponent(redirect) : '/account', { replace: true })
+      navigate(redirect ? decodeURIComponent(redirect) : '/account', {
+        replace: true,
+        state: { authMessage: 'You are now logged in successfully.' },
+      })
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Could not sign in')
     }
   }
 
-  const fieldVariants = {
+  const fieldVariants: Variants = {
     hidden: { opacity: 0, y: 16 },
     visible: (i: number) => ({
       opacity: 1,

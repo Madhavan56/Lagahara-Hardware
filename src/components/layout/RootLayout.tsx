@@ -1,6 +1,6 @@
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import { Suspense, useEffect, useState } from 'react'
-import { Outlet, ScrollRestoration, useLocation } from 'react-router-dom'
+import { Outlet, ScrollRestoration, useLocation, useNavigate } from 'react-router-dom'
 import { CartDrawer } from '@/components/cart/CartDrawer'
 import { Footer } from './Footer'
 import { Header } from './Header'
@@ -56,6 +56,8 @@ function RouteFallback() {
 
 export function RootLayout() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const [authMessage, setAuthMessage] = useState<string | null>(null)
   // A short brand veil on first paint: hides font/route hydration flicker and
   // sets the premium tone. Capped at 500ms so it never feels like a delay.
   const [booted, setBooted] = useState(false)
@@ -64,6 +66,21 @@ export function RootLayout() {
     const timer = window.setTimeout(() => setBooted(true), 500)
     return () => window.clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    const message = (location.state as { authMessage?: string } | null)?.authMessage
+    if (!message) return
+
+    setAuthMessage(message)
+    navigate(`${location.pathname}${location.search}`, { replace: true, state: null })
+  }, [location, navigate])
+
+  useEffect(() => {
+    if (!authMessage) return
+
+    const timer = window.setTimeout(() => setAuthMessage(null), 6000)
+    return () => window.clearTimeout(timer)
+  }, [authMessage])
 
   return (
     // reducedMotion="user" disables every animation for users with the OS
@@ -84,6 +101,13 @@ export function RootLayout() {
 
       <div className="flex min-h-dvh flex-col">
         <Header />
+        {authMessage ? (
+          <div className="container-page pt-4" role="status" aria-live="polite">
+            <p className="rounded-xl bg-add-50 px-4 py-3 text-sm font-semibold text-add-600">
+              {authMessage}
+            </p>
+          </div>
+        ) : null}
         <main id="main" className="flex-1">
           <Suspense fallback={<RouteFallback />}>
             <motion.div

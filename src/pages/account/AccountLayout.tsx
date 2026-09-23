@@ -15,7 +15,7 @@ export default function AccountLayout() {
 
   async function handleSignOut() {
     await signOut()
-    navigate('/', { replace: true })
+    navigate('/', { replace: true, state: { authMessage: 'You have been logged out successfully.' } })
   }
 
   return (
