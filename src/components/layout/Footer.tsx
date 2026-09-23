@@ -9,12 +9,14 @@ const ACCOUNT_LINKS = [
 ]
 
 // Embedded client showroom map (Dhuraj Interior, Thanjavur) — no API key
-// needed. The iframe renders a pin on the address; loading is lazy so the
-// footer never blocks page paint.
+// needed. Uses the maps.google.com embed endpoint: the www.google.com keyless
+// variant refuses to render on production domains ("This content is blocked"),
+// while this endpoint is iframe-safe everywhere. Loading is lazy so the footer
+// never blocks page paint.
+const SHOWROOM_QUERY = '1243, Murugan Kovil Street, Kalainyar Nagar, Thanjavur 613004'
 const MAP_EMBED_SRC =
-  'https://www.google.com/maps?q=' +
-  encodeURIComponent('1243, Murugan Kovil Street, Kalainyar Nagar, Thanjavur 613004') +
-  '&output=embed'
+  `https://maps.google.com/maps?q=${encodeURIComponent(SHOWROOM_QUERY)}&z=16&output=embed`
+const MAP_DIRECTIONS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(SHOWROOM_QUERY)}`
 
 const SHOWROOM = {
   name: 'Dhuraj Interior — Flagship Showroom',
@@ -88,11 +90,28 @@ export function Footer() {
               title="Dhuraj Interior showroom location — Kalainyar Nagar, Thanjavur"
               src={MAP_EMBED_SRC}
               loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
+              referrerPolicy="no-referrer"
               className="h-44 w-full border-0 sm:h-40"
               allowFullScreen
             />
           </div>
+          <a
+            href={MAP_DIRECTIONS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-brass-400 transition-colors hover:text-brass-300"
+          >
+            Get directions on Google Maps
+            <svg viewBox="0 0 16 16" fill="none" className="size-3" aria-hidden>
+              <path
+                d="M4 12 12 4M6 4h6v6"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </a>
         </div>
 
         {/* Account links */}
