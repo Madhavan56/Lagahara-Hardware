@@ -1,14 +1,23 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { cancelOrder, fetchMyOrders, fetchOrderById, fetchOrderByNumber } from './api'
+import {
+  cancelOrder,
+  fetchMyOrders,
+  fetchOrderById,
+  fetchOrderByNumber,
+  type OrdersViewFilter,
+} from './api'
 
 const keys = {
-  list: ['orders'] as const,
+  list: (view: OrdersViewFilter = 'active') => ['orders', view] as const,
   byId: (id: string) => ['order', id] as const,
   byNumber: (num: string) => ['order', 'number', num] as const,
 }
 
-export function useMyOrders() {
-  return useQuery({ queryKey: keys.list, queryFn: fetchMyOrders })
+export function useMyOrders(view: OrdersViewFilter = 'active') {
+  return useQuery({
+    queryKey: keys.list(view),
+    queryFn: () => fetchMyOrders(view),
+  })
 }
 
 export function useOrder(orderId: string | undefined) {
@@ -32,7 +41,8 @@ export function useCancelOrder() {
   return useMutation({
     mutationFn: cancelOrder,
     onSuccess: (_result, orderId) => {
-      queryClient.invalidateQueries({ queryKey: keys.list })
+      // Both list views can be affected (unpaid → deleted, paid → cancelled).
+      queryClient.invalidateQueries({ queryKey: ['orders'] })
       queryClient.invalidateQueries({ queryKey: keys.byId(orderId) })
     },
   })

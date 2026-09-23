@@ -82,13 +82,38 @@ function mapOrder(row: Row): Order {
   }
 }
 
-export async function fetchMyOrders(): Promise<OrderListItem[]> {
-  const { data, error } = await supabase
+/**
+ * View filter for the orders list — the API-level equivalent of
+ * ?status=successful. 'active' excludes cancelled orders; 'cancelled'
+ * returns only those, for the dedicated history tab.
+ */
+export type OrdersViewFilter = 'active' | 'cancelled'
+
+// Every non-cancelled lifecycle state, pending included (an unpaid order is
+// still cancellable, not dead). Cancelled orders never appear here.
+const ACTIVE_STATUSES = [
+  'pending',
+  'confirmed',
+  'processing',
+  'shipped',
+  'out_for_delivery',
+  'delivered',
+] as const
+
+export async function fetchMyOrders(view: OrdersViewFilter = 'active'): Promise<OrderListItem[]> {
+  let query = supabase
     .from('orders')
     .select(
       'id, order_number, status, payment_status, total, created_at, order_items(id, product_name, product_image_path, quantity)',
     )
     .order('created_at', { ascending: false })
+
+  // Status filtering happens in the query (server-side), not in the client —
+  // pagination-safe and consistent with RLS scoping.
+  query =
+    view === 'cancelled'
+      ? query.eq('status', 'cancelled')
+      : query.in('status', [...ACTIVE_STATUSES])
 
   if (error) throw error
   return (data ?? []).map((row) => {
