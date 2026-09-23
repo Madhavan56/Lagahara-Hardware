@@ -1,5 +1,5 @@
 import { LayoutGrid, Rows3 } from 'lucide-react'
-import { useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Pagination } from '@/components/product/Pagination'
 import { ProductGrid } from '@/components/product/ProductGrid'
@@ -14,8 +14,22 @@ export default function ShopPage() {
   const { data: categories = [] } = useCategories()
   const { sort, page, setSort, setPage } = useProductFilterState()
   const [compact, setCompact] = useState(false)
+  const gridRef = useRef<HTMLDivElement>(null)
 
   const productsQuery = useProductsPage({ sort, page, pageSize: PAGE_SIZE })
+
+  // Quick-commerce behavior: on page change, snap the grid back into view so
+  // the fresh results are immediately on screen — the viewport must never sit
+  // at the bottom of the old page after the click.
+  const handlePageChange = useCallback(
+    (nextPage: number) => {
+      setPage(nextPage)
+      const el = gridRef.current
+      const y = el ? el.getBoundingClientRect().top + window.scrollY - 110 : 0
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' })
+    },
+    [setPage],
+  )
 
   return (
     <div className="container-page py-8 lg:py-12">
@@ -75,10 +89,12 @@ export default function ShopPage() {
         </div>
       </div>
 
+      <div ref={gridRef} />
       <ProductGrid
         products={productsQuery.data?.items}
         isLoading={productsQuery.isLoading}
         isError={productsQuery.isError}
+        isFetching={productsQuery.isFetching && !productsQuery.isLoading}
         compact={compact}
       />
 
@@ -86,7 +102,7 @@ export default function ShopPage() {
         page={page}
         pageSize={PAGE_SIZE}
         total={productsQuery.data?.total ?? 0}
-        onPageChange={setPage}
+        onPageChange={handlePageChange}
       />
     </div>
   )

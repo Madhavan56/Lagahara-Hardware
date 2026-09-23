@@ -8,12 +8,15 @@ export function ProductGrid({
   products,
   isLoading,
   isError,
+  isFetching,
   skeletonCount = 8,
   compact = false,
 }: {
   products: ProductListItem[] | undefined
   isLoading?: boolean
   isError?: boolean
+  /** A new page is loading (previous kept via keepPreviousData) — dim, don't blank. */
+  isFetching?: boolean
   skeletonCount?: number
   /** Denser browsing grid for large catalog sweeps. */
   compact?: boolean
@@ -52,11 +55,11 @@ export function ProductGrid({
   return (
     <motion.div
       initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-40px' }}
+      animate="visible"
       variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
       className={cn(
-        'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4',
+        'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4 transition-opacity duration-200',
+        isFetching && 'pointer-events-none opacity-40',
         compact && 'sm:grid-cols-4 lg:grid-cols-5',
       )}
     >

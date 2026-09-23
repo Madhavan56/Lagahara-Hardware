@@ -1,5 +1,22 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
+type PageItem = number | 'gap'
+
+function buildPageItems(page: number, totalPages: number): PageItem[] {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1)
+  }
+
+  const items: PageItem[] = [1]
+  const from = Math.max(2, page - 1)
+  const to = Math.min(totalPages - 1, page + 1)
+  if (from > 2) items.push('gap')
+  for (let p = from; p <= to; p++) items.push(p)
+  if (to < totalPages - 1) items.push('gap')
+  items.push(totalPages)
+  return items
+}
+
 export function Pagination({
   page,
   pageSize,
@@ -15,7 +32,10 @@ export function Pagination({
   if (totalPages <= 1) return null
 
   return (
-    <div className="mt-10 flex items-center justify-center gap-3">
+    <nav
+      aria-label="Product pages"
+      className="mt-10 flex items-center justify-center gap-1.5"
+    >
       <button
         type="button"
         onClick={() => onPageChange(page - 1)}
@@ -25,9 +45,34 @@ export function Pagination({
       >
         <ChevronLeft className="size-4" />
       </button>
-      <span className="text-sm text-sand-600">
-        Page {page} of {totalPages}
-      </span>
+
+      {buildPageItems(page, totalPages).map((item, index) =>
+        item === 'gap' ? (
+          <span
+            key={`gap-${index}`}
+            aria-hidden
+            className="flex size-10 items-end justify-center pb-2.5 text-sm text-sand-400"
+          >
+            …
+          </span>
+        ) : (
+          <button
+            key={item}
+            type="button"
+            onClick={() => onPageChange(item)}
+            aria-current={item === page ? 'page' : undefined}
+            aria-label={`Page ${item}`}
+            className={
+              item === page
+                ? 'flex size-10 items-center justify-center rounded-lg border border-brand-800 bg-brand-800 text-sm font-bold text-white shadow-card'
+                : 'flex size-10 items-center justify-center rounded-lg border border-sand-300 text-sm font-semibold text-sand-700 transition-colors hover:border-brand-600 hover:text-brand-800'
+            }
+          >
+            {item}
+          </button>
+        ),
+      )}
+
       <button
         type="button"
         onClick={() => onPageChange(page + 1)}
@@ -37,6 +82,6 @@ export function Pagination({
       >
         <ChevronRight className="size-4" />
       </button>
-    </div>
+    </nav>
   )
 }

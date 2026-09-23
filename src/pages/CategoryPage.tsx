@@ -1,5 +1,5 @@
 import { SlidersHorizontal, X } from 'lucide-react'
-import { useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { FilterPanel } from '@/components/product/FilterPanel'
 import { Pagination } from '@/components/product/Pagination'
@@ -19,6 +19,7 @@ const PAGE_SIZE = 12
 export default function CategoryPage() {
   const { slug } = useParams<{ slug: string }>()
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const gridRef = useRef<HTMLDivElement>(null)
   const { data: category, isLoading: categoryLoading, isError: categoryError } = useCategoryBySlug(slug)
   const { data: attributes = [] } = useCategoryAttributes(category?.id)
   const { filters, sort, page, setSort, setPage, toggleSelectValue, toggleBoolean, clearAll, activeFilterCount } =
@@ -36,6 +37,18 @@ export default function CategoryPage() {
     title: category ? `${category.name} — Laghara Hardwares` : 'Category — Laghara Hardwares',
     description: category?.description ?? undefined,
   })
+
+  // Quick-commerce behavior: after a page change, snap the grid back into view
+  // instead of leaving the viewport at the bottom where the click happened.
+  const handlePageChange = useCallback(
+    (nextPage: number) => {
+      setPage(nextPage)
+      const el = gridRef.current
+      const y = el ? el.getBoundingClientRect().top + window.scrollY - 110 : 0
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' })
+    },
+    [setPage],
+  )
 
   if (categoryLoading) {
     return (
@@ -114,17 +127,19 @@ export default function CategoryPage() {
             </div>
           </div>
 
+          <div ref={gridRef} />
           <ProductGrid
             products={productsQuery.data?.items}
             isLoading={productsQuery.isLoading}
             isError={productsQuery.isError}
+            isFetching={productsQuery.isFetching && !productsQuery.isLoading}
           />
 
           <Pagination
             page={page}
             pageSize={PAGE_SIZE}
             total={productsQuery.data?.total ?? 0}
-            onPageChange={setPage}
+            onPageChange={handlePageChange}
           />
         </div>
       </div>
