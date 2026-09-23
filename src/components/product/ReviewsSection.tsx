@@ -1,5 +1,9 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Star } from 'lucide-react'
+import { useAuth } from '@/features/auth/AuthProvider'
 import { summarizeRatings } from '@/features/catalog/api'
+import { useSubmitProductReview } from '@/features/catalog/queries'
 import { formatDate } from '@/lib/utils'
 import type { Review } from '@/types/catalog'
 
@@ -16,23 +20,103 @@ function StarRow({ rating }: { rating: number }) {
   )
 }
 
-export function ReviewsSection({ reviews, isLoading }: { reviews: Review[] | undefined; isLoading?: boolean }) {
+export function ReviewsSection({
+  productId,
+  reviews,
+  isLoading,
+}: {
+  productId: string
+  reviews: Review[] | undefined
+  isLoading?: boolean
+}) {
+  const { user } = useAuth()
+  const submitReview = useSubmitProductReview(productId)
+  const [rating, setRating] = useState(5)
+  const [title, setTitle] = useState('')
+  const [body, setBody] = useState('')
+  const [formMessage, setFormMessage] = useState<string | null>(null)
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setFormMessage(null)
+
+    try {
+      await submitReview.mutateAsync({ rating, title, body })
+      setTitle('')
+      setBody('')
+      setFormMessage('Thanks. Your review has been submitted.')
+    } catch (error) {
+      setFormMessage(error instanceof Error ? error.message : 'Only verified buyers can review this product.')
+    }
+  }
+
   if (isLoading) {
     return <p className="text-sm text-sand-500">Loading reviews…</p>
   }
 
   const summary = summarizeRatings(reviews ?? [])
 
-  if (!reviews?.length) {
-    return (
-      <div className="rounded-card border border-sand-200 bg-sand-50 p-6 text-center">
-        <p className="text-sm text-sand-600">No reviews yet. Be the first to review this product.</p>
-      </div>
-    )
-  }
-
   return (
     <div>
+      <div className="mb-8 rounded-card border border-sand-200 bg-sand-50 p-5">
+        <h3 className="text-base font-bold text-sand-900">Share your experience</h3>
+        {!user ? (
+          <p className="mt-2 text-sm text-sand-600">
+            <Link to={`/login?redirect=${encodeURIComponent(window.location.pathname)}`} className="font-semibold text-brand-700 hover:text-brand-900">
+              Sign in
+            </Link>{' '}
+            to review after your delivered order.
+          </p>
+        ) : (
+          <form onSubmit={handleSubmit} className="mt-4 space-y-3">
+            <div>
+              <p className="mb-1.5 text-sm font-medium text-sand-700">Your rating</p>
+              <div className="flex gap-1" role="radiogroup" aria-label="Your rating">
+                {[1, 2, 3, 4, 5].map((value) => (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setRating(value)}
+                    className="rounded-md p-1 hover:bg-sand-200"
+                    aria-label={`${value} star${value === 1 ? '' : 's'}`}
+                    aria-pressed={rating === value}
+                  >
+                    <Star className={`size-5 ${value <= rating ? 'fill-brass-500 text-brass-500' : 'text-sand-300'}`} />
+                  </button>
+                ))}
+              </div>
+            </div>
+            <input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="Review title (optional)"
+              maxLength={120}
+              className="h-10 w-full rounded-lg border border-sand-300 bg-white px-3 text-sm focus:border-brand-600 focus:outline-none"
+            />
+            <textarea
+              value={body}
+              onChange={(event) => setBody(event.target.value)}
+              placeholder="What did you think?"
+              maxLength={1000}
+              rows={3}
+              className="w-full resize-y rounded-lg border border-sand-300 bg-white px-3 py-2 text-sm focus:border-brand-600 focus:outline-none"
+            />
+            <button type="submit" disabled={submitReview.isPending} className="rounded-xl bg-brand-800 px-4 py-2.5 text-sm font-bold text-white hover:bg-brand-700 disabled:opacity-50">
+              {submitReview.isPending ? 'Submitting…' : 'Submit review'}
+            </button>
+            {formMessage ? <p className="text-sm text-sand-600" role="status">{formMessage}</p> : null}
+          </form>
+        )}
+      </div>
+
+      {!reviews?.length ? (
+        <div className="rounded-card border border-sand-200 bg-sand-50 p-6 text-center">
+          <p className="text-sm text-sand-600">No reviews yet. Be the first to review this product.</p>
+        </div>
+      ) : null}
+
+      {reviews?.length ? (
+        <>
       <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-center">
         <div className="text-center sm:border-r sm:border-sand-200 sm:pr-6">
           <p className="font-display text-4xl font-semibold text-sand-900">{summary.average.toFixed(1)}</p>
@@ -74,6 +158,8 @@ export function ReviewsSection({ reviews, isLoading }: { reviews: Review[] | und
           </li>
         ))}
       </ul>
+        </>
+      ) : null}
     </div>
   )
 }

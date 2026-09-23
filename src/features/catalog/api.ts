@@ -254,6 +254,26 @@ export async function fetchProductReviews(productId: string): Promise<Review[]> 
   return (data ?? []).map(mapReview)
 }
 
+export async function submitProductReview(input: {
+  productId: string
+  rating: number
+  title: string
+  body: string
+}): Promise<void> {
+  const { data: userData, error: userError } = await supabase.auth.getUser()
+  if (userError || !userData.user) throw new Error('Please sign in to submit a review.')
+
+  const { error } = await supabase.from('reviews').insert({
+    product_id: input.productId,
+    user_id: userData.user.id,
+    rating: input.rating,
+    title: input.title.trim() || null,
+    body: input.body.trim() || null,
+  })
+
+  if (error) throw error
+}
+
 export function summarizeRatings(reviews: Review[]): RatingSummary {
   const histogram: RatingSummary['histogram'] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
   let total = 0

@@ -319,6 +319,7 @@ async function main() {
 
     const attrs = attrsByCategory.get(category.id) ?? []
     const rand = seededRandom(category.slug.length * 7919 + 13)
+    const usedNames = new Set<string>()
     const rows: Array<{
       category_id: string
       slug: string
@@ -343,7 +344,10 @@ async function main() {
         attributeValues[attr.key] = generateAttributeValue(category.slug, attr, i, brand, rand)
       }
 
-      const name = config.nameBuilder({ brand, attrs: attributeValues, index: i, categoryName: category.name })
+      const baseName = config.nameBuilder({ brand, attrs: attributeValues, index: i, categoryName: category.name })
+      let name = baseName
+      if (usedNames.has(name)) name = `${baseName} — Edition ${i + 1}`
+      usedNames.add(name)
       const [minPrice, maxPrice] = config.priceRange
       const price = Math.round(minPrice + rand() * (maxPrice - minPrice))
       const hasDiscount = rand() < 0.3
@@ -374,8 +378,7 @@ async function main() {
       .select('id, slug, sku, name')
 
     if (upsertError) {
-      console.error(`Failed to upsert products for ${category.slug}:`, upsertError.message)
-      continue
+      throw new Error(`Failed to upsert products for ${category.slug}: ${upsertError.message}`)
     }
 
     console.log(`  ${category.slug}: ${upserted?.length ?? 0} products upserted`)

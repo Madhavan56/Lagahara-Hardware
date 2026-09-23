@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   fetchCategories,
   fetchCategoryAttributes,
@@ -7,6 +7,7 @@ import {
   fetchNewArrivals,
   fetchProductBySlug,
   fetchProductReviews,
+  submitProductReview,
   fetchProductsByIds,
   fetchProductsPage,
   fetchRelatedProducts,
@@ -114,6 +115,20 @@ export function useProductReviews(productId: string | undefined) {
     queryFn: () => fetchProductReviews(productId as string),
     enabled: Boolean(productId),
     staleTime: 60 * 1000,
+  })
+}
+
+export function useSubmitProductReview(productId: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (input: { rating: number; title: string; body: string }) =>
+      submitProductReview({ productId, ...input }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: catalogKeys.reviews(productId) })
+      queryClient.invalidateQueries({ queryKey: ['product'] })
+      queryClient.invalidateQueries({ queryKey: ['products'] })
+    },
   })
 }
 

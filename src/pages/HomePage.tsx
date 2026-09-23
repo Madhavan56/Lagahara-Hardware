@@ -13,6 +13,20 @@ const TRUST_POINTS = [
   { icon: Truck, label: 'Trade to project quantities' },
 ]
 
+const PROJECT_PATHS = [
+  { label: 'Kitchen fit-out', detail: 'Baskets, hinges and organisers', slug: 'kitchen-hardware' },
+  { label: 'Wardrobe build', detail: 'Rails, runners and handles', slug: 'wardrobe-hardware' },
+  { label: 'Cabinet finishing', detail: 'Laminates, pulls and profiles', slug: 'mica-laminates' },
+  { label: 'Build essentials', detail: 'Plywood for every application', slug: 'plywood' },
+]
+
+const BUDGET_LINKS = [
+  { label: 'Best value', query: 'sort=price_asc' },
+  { label: 'New stock', query: 'sort=newest' },
+  { label: 'Top rated', query: 'sort=rating' },
+  { label: 'Premium picks', query: 'sort=price_desc' },
+]
+
 export default function HomePage() {
   const { data: categories, isLoading, isError } = useCategories()
   const featured = useFeaturedProducts(8)
@@ -132,6 +146,31 @@ export default function HomePage() {
         )}
       </section>
 
+      <section className="border-y border-sand-200 bg-sand-100 py-8 lg:py-10">
+        <div className="container-page">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-bold tracking-[0.18em] text-brass-600 uppercase">Start with the room</p>
+              <h2 className="mt-1 text-xl font-extrabold text-sand-900 lg:text-2xl">Plan the whole fit-out</h2>
+            </div>
+            <Link to="/shop" className="text-sm font-bold text-brass-600 hover:text-brass-700">Browse all</Link>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {PROJECT_PATHS.map((path) => (
+              <Link
+                key={path.slug}
+                to={`/category/${path.slug}`}
+                className="group rounded-card border border-sand-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-brass-300 hover:shadow-card"
+              >
+                <span className="text-base font-extrabold text-sand-900 group-hover:text-brand-800">{path.label}</span>
+                <span className="mt-1 block text-sm text-sand-500">{path.detail}</span>
+                <span className="mt-4 block text-xs font-bold text-brass-600">Shop collection →</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="border-t border-sand-200 bg-white py-8 lg:py-12">
         <div className="container-page">
           <div className="mb-5 flex items-end justify-between">
@@ -144,6 +183,26 @@ export default function HomePage() {
             </Link>
           </div>
           <ProductGrid products={featured.data} isLoading={featured.isLoading} isError={featured.isError} />
+        </div>
+      </section>
+
+      <section className="container-page py-8 lg:py-12">
+        <div className="flex flex-col gap-5 rounded-panel bg-brand-900 px-5 py-6 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <div>
+            <p className="text-xs font-bold tracking-[0.18em] text-brass-300 uppercase">Shop smart</p>
+            <h2 className="mt-1 text-xl font-extrabold text-white">Find the right piece for your budget</h2>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {BUDGET_LINKS.map((budget) => (
+              <Link
+                key={budget.query}
+                to={`/shop?${budget.query}`}
+                className="rounded-full border border-white/20 px-3.5 py-2 text-sm font-bold text-sand-100 transition-colors hover:border-brass-300 hover:bg-brass-500 hover:text-white"
+              >
+                {budget.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

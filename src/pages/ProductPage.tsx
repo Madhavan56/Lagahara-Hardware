@@ -218,7 +218,7 @@ export default function ProductPage() {
 
       <div className="mt-16 border-t border-sand-200 pt-10">
         <h2 className="mb-6 font-display text-2xl font-semibold text-sand-900">Reviews</h2>
-        <ReviewsSection reviews={reviews} isLoading={reviewsLoading} />
+        <ReviewsSection productId={product.id} reviews={reviews} isLoading={reviewsLoading} />
       </div>
 
       {related?.length ? (
