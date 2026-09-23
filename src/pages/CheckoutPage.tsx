@@ -35,8 +35,9 @@ export default function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
   const [addingAddress, setAddingAddress] = useState(false)
   const [selectedShippingCode, setSelectedShippingCode] = useState<string | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay')
   const [orderError, setOrderError] = useState<string | null>(null)
-  const [placedOrder, setPlacedOrder] = useState<{ orderNumber: string; total: number } | null>(null)
+  const [placedOrder, setPlacedOrder] = useState<{ orderNumber: string; total: number; cod: boolean } | null>(null)
   // Order created in the DB but awaiting the gateway — cancelled (and removed
   // from history) if the user dismisses or the payment fails.
   const [pendingPayment, setPendingPayment] = useState<{ orderId: string; razorpayOrderId: string; total: number } | null>(null)
@@ -71,9 +72,18 @@ export default function CheckoutPage() {
         addressId: activeAddressId,
         shippingMethodCode: activeShippingCode,
         items: lines.map((line) => ({ productId: line.product.id, quantity: line.quantity })),
+        paymentMethod,
       })
     } catch (err) {
       setOrderError(err instanceof Error ? err.message : 'Could not place order')
+      return
+    }
+
+    // Cash on delivery — the function already confirmed the order.
+    if (created.paymentMethod === 'cod') {
+      clearCart()
+      setPlacedOrder({ orderNumber: created.orderNumber, total: created.total, cod: true })
+      window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
 
@@ -107,7 +117,7 @@ export default function CheckoutPage() {
               await verifyPayment.mutateAsync(response)
               clearCart()
               setPendingPayment(null)
-              setPlacedOrder({ orderNumber: created!.orderNumber, total: created!.total })
+              setPlacedOrder({ orderNumber: created!.orderNumber, total: created!.total, cod: false })
               window.scrollTo({ top: 0, behavior: 'smooth' })
             } catch {
               await discardPendingPayment(created!.orderId)
@@ -135,10 +145,13 @@ export default function CheckoutPage() {
     return (
       <div className="container-page flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
         <CheckCircle2 className="size-14 text-success" />
-        <h1 className="mt-4 font-display text-2xl font-semibold text-sand-900">Payment successful — order confirmed</h1>
+        <h1 className="mt-4 font-display text-2xl font-semibold text-sand-900">
+          {placedOrder.cod ? 'Order confirmed — cash on delivery' : 'Payment successful — order confirmed'}
+        </h1>
         <p className="mt-2 text-sand-600">
           Order <span className="font-medium text-sand-900">{placedOrder.orderNumber}</span> for{' '}
-          {formatPrice(placedOrder.total)} is confirmed and heading to dispatch.
+          {formatPrice(placedOrder.total)} is{' '}
+          {placedOrder.cod ? 'confirmed — pay in cash when it arrives.' : 'confirmed and heading to dispatch.'}
         </p>
         <Link to="/account/orders" className="mt-6 text-sm font-medium text-brand-700 hover:text-brand-900">
           View your orders
@@ -339,15 +352,49 @@ export default function CheckoutPage() {
             <p className="mt-3 rounded-xl bg-danger/10 px-3 py-2 text-sm text-danger">{orderError}</p>
           ) : null}
 
+          {/* Payment method — online via the gateway, or cash on delivery */}
+          <div className="mt-5 grid grid-cols-2 gap-2" role="radiogroup" aria-label="Payment method">
+            <button
+              type="button"
+              role="radio"
+              aria-checked={paymentMethod === 'razorpay'}
+              onClick={() => setPaymentMethod('razorpay')}
+              className={cn(
+                'rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors',
+                paymentMethod === 'razorpay'
+                  ? 'border-brand-600 bg-brand-50 text-brand-800'
+                  : 'border-sand-200 bg-white text-sand-600 hover:border-sand-300',
+              )}
+            >
+              Pay online
+              <span className="mt-0.5 block text-[0.6875rem] font-medium text-sand-500">UPI · Cards · Netbanking</span>
+            </button>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={paymentMethod === 'cod'}
+              onClick={() => setPaymentMethod('cod')}
+              className={cn(
+                'rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors',
+                paymentMethod === 'cod'
+                  ? 'border-brand-600 bg-brand-50 text-brand-800'
+                  : 'border-sand-200 bg-white text-sand-600 hover:border-sand-300',
+              )}
+            >
+              Cash on delivery
+              <span className="mt-0.5 block text-[0.6875rem] font-medium text-sand-500">Pay when it arrives</span>
+            </button>
+          </div>
+
           <Button
             block
             size="lg"
-            className="mt-5"
+            className="mt-3"
             disabled={!readyToPlace}
             loading={createOrder.isPending || verifyPayment.isPending}
             onClick={handlePlaceOrder}
           >
-            Pay now with Razorpay
+            {paymentMethod === 'cod' ? 'Place COD order' : 'Pay now with Razorpay'}
           </Button>
 
           {pendingPayment ? (

@@ -6,6 +6,8 @@ export type CreateOrderInput = {
   shippingMethodCode: string
   items: { productId: string; quantity: number }[]
   customerNote?: string
+  /** "cod" skips the gateway and confirms the order for cash on delivery. */
+  paymentMethod?: 'razorpay' | 'cod'
 }
 
 export type RazorpayCheckoutParams = {
@@ -21,7 +23,9 @@ export type CreateOrderResult = {
   subtotal: number
   shippingAmount: number
   total: number
-  razorpay: RazorpayCheckoutParams
+  paymentMethod: 'razorpay' | 'cod'
+  /** Present only when paymentMethod === 'razorpay'. */
+  razorpay?: RazorpayCheckoutParams
 }
 
 export type CreateOrderError = {

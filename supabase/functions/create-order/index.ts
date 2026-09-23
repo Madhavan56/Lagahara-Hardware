@@ -41,6 +41,8 @@ type RequestBody = {
   shippingMethodCode: string;
   items: OrderItemInput[];
   customerNote?: string;
+  /** "cod" skips the gateway and confirms the order for cash on delivery. */
+  paymentMethod?: "razorpay" | "cod";
 };
 
 function badRequest(message: string, details?: unknown) {
@@ -189,7 +191,10 @@ export default {
 
     // Create the matching Razorpay order so the client can open the branded
     // checkout. Amounts go to the gateway in paise.
-    let razorpayOrderId: string;
+    let razorpayOrderId: string | undefined;
+
+    // The gateway order is only created for the online-payment path.
+    if (body.paymentMethod !== "cod") {
     try {
       const rzp = await createRazorpayOrder({
         amountInPaise: Math.round(total * 100),
@@ -216,6 +221,8 @@ export default {
         { error: "Could not link payment to order", details: rzpLinkError.message },
         { status: 500 },
       );
+    }
+
     }
 
     const orderItems = body.items.map((item) => {
@@ -246,12 +253,36 @@ export default {
       return Response.json({ error: "Could not create order items", details: itemsError.message }, { status: 500 });
     }
 
+    // Cash on delivery: no gateway round-trip — confirm the order outright.
+    // payment_status stays 'pending' until the courier collects the cash.
+    if (body.paymentMethod === "cod") {
+      const { error: confirmError } = await admin
+        .from("orders")
+        .update({ status: "confirmed", placed_at: new Date().toISOString() })
+        .eq("id", order.id);
+
+      if (confirmError) {
+        await admin.from("orders").delete().eq("id", order.id);
+        return Response.json({ error: "Could not confirm order", details: confirmError.message }, { status: 500 });
+      }
+
+      return Response.json({
+        orderId: order.id,
+        orderNumber: order.order_number,
+        subtotal,
+        shippingAmount,
+        total,
+        paymentMethod: "cod",
+      });
+    }
+
     return Response.json({
       orderId: order.id,
       orderNumber: order.order_number,
       subtotal,
       shippingAmount,
       total,
+      paymentMethod: "razorpay",
       razorpay: {
         orderId: razorpayOrderId,
         amountInPaise: Math.round(total * 100),
