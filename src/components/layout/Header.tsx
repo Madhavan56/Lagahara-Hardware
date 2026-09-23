@@ -11,7 +11,6 @@ import { CategoryRail } from './CategoryRail'
 
 const PRIMARY_LINKS = [
   { to: '/shop', label: 'Shop All' },
-  { to: '/about', label: 'About' },
   { to: '/contact', label: 'Contact' },
 ]
 

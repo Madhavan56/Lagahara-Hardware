@@ -17,10 +17,10 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const CONTACT_CARDS = [
-  { icon: Phone, label: 'Call us', value: '+91 98765 43210', href: 'tel:+919876543210' },
-  { icon: Mail, label: 'Email us', value: 'hello@lagharahardwares.com', href: 'mailto:hello@lagharahardwares.com' },
-  { icon: MapPin, label: 'Visit us', value: 'No. 12, Industrial Estate Road, Chennai, Tamil Nadu 600032', href: null },
-  { icon: Clock, label: 'Hours', value: 'Mon–Sat, 9:30 AM – 7:30 PM', href: null },
+  { icon: Phone, label: 'Call us', value: '+91 73737 30340', href: 'tel:+917373730340' },
+  { icon: Mail, label: 'Email us', value: 'dhuraimuthukumar@hotmail.com', href: 'mailto:dhuraimuthukumar@hotmail.com' },
+  { icon: MapPin, label: 'Visit us', value: '1243, Murugan Kovil Street, Kalainyar Nagar, Thanjavur – 613 004', href: null },
+  { icon: Clock, label: 'Hours', value: 'Mon–Sat, 9 AM – 6 PM', href: null },
 ]
 
 export default function ContactPage() {

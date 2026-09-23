@@ -5,7 +5,6 @@ import { AdminRoute } from '@/features/auth/AdminRoute'
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute'
 
 const HomePage = lazy(() => import('@/pages/HomePage'))
-const AboutPage = lazy(() => import('@/pages/AboutPage'))
 const ContactPage = lazy(() => import('@/pages/ContactPage'))
 const ShopPage = lazy(() => import('@/pages/ShopPage'))
 const CategoryPage = lazy(() => import('@/pages/CategoryPage'))
@@ -45,7 +44,6 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       { index: true, element: <HomePage /> },
-      { path: 'about', element: <AboutPage /> },
       { path: 'contact', element: <ContactPage /> },
       { path: 'shop', element: <ShopPage /> },
       { path: 'category/:slug', element: <CategoryPage /> },

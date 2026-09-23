@@ -1,9 +1,5 @@
+import { Mail, MapPin, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
-
-const COMPANY_LINKS = [
-  { to: '/about', label: 'About us' },
-  { to: '/contact', label: 'Contact' },
-]
 
 const ACCOUNT_LINKS = [
   { to: '/account', label: 'My account' },
@@ -12,35 +8,94 @@ const ACCOUNT_LINKS = [
   { to: '/wishlist', label: 'Wishlist' },
 ]
 
+// Embedded client showroom map (Dhuraj Interior, Thanjavur) — no API key
+// needed. The iframe renders a pin on the address; loading is lazy so the
+// footer never blocks page paint.
+const MAP_EMBED_SRC =
+  'https://www.google.com/maps?q=' +
+  encodeURIComponent('1243, Murugan Kovil Street, Kalainyar Nagar, Thanjavur 613004') +
+  '&output=embed'
+
+const SHOWROOM = {
+  name: 'Dhuraj Interior — Flagship Showroom',
+  address: '1243, Murugan Kovil Street, Kalainyar Nagar, Thanjavur – 613 004',
+  phoneDisplay: '+91 73737 30340',
+  phoneHref: 'tel:+917373730340',
+  email: 'dhuraimuthukumar@hotmail.com',
+  hours: 'Mon–Sat · 9 AM – 6 PM',
+  website: { label: 'www.dhurajinterior.in', href: 'https://www.dhurajinterior.in' },
+}
+
 export function Footer() {
   return (
     <footer className="mt-24 bg-brand-950 text-sand-300">
-      <div className="container-page grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-        <div className="lg:pr-8">
+      <div className="container-page grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        {/* Brand + description */}
+        <div className="lg:pr-4">
           <p className="font-display text-2xl font-extrabold text-sand-50">
             Laghara <span className="text-brass-400">Hardwares</span>
           </p>
           <p className="mt-3 text-sm leading-relaxed text-sand-400">
             Interior and furniture materials for builders, carpenters and designers. Trade-grade
-            stock, honest pricing, delivered on schedule.
+            stock, honest pricing, delivered on schedule across Tamil Nadu.
           </p>
         </div>
 
-        <div>
+        {/* Client showroom / contact */}
+        <div className="sm:col-span-2">
           <p className="mb-4 text-xs font-semibold tracking-widest text-sand-500 uppercase">
-            Company
+            Visit our showroom
           </p>
-          <ul className="space-y-2 text-sm">
-            {COMPANY_LINKS.map((link) => (
-              <li key={link.to}>
-                <Link to={link.to} className="transition-colors hover:text-brass-300">
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+          <ul className="space-y-3 text-sm">
+            <li className="flex items-start gap-3">
+              <MapPin className="mt-0.5 size-4 shrink-0 text-brass-400" aria-hidden />
+              <span className="leading-relaxed text-sand-300">{SHOWROOM.address}</span>
+            </li>
+            <li className="flex items-center gap-3">
+              <Phone className="size-4 shrink-0 text-brass-400" aria-hidden />
+              <a
+                href={SHOWROOM.phoneHref}
+                className="text-sand-300 transition-colors hover:text-brass-300"
+              >
+                {SHOWROOM.phoneDisplay}
+              </a>
+            </li>
+            <li className="flex items-center gap-3">
+              <Mail className="size-4 shrink-0 text-brass-400" aria-hidden />
+              <a
+                href={`mailto:${SHOWROOM.email}`}
+                className="break-all text-sand-300 transition-colors hover:text-brass-300"
+              >
+                {SHOWROOM.email}
+              </a>
+            </li>
+            <li className="text-xs text-sand-500">
+              {SHOWROOM.hours} ·{' '}
+              <a
+                href={SHOWROOM.website.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brass-400 transition-colors hover:text-brass-300"
+              >
+                {SHOWROOM.website.label}
+              </a>
+            </li>
           </ul>
+
+          {/* Embedded map */}
+          <div className="mt-5 overflow-hidden rounded-xl border border-brand-900">
+            <iframe
+              title="Dhuraj Interior showroom location — Kalainyar Nagar, Thanjavur"
+              src={MAP_EMBED_SRC}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-44 w-full border-0 sm:h-40"
+              allowFullScreen
+            />
+          </div>
         </div>
 
+        {/* Account links */}
         <div>
           <p className="mb-4 text-xs font-semibold tracking-widest text-sand-500 uppercase">
             Account
