@@ -151,23 +151,15 @@ export function Header() {
               className="relative rounded-lg p-2.5 text-sand-700 transition-colors hover:bg-sand-100 hover:text-brand-800"
               aria-label="Cart"
             >
-              <motion.span
-                key={cartCount}
-                className="block"
-                animate={cartCount > 0 ? { rotate: [0, -10, 8, 0] } : { rotate: 0 }}
-                transition={{ duration: 0.45, ease: 'easeInOut' }}
-              >
-                <ShoppingBag className="size-5" />
-              </motion.span>
+              <ShoppingBag className="size-5" />
               {cartCount > 0 ? (
                 <motion.span
-                  key={cartCount}
                   initial={{ scale: 0.4, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 22 }}
                   aria-live="polite"
                   aria-label={`${cartCount} ${cartCount === 1 ? 'item' : 'items'} in cart`}
-                  className="absolute -top-1 -right-1 z-10 flex h-4 min-w-4 items-center justify-center rounded-full bg-add-500 px-1 text-[0.625rem] font-bold leading-none text-white"
+                  className="cart-badge"
                 >
                   {cartCount}
                 </motion.span>
