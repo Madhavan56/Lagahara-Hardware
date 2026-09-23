@@ -254,6 +254,45 @@ export async function fetchProductReviews(productId: string): Promise<Review[]> 
   return (data ?? []).map(mapReview)
 }
 
+export type ProductReviewEligibility = {
+  signedIn: boolean
+  hasPurchased: boolean
+  isDelivered: boolean
+  hasReviewed: boolean
+}
+
+export async function fetchProductReviewEligibility(productId: string): Promise<ProductReviewEligibility> {
+  const { data: userData, error: userError } = await supabase.auth.getUser()
+  if (userError || !userData.user) {
+    return { signedIn: false, hasPurchased: false, isDelivered: false, hasReviewed: false }
+  }
+
+  const [{ data: orders, error: ordersError }, { data: reviews, error: reviewsError }] = await Promise.all([
+    supabase
+      .from('orders')
+      .select('status, order_items!inner(product_id)')
+      .eq('order_items.product_id', productId)
+      .neq('status', 'cancelled'),
+    supabase
+      .from('reviews')
+      .select('id')
+      .eq('product_id', productId)
+      .eq('user_id', userData.user.id)
+      .limit(1),
+  ])
+
+  if (ordersError) throw ordersError
+  if (reviewsError) throw reviewsError
+
+  const orderRows = orders ?? []
+  return {
+    signedIn: true,
+    hasPurchased: orderRows.length > 0,
+    isDelivered: orderRows.some((order) => order.status === 'delivered'),
+    hasReviewed: (reviews ?? []).length > 0,
+  }
+}
+
 export async function submitProductReview(input: {
   productId: string
   rating: number

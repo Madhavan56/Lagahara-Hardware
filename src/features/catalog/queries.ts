@@ -7,6 +7,7 @@ import {
   fetchNewArrivals,
   fetchProductBySlug,
   fetchProductReviews,
+  fetchProductReviewEligibility,
   submitProductReview,
   fetchProductsByIds,
   fetchProductsPage,
@@ -118,6 +119,15 @@ export function useProductReviews(productId: string | undefined) {
   })
 }
 
+export function useProductReviewEligibility(productId: string | undefined, signedIn: boolean) {
+  return useQuery({
+    queryKey: ['review-eligibility', productId ?? '', signedIn],
+    queryFn: () => fetchProductReviewEligibility(productId as string),
+    enabled: Boolean(productId && signedIn),
+    staleTime: 30 * 1000,
+  })
+}
+
 export function useSubmitProductReview(productId: string) {
   const queryClient = useQueryClient()
 
@@ -126,6 +136,7 @@ export function useSubmitProductReview(productId: string) {
       submitProductReview({ productId, ...input }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: catalogKeys.reviews(productId) })
+      queryClient.invalidateQueries({ queryKey: ['review-eligibility', productId] })
       queryClient.invalidateQueries({ queryKey: ['product'] })
       queryClient.invalidateQueries({ queryKey: ['products'] })
     },

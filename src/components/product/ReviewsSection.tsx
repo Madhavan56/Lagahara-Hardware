@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Star } from 'lucide-react'
 import { useAuth } from '@/features/auth/AuthProvider'
-import { summarizeRatings } from '@/features/catalog/api'
+import { summarizeRatings, type ProductReviewEligibility } from '@/features/catalog/api'
 import { useSubmitProductReview } from '@/features/catalog/queries'
 import { formatDate } from '@/lib/utils'
 import type { Review } from '@/types/catalog'
@@ -24,10 +24,14 @@ export function ReviewsSection({
   productId,
   reviews,
   isLoading,
+  eligibility,
+  eligibilityLoading = false,
 }: {
   productId: string
   reviews: Review[] | undefined
   isLoading?: boolean
+  eligibility?: ProductReviewEligibility
+  eligibilityLoading?: boolean
 }) {
   const { user } = useAuth()
   const submitReview = useSubmitProductReview(productId)
@@ -66,6 +70,16 @@ export function ReviewsSection({
               Sign in
             </Link>{' '}
             to review after your delivered order.
+          </p>
+        ) : eligibilityLoading ? (
+          <p className="mt-2 text-sm text-sand-600">Checking your purchase history…</p>
+        ) : eligibility?.hasReviewed ? (
+          <p className="mt-2 text-sm font-medium text-brand-800" role="status">
+            You already reviewed this product.
+          </p>
+        ) : !eligibility?.hasPurchased || !eligibility.isDelivered ? (
+          <p className="mt-2 text-sm text-sand-600">
+            You can review this product after your order has been delivered.
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="mt-4 space-y-3">
@@ -154,7 +168,12 @@ export function ReviewsSection({
               <p className="text-xs whitespace-nowrap text-sand-500">{formatDate(review.createdAt)}</p>
             </div>
             {review.body ? <p className="mt-2 text-sm leading-relaxed text-sand-700">{review.body}</p> : null}
-            <p className="mt-2 text-xs font-medium text-sand-500">— {review.authorName ?? 'Verified Buyer'}</p>
+            <p className="mt-2 flex items-center gap-2 text-xs font-medium text-sand-500">
+              <span>— {review.authorName ?? 'Verified Buyer'}</span>
+              <span className="rounded-full bg-add-50 px-2 py-0.5 text-[0.6875rem] font-bold text-add-600">
+                Verified purchase
+              </span>
+            </p>
           </li>
         ))}
       </ul>

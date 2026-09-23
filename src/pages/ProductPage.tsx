@@ -9,10 +9,12 @@ import { SpecTable } from '@/components/product/SpecTable'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCartStore } from '@/features/cart/store'
+import { useAuth } from '@/features/auth/AuthProvider'
 import {
   useCategories,
   useCategoryAttributes,
   useProductBySlug,
+  useProductReviewEligibility,
   useProductReviews,
   useRelatedProducts,
 } from '@/features/catalog/queries'
@@ -32,6 +34,8 @@ export default function ProductPage() {
   const { data: attributes = [] } = useCategoryAttributes(product?.categoryId)
   const { data: related } = useRelatedProducts(product?.categoryId, product?.id, 4)
   const { data: reviews, isLoading: reviewsLoading } = useProductReviews(product?.id)
+  const { user, loading: authLoading } = useAuth()
+  const reviewEligibility = useProductReviewEligibility(product?.id, Boolean(user) && !authLoading)
 
   // The product row only carries category_id, not its slug/name. Categories
   // are already cached with a 10-minute staleTime, so resolving the
@@ -218,7 +222,13 @@ export default function ProductPage() {
 
       <div className="mt-16 border-t border-sand-200 pt-10">
         <h2 className="mb-6 font-display text-2xl font-semibold text-sand-900">Reviews</h2>
-        <ReviewsSection productId={product.id} reviews={reviews} isLoading={reviewsLoading} />
+        <ReviewsSection
+          productId={product.id}
+          reviews={reviews}
+          isLoading={reviewsLoading}
+          eligibility={reviewEligibility.data}
+          eligibilityLoading={reviewEligibility.isLoading}
+        />
       </div>
 
       {related?.length ? (
