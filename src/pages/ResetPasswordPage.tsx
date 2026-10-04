@@ -40,7 +40,7 @@ export default function ResetPasswordPage() {
   return (
     <div className="container-page flex min-h-[70vh] items-center justify-center py-16">
       <div className="w-full max-w-sm">
-        <h1 className="font-display text-2xl font-semibold text-sand-900">Set a new password</h1>
+        <h1 className="text-h2 text-content">Set a new password</h1>
 
         {done ? (
           <p className="mt-4 text-sm text-success">Password updated. Redirecting…</p>

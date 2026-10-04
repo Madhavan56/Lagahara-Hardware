@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
 import type { ProductListItem } from '@/types/catalog'
@@ -21,22 +22,22 @@ export function ProductGrid({
   /** Denser browsing grid for large catalog sweeps. */
   compact?: boolean
 }) {
+  const gridClass = cn(
+    'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4',
+    compact && 'sm:grid-cols-4 lg:grid-cols-5',
+  )
+
   if (isError) {
     return (
-      <p className="rounded-panel border border-sand-200 bg-white p-6 text-sm text-sand-600">
+      <Card size="lg" className="text-sm text-content-muted">
         Products could not be loaded.
-      </p>
+      </Card>
     )
   }
 
   if (isLoading) {
     return (
-      <div
-        className={cn(
-          'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4',
-          compact && 'sm:grid-cols-4 lg:grid-cols-5',
-        )}
-      >
+      <div className={gridClass}>
         {Array.from({ length: skeletonCount }).map((_, index) => (
           <Skeleton key={index} className="aspect-[3/4] rounded-card" />
         ))}
@@ -46,22 +47,22 @@ export function ProductGrid({
 
   if (!products?.length) {
     return (
-      <p className="rounded-panel border border-sand-200 bg-white p-6 text-sm text-sand-600">
+      <Card size="lg" className="text-sm text-content-muted">
         No products found.
-      </p>
+      </Card>
     )
   }
 
   return (
     <motion.div
       initial="hidden"
-      animate="visible"
+      // Fade in as the row scrolls into view rather than on mount, so grids
+      // below the fold don't animate while off screen. MotionConfig's
+      // reducedMotion="user" still disables this entirely when requested.
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.1 }}
       variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
-      className={cn(
-        'grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4 transition-opacity duration-200',
-        isFetching && 'pointer-events-none opacity-40',
-        compact && 'sm:grid-cols-4 lg:grid-cols-5',
-      )}
+      className={cn(gridClass, 'transition-opacity duration-200', isFetching && 'pointer-events-none opacity-40')}
     >
       {products.map((product) => (
         <motion.div

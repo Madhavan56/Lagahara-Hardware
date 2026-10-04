@@ -50,6 +50,8 @@ export type Order = {
   shippingAmount: number
   taxAmount: number
   discountAmount: number
+  /** Snapshot of the promo code applied, if any. */
+  couponCode: string | null
   total: number
   currency: string
   shippingMethodName: string

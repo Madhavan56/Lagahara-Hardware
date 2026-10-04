@@ -7,9 +7,22 @@ type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   error?: string
   hint?: string
   leadingIcon?: ReactNode
+  trailingSlot?: ReactNode
+  /** `pill` for search-style fields, `rounded` (default) for form fields. */
+  shape?: 'rounded' | 'pill'
 }
 
-export function Input({ className, label, error, hint, leadingIcon, id, ...props }: InputProps) {
+export function Input({
+  className,
+  label,
+  error,
+  hint,
+  leadingIcon,
+  trailingSlot,
+  shape = 'rounded',
+  id,
+  ...props
+}: InputProps) {
   const generatedId = useId()
   const inputId = id ?? generatedId
   const describedBy = error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined
@@ -17,13 +30,13 @@ export function Input({ className, label, error, hint, leadingIcon, id, ...props
   return (
     <div className="w-full">
       {label ? (
-        <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-sand-800">
+        <label htmlFor={inputId} className="mb-1.5 block text-sm font-semibold text-ink-800">
           {label}
         </label>
       ) : null}
       <div className="relative">
         {leadingIcon ? (
-          <span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-sand-500">
+          <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-content-subtle">
             {leadingIcon}
           </span>
         ) : null}
@@ -32,21 +45,26 @@ export function Input({ className, label, error, hint, leadingIcon, id, ...props
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           className={cn(
-            'h-11 w-full rounded-xl border bg-white px-3.5 text-sm text-sand-900 transition-colors duration-200 placeholder:text-sand-400',
-            'focus:border-brass-600 focus:outline-none',
-            leadingIcon && 'pl-10',
-            error ? 'border-danger' : 'border-sand-300 hover:border-sand-400',
+            'h-11 w-full border bg-card px-4 text-sm text-content transition-colors duration-200 placeholder:text-content-subtle',
+            'focus:border-primary focus:outline-none',
+            shape === 'pill' ? 'rounded-pill' : 'rounded-md',
+            leadingIcon && 'pl-11',
+            trailingSlot && 'pr-11',
+            error ? 'border-danger' : 'border-border-subtle hover:border-border-strong',
             className,
           )}
           {...props}
         />
+        {trailingSlot ? (
+          <span className="absolute inset-y-0 right-2 flex items-center">{trailingSlot}</span>
+        ) : null}
       </div>
       {error ? (
-        <p id={`${inputId}-error`} className="mt-1.5 text-sm text-danger">
+        <p id={`${inputId}-error`} className="mt-1.5 text-sm font-medium text-danger">
           {error}
         </p>
       ) : hint ? (
-        <p id={`${inputId}-hint`} className="mt-1.5 text-sm text-sand-500">
+        <p id={`${inputId}-hint`} className="mt-1.5 text-sm text-content-muted">
           {hint}
         </p>
       ) : null}

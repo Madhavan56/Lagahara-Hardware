@@ -73,6 +73,8 @@ function mapProductListItem(row: Row): ProductListItem {
     ratingAvg: asNumber(row.rating_avg),
     ratingCount: asNumber(row.rating_count),
     categoryId: asString(row.category_id),
+    isFeatured: row.is_featured === true,
+    createdAt: asString(row.created_at),
     primaryImagePath: primary ? asNullableString(primary.storage_path) : null,
   }
 }
@@ -181,7 +183,7 @@ export async function fetchCategoryAttributes(categoryId: string): Promise<Categ
 }
 
 const PRODUCT_LIST_SELECT =
-  'id, slug, name, brand, price, compare_at_price, gst_rate, unit_label, stock_quantity, rating_avg, rating_count, category_id, product_images(storage_path, is_primary)'
+  'id, slug, name, brand, price, compare_at_price, gst_rate, unit_label, stock_quantity, rating_avg, rating_count, category_id, is_featured, created_at, product_images(storage_path, is_primary)'
 
 export async function fetchFeaturedProducts(limit = 8): Promise<ProductListItem[]> {
   const { data, error } = await supabase

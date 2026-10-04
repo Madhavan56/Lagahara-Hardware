@@ -150,20 +150,20 @@ export default function AdminProductFormPage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="font-display text-2xl font-semibold text-sand-900">
+      <h1 className="text-h2 text-content">
         {isEditing ? 'Edit product' : 'New product'}
       </h1>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-6">
-        <div className="rounded-card border border-sand-200 bg-white p-5">
-          <h2 className="mb-4 text-sm font-semibold tracking-wide text-sand-900 uppercase">Basics</h2>
+        <div className="rounded-card border border-border-subtle bg-card p-5">
+          <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">Basics</h2>
           <div className="space-y-4">
             <div className="w-full">
-              <label className="mb-1.5 block text-sm font-medium text-sand-800">Category</label>
+              <label className="mb-1.5 block text-sm font-medium text-ink-800">Category</label>
               <select
                 value={form.categoryId}
                 onChange={(event) => updateField('categoryId', event.target.value)}
-                className="h-11 w-full rounded-xl border border-sand-300 bg-white px-3.5 text-sm focus:border-brand-600 focus:outline-none"
+                className="h-11 w-full rounded-md border border-border-strong bg-card px-3.5 text-sm focus:border-iris-600 focus:outline-none"
               >
                 <option value="">Select a category…</option>
                 {categories.map((category) => (
@@ -181,19 +181,19 @@ export default function AdminProductFormPage() {
             </div>
             <Input label="Brand" value={form.brand} onChange={(e) => updateField('brand', e.target.value)} />
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-sand-800">Description</label>
+              <label className="mb-1.5 block text-sm font-medium text-ink-800">Description</label>
               <textarea
                 value={form.description}
                 onChange={(e) => updateField('description', e.target.value)}
                 rows={3}
-                className="w-full rounded-xl border border-sand-300 bg-white px-3.5 py-2.5 text-sm focus:border-brand-600 focus:outline-none"
+                className="w-full rounded-md border border-border-strong bg-card px-3.5 py-2.5 text-sm focus:border-iris-600 focus:outline-none"
               />
             </div>
           </div>
         </div>
 
-        <div className="rounded-card border border-sand-200 bg-white p-5">
-          <h2 className="mb-4 text-sm font-semibold tracking-wide text-sand-900 uppercase">Pricing & stock</h2>
+        <div className="rounded-card border border-border-subtle bg-card p-5">
+          <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">Pricing & stock</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <Input label="Price (₹, GST-inclusive)" type="number" value={form.price} onChange={(e) => updateField('price', e.target.value)} />
             <Input label="Compare-at price (optional)" type="number" value={form.compareAtPrice} onChange={(e) => updateField('compareAtPrice', e.target.value)} />
@@ -203,20 +203,20 @@ export default function AdminProductFormPage() {
             <Input label="Low stock threshold" type="number" value={form.lowStockThreshold} onChange={(e) => updateField('lowStockThreshold', e.target.value)} />
           </div>
           <div className="mt-4 flex gap-6">
-            <label className="flex items-center gap-2 text-sm text-sand-700">
-              <input type="checkbox" checked={form.isActive} onChange={(e) => updateField('isActive', e.target.checked)} className="size-4 rounded border-sand-300 text-brand-700" />
+            <label className="flex items-center gap-2 text-sm text-ink-700">
+              <input type="checkbox" checked={form.isActive} onChange={(e) => updateField('isActive', e.target.checked)} className="size-4 rounded border-border-strong text-iris-700" />
               Active (visible on storefront)
             </label>
-            <label className="flex items-center gap-2 text-sm text-sand-700">
-              <input type="checkbox" checked={form.isFeatured} onChange={(e) => updateField('isFeatured', e.target.checked)} className="size-4 rounded border-sand-300 text-brand-700" />
+            <label className="flex items-center gap-2 text-sm text-ink-700">
+              <input type="checkbox" checked={form.isFeatured} onChange={(e) => updateField('isFeatured', e.target.checked)} className="size-4 rounded border-border-strong text-iris-700" />
               Featured on homepage
             </label>
           </div>
         </div>
 
         {selectedCategory && categoryAttributes.length > 0 ? (
-          <div className="rounded-card border border-sand-200 bg-white p-5">
-            <h2 className="mb-4 text-sm font-semibold tracking-wide text-sand-900 uppercase">
+          <div className="rounded-card border border-border-subtle bg-card p-5">
+            <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">
               {selectedCategory.name} specifications
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -233,23 +233,23 @@ export default function AdminProductFormPage() {
         ) : null}
 
         {isEditing && existing ? (
-          <div className="rounded-card border border-sand-200 bg-white p-5">
-            <h2 className="mb-4 text-sm font-semibold tracking-wide text-sand-900 uppercase">Images</h2>
+          <div className="rounded-card border border-border-subtle bg-card p-5">
+            <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">Images</h2>
             <div className="flex flex-wrap gap-3">
               {existing.images.map((image) => {
                 const url = productImageUrl(image.storagePath, { width: 200 })
                 return (
-                  <div key={image.id} className="relative size-24 overflow-hidden rounded-lg border border-sand-200">
+                  <div key={image.id} className="relative size-24 overflow-hidden rounded-sm border border-border-subtle">
                     {url ? <img src={url} alt="" className="size-full object-cover" /> : null}
                     {image.isPrimary ? (
-                      <span className="absolute top-1 left-1 rounded-full bg-brass-500 p-1">
-                        <Star className="size-3 fill-sand-950 text-sand-950" />
+                      <span className="absolute top-1 left-1 rounded-pill bg-primary p-1">
+                        <Star className="size-3 fill-ink-950 text-ink-950" />
                       </span>
                     ) : (
                       <button
                         type="button"
                         onClick={() => setPrimaryImage.mutate(image.id)}
-                        className="absolute top-1 left-1 rounded-full bg-white/90 p-1 text-sand-500 hover:text-brass-600"
+                        className="absolute top-1 left-1 rounded-pill bg-white/90 p-1 text-content-muted hover:text-primary"
                         title="Set as primary"
                       >
                         <Star className="size-3" />
@@ -258,7 +258,7 @@ export default function AdminProductFormPage() {
                     <button
                       type="button"
                       onClick={() => deleteImage.mutate({ imageId: image.id, storagePath: image.storagePath })}
-                      className="absolute top-1 right-1 rounded-full bg-white/90 p-1 text-sand-500 hover:text-danger"
+                      className="absolute top-1 right-1 rounded-pill bg-white/90 p-1 text-content-muted hover:text-danger"
                     >
                       <Trash2 className="size-3" />
                     </button>
@@ -269,7 +269,7 @@ export default function AdminProductFormPage() {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="flex size-24 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-sand-300 text-sand-400 hover:border-brand-400 hover:text-brand-600"
+                className="flex size-24 flex-col items-center justify-center gap-1 rounded-sm border-2 border-dashed border-border-strong text-content-subtle hover:border-iris-400 hover:text-iris-600"
               >
                 <ImagePlus className="size-5" />
                 <span className="text-xs">Add</span>

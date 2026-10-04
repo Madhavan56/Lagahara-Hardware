@@ -19,7 +19,7 @@ export function SortSelect({
       value={value}
       onChange={(event) => onChange(event.target.value as ProductSort)}
       aria-label="Sort products"
-      className="h-10 rounded-lg border border-sand-300 bg-white px-3 text-sm text-sand-800 focus:border-brand-600 focus:outline-none"
+      className="h-10 rounded-sm border border-border-strong bg-card px-3 text-sm text-ink-800 focus:border-iris-600 focus:outline-none"
     >
       {SORT_OPTIONS.map((option) => (
         <option key={option.value} value={option.value}>

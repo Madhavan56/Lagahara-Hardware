@@ -34,8 +34,8 @@ export default function ShopPage() {
   return (
     <div className="container-page py-8 lg:py-12">
       <div className="mb-6">
-        <h1 className="font-display text-3xl font-semibold text-sand-900 lg:text-4xl">Shop All</h1>
-        <p className="mt-2 text-sand-600">Every category, in one place. Jump straight to an aisle:</p>
+        <h1 className="text-h1 text-content">Shop All</h1>
+        <p className="mt-2 text-ink-600">Every category, in one place. Jump straight to an aisle:</p>
       </div>
 
       <div className="mb-8 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
@@ -43,10 +43,10 @@ export default function ShopPage() {
           <Link
             key={category.id}
             to={`/category/${category.slug}`}
-            className="group rounded-xl border border-sand-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-sand-700 shadow-card transition-all hover:-translate-y-0.5 hover:border-brass-400 hover:text-brand-800 hover:shadow-lift"
+            className="group rounded-md border border-border-subtle bg-card px-3.5 py-2.5 text-sm font-semibold text-ink-700 shadow-card transition-all hover:-translate-y-0.5 hover:border-iris-400 hover:text-iris-800 hover:shadow-lift"
           >
             {category.name}
-            <span className="mt-0.5 block text-[0.6875rem] font-medium text-sand-400 transition-colors group-hover:text-brass-600">
+            <span className="mt-0.5 block text-[0.6875rem] font-medium text-content-subtle transition-colors group-hover:text-primary">
               Browse →
             </span>
           </Link>
@@ -54,12 +54,12 @@ export default function ShopPage() {
       </div>
 
       {/* Sticky results toolbar */}
-      <div className="sticky top-31 z-20 -mx-1 mb-6 flex items-center justify-between gap-3 rounded-2xl border border-sand-200 bg-white/95 px-4 py-2.5 shadow-card backdrop-blur-md">
-        <p className="text-sm font-semibold text-sand-700">
-          {productsQuery.data?.total ?? 0} <span className="font-normal text-sand-500">products</span>
+      <div className="sticky top-31 z-20 -mx-1 mb-6 flex items-center justify-between gap-3 rounded-card border border-border-subtle bg-white/95 px-4 py-2.5 shadow-card backdrop-blur-md">
+        <p className="text-sm font-semibold text-ink-700">
+          {productsQuery.data?.total ?? 0} <span className="font-normal text-content-muted">products</span>
         </p>
         <div className="flex items-center gap-2">
-          <div className="hidden rounded-lg bg-sand-100 p-0.5 sm:flex" role="group" aria-label="Grid density">
+          <div className="hidden rounded-sm bg-surface-sunken p-0.5 sm:flex" role="group" aria-label="Grid density">
             <button
               type="button"
               onClick={() => setCompact(false)}
@@ -67,7 +67,7 @@ export default function ShopPage() {
               aria-label="Comfortable grid"
               className={cn(
                 'rounded-md p-1.5 transition-colors',
-                !compact ? 'bg-white text-brand-800 shadow-card' : 'text-sand-500 hover:text-sand-700',
+                !compact ? 'bg-card text-iris-800 shadow-card' : 'text-content-muted hover:text-ink-700',
               )}
             >
               <LayoutGrid className="size-4" />
@@ -79,7 +79,7 @@ export default function ShopPage() {
               aria-label="Compact grid"
               className={cn(
                 'rounded-md p-1.5 transition-colors',
-                compact ? 'bg-white text-brand-800 shadow-card' : 'text-sand-500 hover:text-sand-700',
+                compact ? 'bg-card text-iris-800 shadow-card' : 'text-content-muted hover:text-ink-700',
               )}
             >
               <Rows3 className="size-4" />

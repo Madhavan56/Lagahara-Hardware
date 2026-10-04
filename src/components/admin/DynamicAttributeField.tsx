@@ -12,12 +12,12 @@ export function DynamicAttributeField({
 }) {
   if (attribute.dataType === 'boolean') {
     return (
-      <label className="flex items-center gap-2 text-sm text-sand-700">
+      <label className="flex items-center gap-2 text-sm text-ink-700">
         <input
           type="checkbox"
           checked={value === true}
           onChange={(event) => onChange(event.target.checked)}
-          className="size-4 rounded border-sand-300 text-brand-700"
+          className="size-4 rounded border-border-strong text-iris-700"
         />
         {attribute.label}
       </label>
@@ -27,14 +27,14 @@ export function DynamicAttributeField({
   if (attribute.dataType === 'select') {
     return (
       <div className="w-full">
-        <label className="mb-1.5 block text-sm font-medium text-sand-800">
+        <label className="mb-1.5 block text-sm font-medium text-ink-800">
           {attribute.label}
           {attribute.isRequired ? ' *' : ''}
         </label>
         <select
           value={typeof value === 'string' ? value : ''}
           onChange={(event) => onChange(event.target.value)}
-          className="h-11 w-full rounded-xl border border-sand-300 bg-white px-3.5 text-sm focus:border-brand-600 focus:outline-none"
+          className="h-11 w-full rounded-md border border-border-strong bg-card px-3.5 text-sm focus:border-iris-600 focus:outline-none"
         >
           <option value="">Select…</option>
           {attribute.options.map((option) => (

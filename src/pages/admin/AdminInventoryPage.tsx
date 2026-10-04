@@ -26,21 +26,21 @@ export default function AdminInventoryPage() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-semibold text-sand-900">Inventory</h1>
-        <label className="flex items-center gap-2 text-sm text-sand-700">
+        <h1 className="text-h2 text-content">Inventory</h1>
+        <label className="flex items-center gap-2 text-sm text-ink-700">
           <input
             type="checkbox"
             checked={lowStockOnly}
             onChange={(e) => setLowStockOnly(e.target.checked)}
-            className="size-4 rounded border-sand-300 text-brand-700"
+            className="size-4 rounded border-border-strong text-iris-700"
           />
           Low stock only
         </label>
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-card border border-sand-200 bg-white">
+      <div className="mt-6 overflow-x-auto rounded-card border border-border-subtle bg-card">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 bg-sand-50 text-left text-xs text-sand-500 uppercase">
+          <thead className="border-b border-border-subtle bg-surface text-left text-xs text-content-muted uppercase">
             <tr>
               <th className="px-4 py-3">Product</th>
               <th className="px-4 py-3">SKU</th>
@@ -51,16 +51,16 @@ export default function AdminInventoryPage() {
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-sand-500">
+                <td colSpan={4} className="px-4 py-6 text-center text-content-muted">
                   Loading…
                 </td>
               </tr>
             ) : (
               visible.map((product) => (
-                <tr key={product.id} className="border-b border-sand-100 last:border-0">
-                  <td className="px-4 py-3 text-sand-900">{product.name}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-sand-500">{product.sku}</td>
-                  <td className="px-4 py-3 text-sand-600">{product.lowStockThreshold}</td>
+                <tr key={product.id} className="border-b border-ink-100 last:border-0">
+                  <td className="px-4 py-3 text-content">{product.name}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-content-muted">{product.sku}</td>
+                  <td className="px-4 py-3 text-ink-600">{product.lowStockThreshold}</td>
                   <td className="px-4 py-3">
                     <input
                       type="number"
@@ -68,12 +68,12 @@ export default function AdminInventoryPage() {
                       onChange={(e) => setDrafts((prev) => ({ ...prev, [product.id]: e.target.value }))}
                       onBlur={() => commit(product.id, product.stockQuantity)}
                       className={cn(
-                        'h-9 w-24 rounded-lg border px-2.5 text-sm focus:border-brand-600 focus:outline-none',
+                        'h-9 w-24 rounded-sm border px-2.5 text-sm focus:border-iris-600 focus:outline-none',
                         product.stockQuantity === 0
                           ? 'border-danger text-danger'
                           : product.stockQuantity <= product.lowStockThreshold
                             ? 'border-warning text-warning'
-                            : 'border-sand-300',
+                            : 'border-border-strong',
                       )}
                     />
                   </td>

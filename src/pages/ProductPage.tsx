@@ -1,4 +1,4 @@
-import { Check, Heart, ShoppingBag, Star } from 'lucide-react'
+import { Check, Heart, ShoppingBag } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { ProductGallery } from '@/components/product/ProductGallery'
@@ -7,6 +7,9 @@ import { QuantityStepper } from '@/components/product/QuantityStepper'
 import { ReviewsSection } from '@/components/product/ReviewsSection'
 import { SpecTable } from '@/components/product/SpecTable'
 import { Badge } from '@/components/ui/badge'
+import { Price } from '@/components/ui/price'
+import { Rating } from '@/components/ui/rating'
+import { StatusPill } from '@/components/ui/status-pill'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCartStore } from '@/features/cart/store'
 import { useAuth } from '@/features/auth/AuthProvider'
@@ -71,7 +74,7 @@ export default function ProductPage() {
   }, [product])
 
   useDocumentHead({
-    title: product ? `${product.name} — Laghara Hardwares` : 'Product — Laghara Hardwares',
+    title: product ? `${product.name} â Laghara Hardwares` : 'Product â Laghara Hardwares',
     description: product?.description ?? undefined,
     jsonLd,
   })
@@ -105,24 +108,24 @@ export default function ProductPage() {
 
   return (
     <div className="container-page py-10 lg:py-14">
-      <nav className="mb-6 text-xs text-sand-500">
-        <Link to="/" className="hover:text-brand-700">
+      <nav className="mb-6 text-xs text-content-muted">
+        <Link to="/" className="hover:text-iris-700">
           Home
         </Link>
         <span className="mx-1.5">/</span>
-        <Link to="/shop" className="hover:text-brand-700">
+        <Link to="/shop" className="hover:text-iris-700">
           Shop
         </Link>
         {category ? (
           <>
             <span className="mx-1.5">/</span>
-            <Link to={`/category/${category.slug}`} className="hover:text-brand-700">
+            <Link to={`/category/${category.slug}`} className="hover:text-iris-700">
               {category.name}
             </Link>
           </>
         ) : null}
         <span className="mx-1.5">/</span>
-        <span className="text-sand-700">{product.name}</span>
+        <span className="text-ink-700">{product.name}</span>
       </nav>
 
       <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
@@ -130,47 +133,38 @@ export default function ProductPage() {
 
         <div>
           {product.brand ? (
-            <p className="mb-1.5 text-xs font-semibold tracking-wide text-sand-500 uppercase">
+            <p className="mb-1.5 text-xs font-semibold tracking-wide text-content-muted uppercase">
               {product.brand}
             </p>
           ) : null}
-          <h1 className="font-display text-2xl font-semibold text-sand-900 lg:text-3xl">
+          <h1 className="text-h1 text-content">
             {product.name}
           </h1>
 
           {product.ratingCount > 0 ? (
-            <div className="mt-2 flex items-center gap-1.5 text-sm text-sand-600">
-              <Star className="size-4 fill-brass-500 text-brass-500" />
-              <span className="font-medium">{product.ratingAvg.toFixed(1)}</span>
-              <span>({product.ratingCount} reviews)</span>
-            </div>
+            <Rating value={product.ratingAvg} count={product.ratingCount} className="mt-2" />
           ) : null}
 
-          <div className="mt-5 flex items-baseline gap-3">
-            <span className="text-3xl font-semibold text-sand-900">{formatPrice(product.price)}</span>
-            {product.compareAtPrice ? (
-              <span className="text-lg text-sand-400 line-through">
-                {formatPrice(product.compareAtPrice)}
-              </span>
-            ) : null}
-            {discountPct ? <Badge variant="accent">{discountPct}% off</Badge> : null}
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <Price value={product.price} compareAt={product.compareAtPrice} size="lg" />
+            {discountPct ? <StatusPill tone="discount">−{discountPct}% off</StatusPill> : null}
           </div>
-          <p className="mt-1 text-sm text-sand-500">
-            Inclusive of {formatPrice(gstAmount, true)} GST ({product.gstRate}%) · per {product.unitLabel}
+          <p className="mt-1 text-sm text-content-muted">
+            Inclusive of {formatPrice(gstAmount, true)} GST ({product.gstRate}%) Â· per {product.unitLabel}
           </p>
 
           <div className="mt-4">
             {outOfStock ? (
               <Badge variant="danger">Out of stock</Badge>
             ) : lowStock ? (
-              <Badge variant="danger">Only {product.stockQuantity} left</Badge>
+              <Badge variant="warning">Only {product.stockQuantity} left</Badge>
             ) : (
               <Badge variant="success">In stock</Badge>
             )}
           </div>
 
           {product.description ? (
-            <p className="mt-5 leading-relaxed text-sand-700">{product.description}</p>
+            <p className="mt-5 leading-relaxed text-ink-700">{product.description}</p>
           ) : null}
 
           {!outOfStock ? (
@@ -193,7 +187,7 @@ export default function ProductPage() {
                 setJustAdded(true)
                 window.setTimeout(() => setJustAdded(false), 1800)
               }}
-              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-brass-500 px-6 text-sm font-bold text-white transition-colors hover:bg-brass-600 disabled:pointer-events-none disabled:opacity-40"
+              className="flex h-12 flex-1 items-center justify-center gap-2 rounded-pill bg-primary px-6 text-sm font-bold text-on-primary shadow-primary transition-colors hover:bg-primary-hover disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none"
             >
               {justAdded ? <Check className="size-4" /> : <ShoppingBag className="size-4" />}
               {justAdded ? 'Added to cart' : 'Add to cart'}
@@ -201,7 +195,7 @@ export default function ProductPage() {
             <button
               type="button"
               onClick={() => toggleWishlist(product.id)}
-              className="flex size-12 items-center justify-center rounded-xl border border-sand-300 text-sand-600 transition-colors hover:border-brand-600 hover:text-brand-800"
+              className="flex size-12 items-center justify-center rounded-pill border border-border-strong text-ink-600 transition-colors hover:border-primary hover:text-primary"
               aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
               aria-pressed={wishlisted}
             >
@@ -211,7 +205,7 @@ export default function ProductPage() {
 
           {attributes.length ? (
             <div className="mt-10">
-              <h2 className="mb-3 text-sm font-semibold tracking-wide text-sand-900 uppercase">
+              <h2 className="mb-3 text-sm font-semibold tracking-wide text-content uppercase">
                 Specifications
               </h2>
               <SpecTable attributes={attributes} values={product.attributes} />
@@ -220,8 +214,8 @@ export default function ProductPage() {
         </div>
       </div>
 
-      <div className="mt-16 border-t border-sand-200 pt-10">
-        <h2 className="mb-6 font-display text-2xl font-semibold text-sand-900">Reviews</h2>
+      <div className="mt-16 border-t border-border-subtle pt-10">
+        <h2 className="text-h2 mb-6 text-content">Reviews</h2>
         <ReviewsSection
           productId={product.id}
           reviews={reviews}
@@ -232,8 +226,8 @@ export default function ProductPage() {
       </div>
 
       {related?.length ? (
-        <div className="mt-16 border-t border-sand-200 pt-10">
-          <h2 className="mb-6 font-display text-2xl font-semibold text-sand-900">
+        <div className="mt-16 border-t border-border-subtle pt-10">
+          <h2 className="text-h2 mb-6 text-content">
             You might also need
           </h2>
           <ProductGrid products={related} />

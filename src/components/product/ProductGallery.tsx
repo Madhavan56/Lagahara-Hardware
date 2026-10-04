@@ -22,7 +22,7 @@ export function ProductGallery({ images, productName }: { images: ProductImage[]
   return (
     <div>
       <div
-        className="relative aspect-square cursor-zoom-in overflow-hidden rounded-card border border-sand-200 bg-sand-100"
+        className="relative aspect-square cursor-zoom-in overflow-hidden rounded-card border border-border-subtle bg-surface-sunken"
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setZoomed(true)}
         onMouseLeave={() => setZoomed(false)}
@@ -54,8 +54,8 @@ export function ProductGallery({ images, productName }: { images: ProductImage[]
                 aria-label={`View image ${index + 1} of ${images.length}`}
                 aria-pressed={index === activeIndex}
                 className={cn(
-                  'size-16 shrink-0 overflow-hidden rounded-lg border-2 transition-colors',
-                  index === activeIndex ? 'border-brand-700' : 'border-transparent hover:border-sand-300',
+                  'size-16 shrink-0 overflow-hidden rounded-sm border-2 transition-colors',
+                  index === activeIndex ? 'border-iris-700' : 'border-transparent hover:border-border-strong',
                 )}
               >
                 {thumbUrl ? (

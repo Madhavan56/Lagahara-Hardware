@@ -56,10 +56,10 @@ export default function SignupPage() {
     return (
       <AuthLayout title="Check your email" subtitle="Confirm your account to continue">
         <div className="text-center">
-          <p className="text-sm text-sand-600">
+          <p className="text-sm text-ink-600">
             We've sent a confirmation link. Once confirmed, you can sign in.
           </p>
-          <Link to="/login" className="mt-4 inline-block text-sm font-semibold text-brand-700 hover:text-brand-900">
+          <Link to="/login" className="mt-4 inline-block text-sm font-semibold text-iris-700 hover:text-iris-900">
             Back to sign in
           </Link>
         </div>
@@ -112,9 +112,9 @@ export default function SignupPage() {
 
         {/* Sign in link */}
         <motion.div className="text-center" custom={4} variants={fieldVariants} initial="hidden" animate="visible">
-          <p className="text-sm text-sand-600">
+          <p className="text-sm text-ink-600">
             Already have an account?{' '}
-            <Link to="/login" className="font-semibold text-brand-700 hover:text-brand-900">
+            <Link to="/login" className="font-semibold text-iris-700 hover:text-iris-900">
               Sign in
             </Link>
           </p>

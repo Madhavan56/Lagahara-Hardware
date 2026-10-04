@@ -13,15 +13,15 @@ export function OrderStatusTimeline({ events }: { events: OrderStatusEvent[] }) 
         return (
           <li key={event.id} className="relative flex gap-4 pb-6 last:pb-0">
             {!isLast ? (
-              <span className="absolute top-6 left-3 h-full w-px -translate-x-1/2 bg-sand-200" aria-hidden />
+              <span className="absolute top-6 left-3 h-full w-px -translate-x-1/2 bg-ink-200" aria-hidden />
             ) : null}
-            <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-800 text-sand-50">
+            <span className="flex size-6 shrink-0 items-center justify-center rounded-pill bg-iris-800 text-ink-50">
               <Check className="size-3.5" />
             </span>
             <div>
               <OrderStatusBadge status={event.status} />
-              <p className="mt-1 text-xs text-sand-500">{formatDate(event.createdAt)}</p>
-              {event.note ? <p className="mt-1 text-sm text-sand-600">{event.note}</p> : null}
+              <p className="mt-1 text-xs text-content-muted">{formatDate(event.createdAt)}</p>
+              {event.note ? <p className="mt-1 text-sm text-ink-600">{event.note}</p> : null}
             </div>
           </li>
         )

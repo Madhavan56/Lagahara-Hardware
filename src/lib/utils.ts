@@ -51,3 +51,14 @@ export function formatDate(value: string | Date) {
     year: 'numeric',
   }).format(typeof value === 'string' ? new Date(value) : value)
 }
+
+/**
+ * Reads a design token off the document root so non-DOM consumers (the
+ * Razorpay checkout sheet, canvas, anything taking a raw colour) stay in sync
+ * with index.css instead of carrying their own hardcoded copy.
+ */
+export function cssToken(name: string, fallback: string) {
+  if (typeof document === 'undefined') return fallback
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  return value || fallback
+}

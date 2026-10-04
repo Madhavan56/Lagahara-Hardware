@@ -35,24 +35,24 @@ export default function AddressesTab() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-sand-500">Loading…</p>
+    return <p className="text-sm text-content-muted">Loading…</p>
   }
 
   return (
     <div className="max-w-2xl space-y-4">
       {addresses.map((address) => (
-        <div key={address.id} className="rounded-card border border-sand-200 bg-white p-5">
+        <div key={address.id} className="rounded-card border border-border-subtle bg-card p-5">
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
-                <p className="text-sm font-semibold text-sand-900">
+                <p className="text-sm font-semibold text-content">
                   {address.label || 'Address'}
                 </p>
                 {address.isDefault ? <Badge variant="brand" size="sm">Default</Badge> : null}
               </div>
-              <p className="mt-1.5 text-sm text-sand-700">{address.fullName}</p>
-              <p className="text-sm text-sand-600">{address.phone}</p>
-              <p className="mt-1 text-sm text-sand-600">
+              <p className="mt-1.5 text-sm text-ink-700">{address.fullName}</p>
+              <p className="text-sm text-ink-600">{address.phone}</p>
+              <p className="mt-1 text-sm text-ink-600">
                 {address.line1}
                 {address.line2 ? `, ${address.line2}` : ''}, {address.city}, {address.state}{' '}
                 {address.postalCode}, {address.country}
@@ -63,7 +63,7 @@ export default function AddressesTab() {
                 <button
                   type="button"
                   onClick={() => setDefaultAddress.mutate(address.id)}
-                  className="rounded-lg p-2 text-sand-500 hover:bg-sand-100 hover:text-brand-800"
+                  className="rounded-sm p-2 text-content-muted hover:bg-surface-sunken hover:text-iris-800"
                   title="Set as default"
                 >
                   <Star className="size-4" />
@@ -72,7 +72,7 @@ export default function AddressesTab() {
               <button
                 type="button"
                 onClick={() => deleteAddress.mutate(address.id)}
-                className="rounded-lg p-2 text-sand-500 hover:bg-sand-100 hover:text-danger"
+                className="rounded-sm p-2 text-content-muted hover:bg-surface-sunken hover:text-danger"
                 title="Delete"
               >
                 <Trash2 className="size-4" />
@@ -82,7 +82,7 @@ export default function AddressesTab() {
           <button
             type="button"
             onClick={() => setMode({ edit: address })}
-            className="mt-3 text-xs font-medium text-brand-700 hover:text-brand-900"
+            className="mt-3 text-xs font-medium text-iris-700 hover:text-iris-900"
           >
             Edit
           </button>

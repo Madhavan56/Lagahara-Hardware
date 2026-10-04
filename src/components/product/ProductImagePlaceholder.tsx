@@ -9,18 +9,27 @@ export function ProductImagePlaceholder({
   size?: 'sm' | 'md' | 'lg'
   className?: string
 }) {
-  const iconSize = size === 'sm' ? 'size-4' : size === 'lg' ? 'size-10' : 'size-6'
+  const iconSize = size === 'sm' ? 'size-4' : size === 'lg' ? 'size-9' : 'size-6'
   const showLabel = size !== 'sm'
 
   return (
     <div
       className={cn(
-        'flex size-full flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-sand-100 to-sand-200 text-sand-400',
+        'flex size-full flex-col items-center justify-center gap-2 bg-surface-sunken text-content-subtle',
         className,
       )}
     >
-      <ImageOff className={iconSize} />
-      {showLabel ? <span className="text-[0.6875rem] font-medium text-sand-400">Photo coming soon</span> : null}
+      <span
+        className={cn(
+          'flex items-center justify-center rounded-pill bg-primary-soft text-primary',
+          size === 'sm' ? 'size-7' : size === 'lg' ? 'size-16' : 'size-11',
+        )}
+      >
+        <ImageOff className={iconSize} aria-hidden />
+      </span>
+      {showLabel ? (
+        <span className="text-[0.6875rem] font-semibold text-content-subtle">Photo coming soon</span>
+      ) : null}
     </div>
   )
 }

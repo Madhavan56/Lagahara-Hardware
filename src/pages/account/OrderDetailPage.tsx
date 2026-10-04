@@ -53,17 +53,17 @@ export default function OrderDetailPage() {
 
   return (
     <div className="container-page py-10 lg:py-14">
-      <Link to="/account/orders" className="mb-6 inline-flex items-center gap-1.5 text-sm text-sand-600 hover:text-brand-800">
+      <Link to="/account/orders" className="mb-6 inline-flex items-center gap-1.5 text-sm text-ink-600 hover:text-iris-800">
         <ChevronLeft className="size-4" />
         Back to orders
       </Link>
 
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold text-sand-900 lg:text-3xl">
+          <h1 className="text-h1 text-content">
             {order.orderNumber}
           </h1>
-          <p className="mt-1 text-sm text-sand-500">Placed {formatDate(order.placedAt ?? order.createdAt)}</p>
+          <p className="mt-1 text-sm text-content-muted">Placed {formatDate(order.placedAt ?? order.createdAt)}</p>
         </div>
         <OrderStatusBadge status={order.status} />
       </div>
@@ -71,13 +71,13 @@ export default function OrderDetailPage() {
       <div className="grid gap-10 lg:grid-cols-[1fr_360px]">
         <div className="space-y-8">
           <div>
-            <h2 className="mb-4 text-sm font-semibold tracking-wide text-sand-900 uppercase">Items</h2>
+            <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">Items</h2>
             <ul className="space-y-3">
               {order.items.map((item) => {
                 const imageUrl = productImageUrl(item.productImagePath, { width: 150 })
                 return (
-                  <li key={item.id} className="flex items-center gap-4 rounded-card border border-sand-200 bg-white p-4">
-                    <div className="size-16 shrink-0 overflow-hidden rounded-lg bg-sand-100">
+                  <li key={item.id} className="flex items-center gap-4 rounded-card border border-border-subtle bg-card p-4">
+                    <div className="size-16 shrink-0 overflow-hidden rounded-sm bg-surface-sunken">
                       {imageUrl ? (
                         <img src={imageUrl} alt="" className="size-full object-cover" />
                       ) : (
@@ -86,17 +86,17 @@ export default function OrderDetailPage() {
                     </div>
                     <div className="min-w-0 flex-1">
                       {item.productSlug ? (
-                        <Link to={`/product/${item.productSlug}`} className="text-sm font-medium text-sand-900 hover:text-brand-800">
+                        <Link to={`/product/${item.productSlug}`} className="text-sm font-medium text-content hover:text-iris-800">
                           {item.productName}
                         </Link>
                       ) : (
-                        <p className="text-sm font-medium text-sand-900">{item.productName}</p>
+                        <p className="text-sm font-medium text-content">{item.productName}</p>
                       )}
-                      <p className="mt-0.5 text-xs text-sand-500">
+                      <p className="mt-0.5 text-xs text-content-muted">
                         {item.quantity} × {formatPrice(item.unitPrice)}
                       </p>
                     </div>
-                    <span className="text-sm font-semibold text-sand-900">{formatPrice(item.lineTotal)}</span>
+                    <span className="text-sm font-semibold text-content">{formatPrice(item.lineTotal)}</span>
                   </li>
                 )
               })}
@@ -104,29 +104,37 @@ export default function OrderDetailPage() {
           </div>
 
           <div>
-            <h2 className="mb-4 text-sm font-semibold tracking-wide text-sand-900 uppercase">Status</h2>
+            <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">Status</h2>
             <OrderStatusTimeline events={order.statusEvents} />
           </div>
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-card border border-sand-200 bg-sand-50 p-6">
-            <h2 className="mb-4 text-sm font-semibold tracking-wide text-sand-900 uppercase">Summary</h2>
+          <div className="rounded-card border border-border-subtle bg-surface p-6">
+            <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">Summary</h2>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between text-sand-600">
+              <div className="flex justify-between text-ink-600">
                 <span>Subtotal</span>
-                <span className="text-sand-900">{formatPrice(order.subtotal)}</span>
+                <span className="text-content">{formatPrice(order.subtotal)}</span>
               </div>
-              <div className="flex justify-between text-sand-500">
+              {order.discountAmount > 0 ? (
+                <div className="flex justify-between text-ink-600">
+                  <span>Discount{order.couponCode ? ` (${order.couponCode})` : ''}</span>
+                  <span className="font-semibold text-success">
+                    −{formatPrice(order.discountAmount)}
+                  </span>
+                </div>
+              ) : null}
+              <div className="flex justify-between text-content-muted">
                 <span>Incl. GST</span>
                 <span>{formatPrice(gstTotal, true)}</span>
               </div>
-              <div className="flex justify-between text-sand-600">
+              <div className="flex justify-between text-ink-600">
                 <span>Shipping ({order.shippingMethodName})</span>
-                <span className="text-sand-900">{formatPrice(order.shippingAmount)}</span>
+                <span className="text-content">{formatPrice(order.shippingAmount)}</span>
               </div>
             </div>
-            <div className="mt-4 flex justify-between border-t border-sand-200 pt-4 text-base font-semibold text-sand-900">
+            <div className="mt-4 flex justify-between border-t border-border-subtle pt-4 text-base font-semibold text-content">
               <span>Total</span>
               <span>{formatPrice(order.total)}</span>
             </div>
@@ -138,7 +146,7 @@ export default function OrderDetailPage() {
                   {unpaid ? 'Cancel & remove order' : 'Cancel order'}
                 </Button>
                 {unpaid ? (
-                  <p className="mt-2 text-center text-xs text-sand-500">
+                  <p className="mt-2 text-center text-xs text-content-muted">
                     Unpaid orders are removed from your history when cancelled.
                   </p>
                 ) : null}
@@ -146,13 +154,13 @@ export default function OrderDetailPage() {
             ) : null}
           </div>
 
-          <div className="rounded-card border border-sand-200 bg-white p-6">
-            <h2 className="mb-3 text-sm font-semibold tracking-wide text-sand-900 uppercase">
+          <div className="rounded-card border border-border-subtle bg-card p-6">
+            <h2 className="mb-3 text-sm font-semibold tracking-wide text-content uppercase">
               Shipping to
             </h2>
-            <p className="text-sm text-sand-700">{order.shippingAddress.full_name}</p>
-            <p className="text-sm text-sand-600">{order.shippingAddress.phone}</p>
-            <p className="mt-1 text-sm text-sand-600">
+            <p className="text-sm text-ink-700">{order.shippingAddress.full_name}</p>
+            <p className="text-sm text-ink-600">{order.shippingAddress.phone}</p>
+            <p className="mt-1 text-sm text-ink-600">
               {order.shippingAddress.line1}
               {order.shippingAddress.line2 ? `, ${order.shippingAddress.line2}` : ''},{' '}
               {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.postal_code}

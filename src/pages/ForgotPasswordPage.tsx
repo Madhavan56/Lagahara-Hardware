@@ -35,11 +35,11 @@ export default function ForgotPasswordPage() {
     return (
       <div className="container-page flex min-h-[70vh] items-center justify-center py-16 text-center">
         <div className="max-w-sm">
-          <h1 className="font-display text-2xl font-semibold text-sand-900">Check your email</h1>
-          <p className="mt-3 text-sand-600">
+          <h1 className="text-h2 text-content">Check your email</h1>
+          <p className="mt-3 text-ink-600">
             If an account exists for that address, we've sent a link to reset your password.
           </p>
-          <Link to="/login" className="mt-6 inline-block text-sm font-medium text-brand-700">
+          <Link to="/login" className="mt-6 inline-block text-sm font-medium text-iris-700">
             Back to sign in
           </Link>
         </div>
@@ -50,8 +50,8 @@ export default function ForgotPasswordPage() {
   return (
     <div className="container-page flex min-h-[70vh] items-center justify-center py-16">
       <div className="w-full max-w-sm">
-        <h1 className="font-display text-2xl font-semibold text-sand-900">Reset your password</h1>
-        <p className="mt-1.5 text-sm text-sand-600">
+        <h1 className="text-h2 text-content">Reset your password</h1>
+        <p className="mt-1.5 text-sm text-ink-600">
           Enter your email and we'll send you a reset link.
         </p>
 
@@ -63,8 +63,8 @@ export default function ForgotPasswordPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-sand-600">
-          <Link to="/login" className="font-medium text-brand-700 hover:text-brand-900">
+        <p className="mt-6 text-center text-sm text-ink-600">
+          <Link to="/login" className="font-medium text-iris-700 hover:text-iris-900">
             Back to sign in
           </Link>
         </p>

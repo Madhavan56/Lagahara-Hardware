@@ -4,22 +4,31 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap transition-all duration-200 ease-[var(--ease-out-soft)] disabled:pointer-events-none disabled:opacity-50 active:translate-y-px',
+  'inline-flex items-center justify-center gap-2 font-bold whitespace-nowrap transition-all duration-200 ease-[var(--ease-out-soft)] disabled:pointer-events-none disabled:opacity-50 active:translate-y-px',
   {
     variants: {
       variant: {
-        primary: 'sheen-sweep bg-brass-500 text-white hover:bg-brass-600 shadow-card hover:shadow-lift font-bold',
-        accent: 'sheen-sweep bg-brand-800 text-sand-50 hover:bg-brand-700 shadow-card hover:shadow-lift',
-        outline: 'border-2 border-sand-300 bg-transparent text-sand-800 hover:border-brass-500 hover:text-brass-600',
-        ghost: 'bg-transparent text-sand-700 hover:bg-sand-100 hover:text-sand-900',
-        subtle: 'bg-sand-100 text-sand-800 hover:bg-sand-200',
-        danger: 'bg-danger text-white hover:opacity-90',
+        /** Filled violet — the one CTA on any given view. */
+        primary:
+          'sheen-sweep bg-primary text-on-primary shadow-primary hover:bg-primary-hover hover:shadow-lift',
+        /** Deep violet, for emphasis that must not compete with `primary`. */
+        accent: 'sheen-sweep bg-iris-800 text-on-primary shadow-card hover:bg-iris-700 hover:shadow-lift',
+        /** Lavender chip — the quiet secondary action next to a primary CTA. */
+        soft: 'bg-primary-soft text-primary hover:bg-primary-soft-hover',
+        /** Outlined, as in the hero's second CTA. */
+        outline:
+          'border border-border-strong bg-card text-content hover:border-primary hover:text-primary hover:shadow-card',
+        ghost: 'bg-transparent text-ink-700 hover:bg-surface-sunken hover:text-content',
+        subtle: 'bg-surface-sunken text-ink-800 hover:bg-ink-200',
+        /** White pill for use on gradient or dark panels. */
+        inverse: 'focus-ring-light bg-card text-primary shadow-card hover:bg-iris-50',
+        danger: 'bg-danger text-on-primary hover:opacity-90',
       },
       size: {
-        sm: 'h-9 rounded-xl px-3.5 text-sm',
-        md: 'h-11 rounded-2xl px-5 text-sm',
-        lg: 'h-13 rounded-2xl px-7 text-base',
-        icon: 'size-11 rounded-2xl',
+        sm: 'h-9 rounded-pill px-4 text-sm',
+        md: 'h-11 rounded-pill px-5 text-sm',
+        lg: 'h-13 rounded-pill px-7 text-base',
+        icon: 'size-11 rounded-pill',
       },
       block: {
         true: 'w-full',
@@ -36,6 +45,7 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof buttonVariants> & {
     loading?: boolean
     leadingIcon?: ReactNode
+    trailingIcon?: ReactNode
   }
 
 export function Button({
@@ -45,6 +55,7 @@ export function Button({
   block,
   loading = false,
   leadingIcon,
+  trailingIcon,
   disabled,
   children,
   ...props
@@ -57,6 +68,7 @@ export function Button({
     >
       {loading ? <Loader2 className="size-4 animate-spin" aria-hidden /> : leadingIcon}
       {children}
+      {trailingIcon}
     </button>
   )
 }

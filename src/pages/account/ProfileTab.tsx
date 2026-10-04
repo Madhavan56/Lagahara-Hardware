@@ -40,7 +40,7 @@ export default function ProfileTab() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-sand-500">Loading…</p>
+    return <p className="text-sm text-content-muted">Loading…</p>
   }
 
   return (

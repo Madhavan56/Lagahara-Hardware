@@ -69,24 +69,24 @@ export default function CategoryPage() {
 
   return (
     <div className="container-page py-10 lg:py-14">
-      <nav className="mb-4 flex items-center gap-1.5 text-xs font-medium text-sand-500">
-        <Link to="/" className="hover:text-brand-700">
+      <nav className="mb-4 flex items-center gap-1.5 text-xs font-medium text-content-muted">
+        <Link to="/" className="hover:text-iris-700">
           Home
         </Link>
         <span>/</span>
-        <Link to="/shop" className="hover:text-brand-700">
+        <Link to="/shop" className="hover:text-iris-700">
           Shop
         </Link>
         <span>/</span>
-        <span className="text-sand-700">{category.name}</span>
+        <span className="text-ink-700">{category.name}</span>
       </nav>
 
       <div className="mb-6">
-        <h1 className="font-display text-3xl font-semibold text-sand-900 lg:text-4xl">
+        <h1 className="text-h1 text-content">
           {category.name}
         </h1>
         {category.description ? (
-          <p className="mt-2 max-w-2xl text-sand-600">{category.description}</p>
+          <p className="mt-2 max-w-2xl text-ink-600">{category.description}</p>
         ) : null}
       </div>
 
@@ -105,22 +105,22 @@ export default function CategoryPage() {
         </aside>
 
         <div>
-          <div className="sticky top-31 z-20 -mx-1 mb-6 flex items-center justify-between gap-3 rounded-2xl border border-sand-200 bg-white/95 px-4 py-2.5 shadow-card backdrop-blur-md">
+          <div className="sticky top-31 z-20 -mx-1 mb-6 flex items-center justify-between gap-3 rounded-card border border-border-subtle bg-white/95 px-4 py-2.5 shadow-card backdrop-blur-md">
             <button
               type="button"
               onClick={() => setMobileFiltersOpen(true)}
-              className="flex items-center gap-2 rounded-lg border border-sand-300 px-3.5 py-2 text-sm font-bold text-sand-700 lg:hidden"
+              className="flex items-center gap-2 rounded-sm border border-border-strong px-3.5 py-2 text-sm font-bold text-ink-700 lg:hidden"
             >
               <SlidersHorizontal className="size-4" />
               Filters
               {activeFilterCount > 0 ? (
-                <span className="rounded-full bg-brass-500 px-1.5 py-0.5 text-xs font-bold text-white">
+                <span className="rounded-pill bg-primary px-1.5 py-0.5 text-xs font-bold text-white">
                   {activeFilterCount}
                 </span>
               ) : null}
             </button>
-            <p className="text-sm font-semibold text-sand-700">
-              {productsQuery.data?.total ?? 0} <span className="font-normal text-sand-500">products</span>
+            <p className="text-sm font-semibold text-ink-700">
+              {productsQuery.data?.total ?? 0} <span className="font-normal text-content-muted">products</span>
             </p>
             <div className="ml-auto">
               <SortSelect value={sort} onChange={setSort} />
@@ -147,16 +147,16 @@ export default function CategoryPage() {
       {mobileFiltersOpen ? (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="absolute inset-0 bg-sand-950/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-ink-950/40 backdrop-blur-sm"
             onClick={() => setMobileFiltersOpen(false)}
           />
-          <div className="absolute inset-y-0 right-0 w-[85%] max-w-sm overflow-y-auto bg-white p-5">
+          <div className="absolute inset-y-0 right-0 w-[85%] max-w-sm overflow-y-auto bg-card p-5">
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="font-display text-lg font-semibold text-sand-900">Filters</h2>
+              <h2 className="text-h3 text-content">Filters</h2>
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(false)}
-                className="rounded-lg p-2 hover:bg-sand-100"
+                className="rounded-sm p-2 hover:bg-surface-sunken"
                 aria-label="Close filters"
               >
                 <X className="size-5" />

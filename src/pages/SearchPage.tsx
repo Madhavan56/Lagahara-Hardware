@@ -9,10 +9,10 @@ export default function SearchPage() {
 
   return (
     <div className="container-page py-10 lg:py-14">
-      <h1 className="font-display text-3xl font-semibold text-sand-900 lg:text-4xl">
+      <h1 className="text-h1 text-content">
         {query ? `Results for "${query}"` : 'Search'}
       </h1>
-      <p className="mt-2 mb-8 text-sand-600">
+      <p className="mt-2 mb-8 text-ink-600">
         {query
           ? `${data?.length ?? 0} products found`
           : 'Enter a search term to find products.'}

@@ -43,12 +43,12 @@ export default function AdminShippingPage() {
     window.setTimeout(() => setSavedId(null), 2000)
   }
 
-  if (isLoading) return <p className="text-sm text-sand-500">Loading…</p>
+  if (isLoading) return <p className="text-sm text-content-muted">Loading…</p>
 
   return (
     <div className="max-w-2xl">
-      <h1 className="font-display text-2xl font-semibold text-sand-900">Shipping</h1>
-      <p className="mt-1 text-sm text-sand-600">
+      <h1 className="text-h2 text-content">Shipping</h1>
+      <p className="mt-1 text-sm text-ink-600">
         These two methods are the only shipping options shown at checkout.
       </p>
 
@@ -57,8 +57,8 @@ export default function AdminShippingPage() {
           const draft = drafts[method.id]
           if (!draft) return null
           return (
-            <div key={method.id} className="rounded-card border border-sand-200 bg-white p-5">
-              <p className="mb-4 text-xs font-semibold tracking-wide text-sand-500 uppercase">{method.code}</p>
+            <div key={method.id} className="rounded-card border border-border-subtle bg-card p-5">
+              <p className="mb-4 text-xs font-semibold tracking-wide text-content-muted uppercase">{method.code}</p>
               <div className="space-y-4">
                 <Input
                   label="Name"

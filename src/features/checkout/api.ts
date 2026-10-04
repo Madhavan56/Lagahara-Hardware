@@ -8,6 +8,8 @@ export type CreateOrderInput = {
   customerNote?: string
   /** "cod" skips the gateway and confirms the order for cash on delivery. */
   paymentMethod?: 'razorpay' | 'cod'
+  /** Optional promo code. Re-validated server-side before it is honoured. */
+  couponCode?: string
 }
 
 export type RazorpayCheckoutParams = {
@@ -22,6 +24,10 @@ export type CreateOrderResult = {
   orderNumber: string
   subtotal: number
   shippingAmount: number
+  /** Authoritative discount the server actually applied. */
+  discountAmount: number
+  /** The code the server honoured, or null when none was applied. */
+  couponCode: string | null
   total: number
   paymentMethod: 'razorpay' | 'cod'
   /** Present only when paymentMethod === 'razorpay'. */

@@ -17,7 +17,7 @@ export default function AdminProductsPage() {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="font-display text-2xl font-semibold text-sand-900">Products</h1>
+        <h1 className="text-h2 text-content">Products</h1>
         <Link to="/admin/products/new" className={buttonVariants({ variant: 'primary' })}>
           <Plus className="size-4" />
           New product
@@ -33,9 +33,9 @@ export default function AdminProductsPage() {
         />
       </div>
 
-      <div className="mt-6 overflow-x-auto rounded-card border border-sand-200 bg-white">
+      <div className="mt-6 overflow-x-auto rounded-card border border-border-subtle bg-card">
         <table className="w-full text-sm">
-          <thead className="border-b border-sand-200 bg-sand-50 text-left text-xs text-sand-500 uppercase">
+          <thead className="border-b border-border-subtle bg-surface text-left text-xs text-content-muted uppercase">
             <tr>
               <th className="px-4 py-3">Product</th>
               <th className="px-4 py-3">Category</th>
@@ -48,7 +48,7 @@ export default function AdminProductsPage() {
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-sand-500">
+                <td colSpan={6} className="px-4 py-6 text-center text-content-muted">
                   Loading…
                 </td>
               </tr>
@@ -57,10 +57,10 @@ export default function AdminProductsPage() {
                 const primaryImage = product.images.find((img) => img.isPrimary) ?? product.images[0]
                 const imageUrl = productImageUrl(primaryImage?.storagePath, { width: 100 })
                 return (
-                  <tr key={product.id} className="border-b border-sand-100 last:border-0">
+                  <tr key={product.id} className="border-b border-ink-100 last:border-0">
                     <td className="px-4 py-3">
                       <Link to={`/admin/products/${product.id}`} className="flex items-center gap-3">
-                        <div className="size-10 shrink-0 overflow-hidden rounded-lg bg-sand-100">
+                        <div className="size-10 shrink-0 overflow-hidden rounded-sm bg-surface-sunken">
                           {imageUrl ? (
                             <img src={imageUrl} alt="" className="size-full object-cover" />
                           ) : (
@@ -68,20 +68,20 @@ export default function AdminProductsPage() {
                           )}
                         </div>
                         <div>
-                          <p className="font-medium text-sand-900">{product.name}</p>
-                          <p className="text-xs text-sand-500">{product.sku}</p>
+                          <p className="font-medium text-content">{product.name}</p>
+                          <p className="text-xs text-content-muted">{product.sku}</p>
                         </div>
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-sand-600">{product.categoryName}</td>
-                    <td className="px-4 py-3 text-sand-900">{formatPrice(product.price)}</td>
+                    <td className="px-4 py-3 text-ink-600">{product.categoryName}</td>
+                    <td className="px-4 py-3 text-content">{formatPrice(product.price)}</td>
                     <td className="px-4 py-3">
                       {product.stockQuantity === 0 ? (
                         <Badge variant="danger" size="sm">Out of stock</Badge>
                       ) : product.stockQuantity <= product.lowStockThreshold ? (
                         <Badge variant="danger" size="sm">{product.stockQuantity} left</Badge>
                       ) : (
-                        <span className="text-sand-600">{product.stockQuantity}</span>
+                        <span className="text-ink-600">{product.stockQuantity}</span>
                       )}
                     </td>
                     <td className="px-4 py-3">

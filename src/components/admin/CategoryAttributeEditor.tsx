@@ -103,12 +103,12 @@ export function CategoryAttributeEditor({ categoryId }: { categoryId: string }) 
     }
   }
 
-  if (isLoading) return <p className="text-sm text-sand-500">Loading attributes…</p>
+  if (isLoading) return <p className="text-sm text-content-muted">Loading attributes…</p>
 
   return (
     <div className="space-y-3">
       <table className="w-full text-sm">
-        <thead className="text-left text-xs text-sand-500 uppercase">
+        <thead className="text-left text-xs text-content-muted uppercase">
           <tr>
             <th className="py-2">Key</th>
             <th className="py-2">Label</th>
@@ -120,14 +120,14 @@ export function CategoryAttributeEditor({ categoryId }: { categoryId: string }) 
         </thead>
         <tbody>
           {attributes.map((attr) => (
-            <tr key={attr.id} className="border-t border-sand-100">
-              <td className="py-2 font-mono text-xs text-sand-600">{attr.key}</td>
-              <td className="py-2 text-sand-900">{attr.label}</td>
-              <td className="py-2 text-sand-600">{attr.dataType}</td>
-              <td className="py-2 text-sand-600">{attr.options.join(', ') || '—'}</td>
-              <td className="py-2 text-sand-600">{attr.isRequired ? 'Yes' : 'No'}</td>
+            <tr key={attr.id} className="border-t border-ink-100">
+              <td className="py-2 font-mono text-xs text-ink-600">{attr.key}</td>
+              <td className="py-2 text-content">{attr.label}</td>
+              <td className="py-2 text-ink-600">{attr.dataType}</td>
+              <td className="py-2 text-ink-600">{attr.options.join(', ') || '—'}</td>
+              <td className="py-2 text-ink-600">{attr.isRequired ? 'Yes' : 'No'}</td>
               <td className="py-2 text-right">
-                <button type="button" onClick={() => startEdit(attr)} className="mr-3 text-xs font-medium text-brand-700 hover:underline">
+                <button type="button" onClick={() => startEdit(attr)} className="mr-3 text-xs font-medium text-iris-700 hover:underline">
                   Edit
                 </button>
                 <button
@@ -149,7 +149,7 @@ export function CategoryAttributeEditor({ categoryId }: { categoryId: string }) 
       </table>
 
       {draft ? (
-        <div className="space-y-3 rounded-lg border border-sand-200 bg-sand-50 p-4">
+        <div className="space-y-3 rounded-sm border border-border-subtle bg-surface p-4">
           <div className="grid gap-3 sm:grid-cols-2">
             <Input
               label="Key (machine name)"
@@ -162,11 +162,11 @@ export function CategoryAttributeEditor({ categoryId }: { categoryId: string }) 
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-sand-800">Data type</label>
+              <label className="mb-1.5 block text-sm font-medium text-ink-800">Data type</label>
               <select
                 value={draft.dataType}
                 onChange={(e) => setDraft({ ...draft, dataType: e.target.value as CategoryAttribute['dataType'] })}
-                className="h-11 w-full rounded-xl border border-sand-300 bg-white px-3.5 text-sm focus:border-brand-600 focus:outline-none"
+                className="h-11 w-full rounded-md border border-border-strong bg-card px-3.5 text-sm focus:border-iris-600 focus:outline-none"
               >
                 {DATA_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -186,12 +186,12 @@ export function CategoryAttributeEditor({ categoryId }: { categoryId: string }) 
             />
           ) : null}
           <div className="flex gap-6">
-            <label className="flex items-center gap-2 text-sm text-sand-700">
-              <input type="checkbox" checked={draft.isRequired} onChange={(e) => setDraft({ ...draft, isRequired: e.target.checked })} className="size-4 rounded border-sand-300 text-brand-700" />
+            <label className="flex items-center gap-2 text-sm text-ink-700">
+              <input type="checkbox" checked={draft.isRequired} onChange={(e) => setDraft({ ...draft, isRequired: e.target.checked })} className="size-4 rounded border-border-strong text-iris-700" />
               Required
             </label>
-            <label className="flex items-center gap-2 text-sm text-sand-700">
-              <input type="checkbox" checked={draft.isFilterable} onChange={(e) => setDraft({ ...draft, isFilterable: e.target.checked })} className="size-4 rounded border-sand-300 text-brand-700" />
+            <label className="flex items-center gap-2 text-sm text-ink-700">
+              <input type="checkbox" checked={draft.isFilterable} onChange={(e) => setDraft({ ...draft, isFilterable: e.target.checked })} className="size-4 rounded border-border-strong text-iris-700" />
               Filterable in shop
             </label>
           </div>

@@ -5,8 +5,8 @@ import { useCategories } from '@/features/catalog/queries'
 import { cn } from '@/lib/utils'
 
 /**
- * Instamart-style always-visible category rail: one tap to any category from
- * anywhere on the page. Horizontally scrollable with hidden scrollbars.
+ * Always-visible category rail: one tap to any category from anywhere on the
+ * page. Horizontally scrollable with hidden scrollbars.
  */
 export function CategoryRail() {
   const { data: categories = [] } = useCategories()
@@ -22,7 +22,7 @@ export function CategoryRail() {
   }
 
   return (
-    <nav aria-label="Shop categories" className="border-b border-sand-200 bg-white">
+    <nav aria-label="Shop categories" className="border-b border-border-subtle bg-card">
       <div className="container-page flex gap-4 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {categories.map((category) => {
           const tile = getCategoryTile(category.slug)
@@ -34,7 +34,7 @@ export function CategoryRail() {
               className="group flex w-18 shrink-0 snap-start flex-col items-center gap-1.5"
               title={category.name}
             >
-              <span className="block size-14 overflow-hidden rounded-2xl border border-sand-200 bg-sand-100 transition-all duration-300 group-hover:-translate-y-0.5 group-hover:border-brass-400 group-hover:shadow-card">
+              <span className="block size-14 overflow-hidden rounded-pill bg-surface-sunken ring-2 ring-transparent transition-all duration-300 group-hover:-translate-y-0.5 group-hover:shadow-card group-hover:ring-iris-200">
                 {tile.photo && !imageFailed ? (
                   <img
                     src={tile.photo.src}
@@ -47,12 +47,10 @@ export function CategoryRail() {
                     className="size-full object-cover"
                   />
                 ) : (
-                  <span
-                    className={cn('flex size-full items-center justify-center bg-gradient-to-br', tile.fallbackGradient)}
-                  />
+                  <span className={cn('flex size-full items-center justify-center', tile.fallbackTint)} />
                 )}
               </span>
-              <span className="w-full truncate text-center text-[0.6875rem] leading-tight font-semibold text-sand-700 transition-colors group-hover:text-brand-800">
+              <span className="w-full truncate text-center text-[0.6875rem] leading-tight font-semibold text-ink-600 transition-colors group-hover:text-primary">
                 {category.name}
               </span>
             </Link>

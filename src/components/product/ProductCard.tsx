@@ -1,12 +1,15 @@
 import { motion } from 'framer-motion'
-import { Heart, Minus, Plus, Star, Zap } from 'lucide-react'
+import { Check, Heart, Minus, Plus, ShoppingCart } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
-import { Badge } from '@/components/ui/badge'
+import { Price } from '@/components/ui/price'
+import { Rating } from '@/components/ui/rating'
+import { StatusPill, deriveProductStatus } from '@/components/ui/status-pill'
 import { useCartStore } from '@/features/cart/store'
+import { useCategoryNameMap } from '@/features/catalog/queries'
 import { useIsWishlisted, useWishlistStore } from '@/features/wishlist/store'
 import { productImageUrl } from '@/lib/supabase/client'
-import { cn, formatPrice } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import type { ProductListItem } from '@/types/catalog'
 
 const LOW_STOCK_THRESHOLD = 5
@@ -20,18 +23,22 @@ export function ProductCard({ product }: { product: ProductListItem }) {
   const quantityInCart = useCartStore((state) => state.lines[product.id]?.quantity ?? 0)
   const addItem = useCartStore((state) => state.addItem)
   const setQuantity = useCartStore((state) => state.setQuantity)
-  const discountPct =
-    product.compareAtPrice && product.compareAtPrice > product.price
-      ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
-      : null
+  const categoryNames = useCategoryNameMap()
+  const categoryName = categoryNames.get(product.categoryId)
+  const status = deriveProductStatus(product)
 
   return (
-    <motion.div whileHover={{ y: -4 }} transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}>
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      className="h-full"
+    >
       <Link
         to={`/product/${product.slug}`}
-        className="group flex h-full flex-col overflow-hidden rounded-card border border-sand-200 bg-white shadow-card transition-shadow duration-300 hover:shadow-lift"
+        className="group flex h-full flex-col overflow-hidden rounded-card bg-card shadow-card transition-shadow duration-300 hover:shadow-lift"
       >
-        <div className="relative aspect-square overflow-hidden bg-sand-100">
+        {/* Light-grey image tile with the product centred. */}
+        <div className="relative aspect-square overflow-hidden bg-surface-sunken">
           {imageUrl ? (
             <img
               src={imageUrl}
@@ -43,18 +50,11 @@ export function ProductCard({ product }: { product: ProductListItem }) {
             <ProductImagePlaceholder size="md" />
           )}
 
-          <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5">
-            {discountPct ? (
-              <Badge variant="accent" size="sm">
-                {discountPct}% off
-              </Badge>
-            ) : null}
-            {outOfStock ? (
-              <Badge variant="danger" size="sm">
-                Out of stock
-              </Badge>
-            ) : null}
-          </div>
+          {status ? (
+            <StatusPill tone={status.tone} className="absolute top-3 left-3">
+              {status.label}
+            </StatusPill>
+          ) : null}
 
           <motion.button
             type="button"
@@ -66,91 +66,87 @@ export function ProductCard({ product }: { product: ProductListItem }) {
             whileTap={{ scale: 0.85 }}
             aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
             aria-pressed={wishlisted}
-            className="absolute top-3 right-3 flex size-8 items-center justify-center rounded-full bg-white/90 text-sand-600 shadow-card backdrop-blur-sm transition-colors hover:text-danger"
+            className="absolute top-3 right-3 flex size-8 items-center justify-center rounded-pill bg-card/90 text-ink-600 shadow-xs backdrop-blur-sm transition-colors hover:text-pill-best"
           >
-            <Heart className={cn('size-4', wishlisted && 'fill-danger text-danger')} />
+            <Heart className={cn('size-4', wishlisted && 'fill-pill-best text-pill-best')} />
           </motion.button>
-
-          {!outOfStock ? (
-            <div className="absolute inset-x-3 bottom-3 z-10" onClick={(event) => event.preventDefault()}>
-              {quantityInCart === 0 ? (
-                <button
-                  type="button"
-                  onClick={() => addItem(product.id, 1, product.stockQuantity)}
-                  className="w-full rounded-xl border border-add-500 bg-white/95 px-4 py-2 text-xs font-extrabold tracking-widest text-add-600 shadow-lift backdrop-blur-sm transition-all hover:bg-add-50 active:scale-95"
-                >
-                  ADD
-                </button>
-              ) : (
-                <div className="flex items-stretch overflow-hidden rounded-xl border border-add-500 bg-add-500 text-white shadow-lift">
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(product.id, quantityInCart - 1, product.stockQuantity)}
-                    aria-label="Decrease quantity"
-                    className="flex h-9 flex-1 items-center justify-center transition-colors hover:bg-add-600"
-                  >
-                    <Minus className="size-3.5" />
-                  </button>
-                  <span className="flex w-8 items-center justify-center text-sm font-bold">
-                    {quantityInCart}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => addItem(product.id, 1, product.stockQuantity)}
-                    disabled={quantityInCart >= product.stockQuantity}
-                    aria-label="Increase quantity"
-                    className="flex h-9 flex-1 items-center justify-center transition-colors hover:bg-add-600 disabled:opacity-50"
-                  >
-                    <Plus className="size-3.5" />
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : null}
         </div>
 
-        <div className="flex flex-1 flex-col gap-1 p-4">
-          <div className="flex items-center justify-between gap-2">
-            {product.brand ? (
-              <p className="truncate text-[0.6875rem] font-bold tracking-widest text-sand-500 uppercase">
-                {product.brand}
-              </p>
-            ) : (
-              <span />
-            )}
-            {product.ratingCount > 0 ? (
-              <span className="flex shrink-0 items-center gap-1 rounded-full bg-sand-100 px-1.5 py-0.5 text-[0.6875rem] font-semibold text-sand-700">
-                <Star className="size-3 fill-brand-600 text-brand-600" />
-                {product.ratingAvg.toFixed(1)}
-              </span>
-            ) : null}
-          </div>
+        <div className="flex flex-1 flex-col gap-1.5 p-4">
+          {categoryName ? (
+            <p className="text-label truncate text-content-muted uppercase">{categoryName}</p>
+          ) : null}
 
-          <h3 className="line-clamp-2 min-h-10 text-sm leading-snug font-semibold text-sand-900 transition-colors duration-300 group-hover:text-brand-800">
+          <h3 className="line-clamp-2 min-h-10 text-sm leading-snug font-bold text-content transition-colors duration-300 group-hover:text-primary">
             {product.name}
           </h3>
 
-          <div className="mt-auto flex items-baseline gap-2 pt-1.5">
-            <span className="text-base font-extrabold text-sand-900">
-              {formatPrice(product.price)}
-            </span>
-            {product.compareAtPrice ? (
-              <span className="text-xs text-sand-400 line-through">
-                {formatPrice(product.compareAtPrice)}
+          {product.ratingCount > 0 ? (
+            <Rating value={product.ratingAvg} count={product.ratingCount} size="sm" />
+          ) : (
+            <span className="text-[0.6875rem] text-content-subtle">No reviews yet</span>
+          )}
+
+          <div className="mt-auto flex items-end justify-between gap-2 pt-2">
+            <Price
+              value={product.price}
+              compareAt={product.compareAtPrice}
+              unitLabel={product.unitLabel}
+              className="min-w-0"
+            />
+
+            {/* Round lavender add-to-cart; becomes a stepper once in the cart. */}
+            {!outOfStock ? (
+              <span onClick={(event) => event.preventDefault()} className="shrink-0">
+                {quantityInCart === 0 ? (
+                  <motion.button
+                    type="button"
+                    onClick={() => addItem(product.id, 1, product.stockQuantity)}
+                    whileTap={{ scale: 0.9 }}
+                    aria-label={`Add ${product.name} to cart`}
+                    className="flex size-10 items-center justify-center rounded-pill bg-primary-soft text-primary transition-colors hover:bg-primary hover:text-on-primary"
+                  >
+                    <ShoppingCart className="size-4" />
+                  </motion.button>
+                ) : (
+                  <span className="flex items-stretch overflow-hidden rounded-pill bg-primary text-on-primary">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setQuantity(product.id, quantityInCart - 1, product.stockQuantity)
+                      }
+                      aria-label={`Decrease quantity of ${product.name}`}
+                      className="flex h-10 w-8 items-center justify-center transition-colors hover:bg-primary-hover"
+                    >
+                      <Minus className="size-3.5" />
+                    </button>
+                    <span className="flex min-w-6 items-center justify-center text-sm font-bold">
+                      {quantityInCart}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => addItem(product.id, 1, product.stockQuantity)}
+                      disabled={quantityInCart >= product.stockQuantity}
+                      aria-label={`Increase quantity of ${product.name}`}
+                      className="flex h-10 w-8 items-center justify-center transition-colors hover:bg-primary-hover disabled:opacity-50"
+                    >
+                      <Plus className="size-3.5" />
+                    </button>
+                  </span>
+                )}
               </span>
             ) : null}
-            <span className="text-[0.6875rem] text-sand-500">/ {product.unitLabel}</span>
           </div>
 
           <div className="flex min-h-4 items-center gap-1 text-[0.6875rem] font-semibold">
             {lowStock ? (
-              <span className="text-danger">
-                Only {product.stockQuantity} left
-              </span>
+              <span className="text-warning">Only {product.stockQuantity} left</span>
+            ) : outOfStock ? (
+              <span className="text-content-subtle">Back in stock soon</span>
             ) : (
               <>
-                <Zap className="size-3 fill-brass-500 text-brass-500" aria-hidden />
-                <span className="text-brand-700">Quick delivery · 2 days</span>
+                <Check className="size-3 text-success" aria-hidden />
+                <span className="text-success">In stock · 2 day delivery</span>
               </>
             )}
           </div>

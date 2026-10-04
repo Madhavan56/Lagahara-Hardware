@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Crown } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 type AuthLayoutProps = {
   title: string
@@ -9,93 +9,48 @@ type AuthLayoutProps = {
 
 export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
   return (
-    <div className="relative isolate flex min-h-[calc(100dvh-2px)] items-center justify-center overflow-hidden bg-brand-950 px-4 py-8 sm:px-6 lg:px-8">
-      {/* Interior design image background with dark overlay */}
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/categories/interior-hardware-960.jpg')" }}
-        aria-hidden="true"
-      />
-      <div className="absolute inset-0 bg-brand-950/90" />
-
-      {/* Subtle warm brass accent light */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <div className="absolute -top-32 -right-32 size-[24rem] rounded-full bg-brass-500/10 blur-3xl" />
+    <div className="relative isolate flex min-h-dvh items-center justify-center overflow-hidden bg-gradient-hero px-4 py-10 sm:px-6">
+      {/* Soft violet blooms, matching the hero panel on the homepage. */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden>
+        <div className="absolute -top-32 -left-24 size-96 rounded-pill bg-iris-200/50 blur-3xl" />
+        <div className="absolute -right-24 -bottom-32 size-96 rounded-pill bg-pastel-peach/70 blur-3xl" />
       </div>
 
-      <div className="relative z-10 flex w-full items-center justify-center">
-        <motion.div
-          className="relative w-full max-w-sm"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {/* Card */}
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl shadow-[0_24px_80px_rgb(0_0_0/0.5)]">
-            {/* Top accent bar */}
-            <div className="h-[3px] bg-gradient-to-r from-brass-500 via-brass-400 to-brand-300" />
-
-            {/* Brand header */}
-            <div className="flex flex-col items-center pt-8 pb-6">
-              <motion.div
-                className="mb-3 flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-brass-500 to-brand-800 text-white shadow-lg shadow-brass-500/30"
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <Crown className="size-7" />
-              </motion.div>
-
-              <motion.h1
-                className="font-display text-2xl font-extrabold tracking-tight text-white"
-                initial={{ y: 8, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              >
-                Laghara
-              </motion.h1>
-              <motion.p
-                className="mt-1 text-[0.6875rem] font-semibold tracking-[0.2em] uppercase text-brass-400"
-                initial={{ y: 8, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.25, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              >
-                Hardwares · Premium Collection
-              </motion.p>
-
-              <motion.div
-                className="my-5 h-px w-24 bg-gradient-to-r from-transparent via-brass-400 to-transparent"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 0.35, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      <motion.div
+        className="relative z-10 w-full max-w-sm"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="overflow-hidden rounded-panel bg-card shadow-float">
+          <div className="flex flex-col items-center px-6 pt-8 pb-6">
+            <Link to="/" className="flex items-center gap-3" aria-label="Laghara Hardwares home">
+              <img
+                src="/logo-mark.svg"
+                alt=""
+                className="size-12 rounded-md object-cover shadow-xs"
               />
+              <span className="leading-none">
+                <span className="block font-display text-xl font-extrabold tracking-tight text-content">
+                  Laghara
+                </span>
+                <span className="text-label mt-0.5 block text-primary uppercase">Hardwares</span>
+              </span>
+            </Link>
 
-              <motion.div
-                className="text-center"
-                initial={{ y: 8, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <h2 className="font-display text-xl font-bold text-white">{title}</h2>
-                <p className="mt-1.5 text-sm text-white/60">{subtitle}</p>
-              </motion.div>
+            <div className="mt-7 text-center">
+              <h1 className="text-h2 text-content">{title}</h1>
+              <p className="mt-1.5 text-sm text-content-muted">{subtitle}</p>
             </div>
-
-            {/* Form body */}
-            <div className="space-y-4 px-6 pb-6">{children}</div>
           </div>
 
-          {/* Footer link */}
-          <motion.div
-            className="mt-5 text-center text-[0.75rem] text-white/50"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.55, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          >
-            <p>© {new Date().getFullYear()} Laghara Hardwares. Crafted with care.</p>
-          </motion.div>
-        </motion.div>
-      </div>
+          <div className="space-y-4 px-6 pb-7">{children}</div>
+        </div>
+
+        <p className="mt-5 text-center text-xs text-content-muted">
+          © {new Date().getFullYear()} Laghara Hardwares · Interior & furniture materials
+        </p>
+      </motion.div>
     </div>
   )
 }

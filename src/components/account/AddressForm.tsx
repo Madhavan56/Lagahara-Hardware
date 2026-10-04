@@ -63,7 +63,7 @@ export function AddressForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(submit)} className="space-y-4 rounded-card border border-sand-200 bg-white p-5">
+    <form onSubmit={handleSubmit(submit)} className="space-y-4 rounded-card border border-border-subtle bg-card p-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <Input label="Label (e.g. Home, Site)" {...register('label')} />
         <Input label="Full name" error={errors.fullName?.message} {...register('fullName')} />

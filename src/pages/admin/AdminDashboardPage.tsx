@@ -19,11 +19,11 @@ function StatCard({
   return (
     <Link
       to={to}
-      className="rounded-card border border-sand-200 bg-white p-5 transition-colors hover:border-brand-300"
+      className="rounded-card border border-border-subtle bg-card p-5 transition-colors hover:border-iris-300"
     >
-      <Icon className="size-5 text-brand-700" />
-      <p className="mt-3 text-2xl font-semibold text-sand-900">{value}</p>
-      <p className="text-sm text-sand-500">{label}</p>
+      <Icon className="size-5 text-iris-700" />
+      <p className="mt-3 text-2xl font-semibold text-content">{value}</p>
+      <p className="text-sm text-content-muted">{label}</p>
     </Link>
   )
 }
@@ -40,7 +40,7 @@ export default function AdminDashboardPage() {
 
   return (
     <div>
-      <h1 className="font-display text-2xl font-semibold text-sand-900">Dashboard</h1>
+      <h1 className="text-h2 text-content">Dashboard</h1>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={Package} label="Total products" value={products?.length ?? 0} to="/admin/products" />
@@ -59,7 +59,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {pendingOrders?.length ? (
-        <p className="mt-4 text-sm text-sand-600">
+        <p className="mt-4 text-sm text-ink-600">
           {formatPrice(pendingOrdersTotal)} in pending orders awaiting fulfillment.
         </p>
       ) : null}

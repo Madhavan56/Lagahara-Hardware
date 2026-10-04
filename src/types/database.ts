@@ -241,6 +241,102 @@ export type Database = {
         }
         Relationships: []
       }
+      coupon_redemptions: {
+        Row: {
+          coupon_id: string
+          created_at: string
+          discount_amount: number
+          id: string
+          order_id: string
+          user_id: string
+        }
+        Insert: {
+          coupon_id: string
+          created_at?: string
+          discount_amount: number
+          id?: string
+          order_id: string
+          user_id: string
+        }
+        Update: {
+          coupon_id?: string
+          created_at?: string
+          discount_amount?: number
+          id?: string
+          order_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_redemptions_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupon_redemptions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          discount_type: Database["public"]["Enums"]["coupon_discount_type"]
+          discount_value: number
+          ends_at: string | null
+          id: string
+          is_active: boolean
+          max_discount_amount: number | null
+          max_redemptions: number | null
+          max_redemptions_per_user: number
+          min_order_amount: number
+          redemption_count: number
+          starts_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          discount_type: Database["public"]["Enums"]["coupon_discount_type"]
+          discount_value: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_discount_amount?: number | null
+          max_redemptions?: number | null
+          max_redemptions_per_user?: number
+          min_order_amount?: number
+          redemption_count?: number
+          starts_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          discount_type?: Database["public"]["Enums"]["coupon_discount_type"]
+          discount_value?: number
+          ends_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_discount_amount?: number | null
+          max_redemptions?: number | null
+          max_redemptions_per_user?: number
+          min_order_amount?: number
+          redemption_count?: number
+          starts_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           attributes_snapshot: Json
@@ -345,6 +441,8 @@ export type Database = {
       orders: {
         Row: {
           created_at: string
+          coupon_code: string | null
+          coupon_id: string | null
           currency: string
           customer_email: string | null
           customer_name: string | null
@@ -373,6 +471,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          coupon_code?: string | null
+          coupon_id?: string | null
           currency?: string
           customer_email?: string | null
           customer_name?: string | null
@@ -401,6 +501,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          coupon_code?: string | null
+          coupon_id?: string | null
           currency?: string
           customer_email?: string | null
           customer_name?: string | null
@@ -720,6 +822,8 @@ export type Database = {
         Returns: {
           created_at: string
           currency: string
+          coupon_code: string | null
+          coupon_id: string | null
           customer_email: string | null
           customer_name: string | null
           customer_note: string | null
@@ -761,11 +865,23 @@ export type Database = {
           rank: number
         }[]
       }
+      validate_coupon: {
+        Args: { p_code: string; p_subtotal: number }
+        Returns: {
+          valid: boolean
+          reason: string | null
+          coupon_id: string | null
+          code: string | null
+          description: string | null
+          discount_amount: number
+        }[]
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       attribute_data_type: "text" | "number" | "boolean" | "select"
+      coupon_discount_type: "percent" | "fixed"
       order_status:
         | "pending"
         | "confirmed"
@@ -907,6 +1023,7 @@ export const Constants = {
   public: {
     Enums: {
       attribute_data_type: ["text", "number", "boolean", "select"],
+      coupon_discount_type: ["percent", "fixed"],
       order_status: [
         "pending",
         "confirmed",

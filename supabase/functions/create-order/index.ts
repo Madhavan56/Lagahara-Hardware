@@ -43,7 +43,36 @@ type RequestBody = {
   customerNote?: string;
   /** "cod" skips the gateway and confirms the order for cash on delivery. */
   paymentMethod?: "razorpay" | "cod";
+  /** Optional promo code. Re-validated here; the client's view is advisory. */
+  couponCode?: string;
 };
+
+type CouponRow = {
+  id: string;
+  code: string;
+  discount_type: "percent" | "fixed";
+  discount_value: number;
+  max_discount_amount: number | null;
+  min_order_amount: number;
+  starts_at: string | null;
+  ends_at: string | null;
+  max_redemptions: number | null;
+  max_redemptions_per_user: number;
+  redemption_count: number;
+  is_active: boolean;
+};
+
+/** Mirrors public.coupon_discount_for — capped at the subtotal, 2dp. */
+function couponDiscountFor(coupon: CouponRow, subtotal: number): number {
+  const raw =
+    coupon.discount_type === "percent"
+      ? Math.min(
+        (subtotal * coupon.discount_value) / 100,
+        coupon.max_discount_amount ?? Number.POSITIVE_INFINITY,
+      )
+      : coupon.discount_value;
+  return Math.min(subtotal, Math.round(raw * 100) / 100);
+}
 
 function badRequest(message: string, details?: unknown) {
   return Response.json({ error: message, details }, { status: 400 });
@@ -150,7 +179,60 @@ export default {
       return sum + product.price * item.quantity;
     }, 0);
     const shippingAmount = shippingMethod.price;
-    const total = subtotal + shippingAmount;
+
+    // Promo code. The storefront previews a discount through
+    // public.validate_coupon(), but the authoritative figure is computed here
+    // from the coupon row — the client never supplies an amount.
+    let coupon: CouponRow | null = null;
+    let discountAmount = 0;
+
+    if (body.couponCode && body.couponCode.trim()) {
+      const code = body.couponCode.trim().toUpperCase();
+      const { data: couponRow } = await admin
+        .from("coupons")
+        .select(
+          "id, code, discount_type, discount_value, max_discount_amount, min_order_amount, starts_at, ends_at, max_redemptions, max_redemptions_per_user, redemption_count, is_active",
+        )
+        .eq("code", code)
+        .maybeSingle<CouponRow>();
+
+      if (!couponRow || !couponRow.is_active) {
+        return badRequest("That promo code is not valid");
+      }
+
+      const now = Date.now();
+      if (couponRow.starts_at && now < Date.parse(couponRow.starts_at)) {
+        return badRequest("That promo code is not active yet");
+      }
+      if (couponRow.ends_at && now >= Date.parse(couponRow.ends_at)) {
+        return badRequest("That promo code has expired");
+      }
+      if (subtotal < couponRow.min_order_amount) {
+        return badRequest(`Spend ₹${couponRow.min_order_amount} to use this code`);
+      }
+      if (
+        couponRow.max_redemptions !== null &&
+        couponRow.redemption_count >= couponRow.max_redemptions
+      ) {
+        return badRequest("That promo code has been fully claimed");
+      }
+
+      const { count: userUses } = await admin
+        .from("coupon_redemptions")
+        .select("id", { count: "exact", head: true })
+        .eq("coupon_id", couponRow.id)
+        .eq("user_id", userId);
+
+      if ((userUses ?? 0) >= couponRow.max_redemptions_per_user) {
+        return badRequest("You have already used this code");
+      }
+
+      coupon = couponRow;
+      discountAmount = couponDiscountFor(couponRow, subtotal);
+    }
+
+    // Shipping is never discounted, and the total can't go below zero.
+    const total = Math.max(0, subtotal - discountAmount) + shippingAmount;
 
     const { data: profile } = await admin
       .from("profiles")
@@ -169,7 +251,9 @@ export default {
         subtotal,
         shipping_amount: shippingAmount,
         tax_amount: 0,
-        discount_amount: 0,
+        discount_amount: discountAmount,
+        coupon_id: coupon?.id ?? null,
+        coupon_code: coupon?.code ?? null,
         total,
         currency: "INR",
         shipping_method_id: shippingMethod.id,
@@ -187,6 +271,26 @@ export default {
 
     if (orderError || !order) {
       return Response.json({ error: "Could not create order", details: orderError?.message }, { status: 500 });
+    }
+
+    // Claim the redemption. The unique index on order_id makes this idempotent
+    // per order, and the row cascades away if the order is later deleted —
+    // which is what returns the allowance to the user on an abandoned payment.
+    if (coupon) {
+      const { error: redemptionError } = await admin.from("coupon_redemptions").insert({
+        coupon_id: coupon.id,
+        order_id: order.id,
+        user_id: userId,
+        discount_amount: discountAmount,
+      });
+
+      if (redemptionError) {
+        await admin.from("orders").delete().eq("id", order.id);
+        return Response.json(
+          { error: "Could not apply the promo code", details: redemptionError.message },
+          { status: 500 },
+        );
+      }
     }
 
     // Create the matching Razorpay order so the client can open the branded
@@ -269,6 +373,8 @@ export default {
       return Response.json({
         orderId: order.id,
         orderNumber: order.order_number,
+        discountAmount,
+        couponCode: coupon?.code ?? null,
         subtotal,
         shippingAmount,
         total,
@@ -281,6 +387,8 @@ export default {
       orderNumber: order.order_number,
       subtotal,
       shippingAmount,
+      discountAmount,
+      couponCode: coupon?.code ?? null,
       total,
       paymentMethod: "razorpay",
       razorpay: {

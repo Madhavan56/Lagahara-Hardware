@@ -45,7 +45,7 @@ function mapStatusEvent(row: Row): OrderStatusEvent {
 
 const ORDER_DETAIL_SELECT = `
   id, order_number, status, payment_status, subtotal, shipping_amount, tax_amount,
-  discount_amount, total, currency, shipping_method_name, shipping_method_description,
+  discount_amount, coupon_code, total, currency, shipping_method_name, shipping_method_description,
   shipping_eta_days_min, shipping_eta_days_max, shipping_address, customer_note,
   placed_at, created_at,
   order_items(id, product_id, product_name, product_slug, product_sku, product_image_path, unit_label, unit_price, gst_rate, quantity, line_total),
@@ -65,6 +65,7 @@ function mapOrder(row: Row): Order {
     shippingAmount: asNumber(row.shipping_amount),
     taxAmount: asNumber(row.tax_amount),
     discountAmount: asNumber(row.discount_amount),
+    couponCode: asNullableString(row.coupon_code),
     total: asNumber(row.total),
     currency: asString(row.currency) || 'INR',
     shippingMethodName: asString(row.shipping_method_name),

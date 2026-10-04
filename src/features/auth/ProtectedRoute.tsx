@@ -8,7 +8,7 @@ export function ProtectedRoute() {
   if (loading) {
     return (
       <div className="container-page flex min-h-[50vh] items-center justify-center">
-        <div className="size-6 animate-spin rounded-full border-2 border-sand-300 border-t-brand-700" />
+        <div className="size-6 animate-spin rounded-pill border-2 border-border-strong border-t-iris-700" />
       </div>
     )
   }

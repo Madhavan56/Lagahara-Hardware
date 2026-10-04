@@ -29,7 +29,7 @@ export default function OrdersTab() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-sand-500">Loading orders…</p>
+    return <p className="text-sm text-content-muted">Loading orders…</p>
   }
 
   if (isError) {
@@ -39,7 +39,7 @@ export default function OrdersTab() {
   return (
     <div>
       {/* View switch — cancelled orders live in their own history tab */}
-      <div className="mb-5 flex gap-1 rounded-xl bg-sand-100 p-1" role="tablist" aria-label="Order views">
+      <div className="mb-5 flex gap-1 rounded-md bg-surface-sunken p-1" role="tablist" aria-label="Order views">
         {TABS.map((tab) => (
           <button
             key={tab.value}
@@ -48,27 +48,27 @@ export default function OrdersTab() {
             aria-selected={view === tab.value}
             onClick={() => setView(tab.value)}
             className={cn(
-              'flex-1 rounded-lg px-3 py-2 text-sm font-bold transition-colors',
+              'flex-1 rounded-sm px-3 py-2 text-sm font-bold transition-colors',
               view === tab.value
-                ? 'bg-white text-brand-800 shadow-card'
-                : 'text-sand-500 hover:text-sand-700',
+                ? 'bg-card text-iris-800 shadow-card'
+                : 'text-content-muted hover:text-ink-700',
             )}
           >
             {tab.label}
             {view === tab.value && orders ? (
-              <span className="ml-1.5 text-xs font-semibold text-sand-400">{orders.length}</span>
+              <span className="ml-1.5 text-xs font-semibold text-content-subtle">{orders.length}</span>
             ) : null}
           </button>
         ))}
       </div>
 
       {orders && orders.length === 0 ? (
-        <div className="rounded-card border border-sand-200 bg-sand-50 p-8 text-center">
-          <PackageSearch className="mx-auto size-8 text-sand-400" />
-          <p className="mt-3 text-sm font-semibold text-sand-700">{emptyCopy[view].title}</p>
-          <p className="mt-1 text-xs text-sand-500">{emptyCopy[view].hint}</p>
+        <div className="rounded-card border border-border-subtle bg-surface p-8 text-center">
+          <PackageSearch className="mx-auto size-8 text-content-subtle" />
+          <p className="mt-3 text-sm font-semibold text-ink-700">{emptyCopy[view].title}</p>
+          <p className="mt-1 text-xs text-content-muted">{emptyCopy[view].hint}</p>
           {view === 'active' ? (
-            <Link to="/shop" className="mt-3 inline-block text-sm font-medium text-brand-700">
+            <Link to="/shop" className="mt-3 inline-block text-sm font-medium text-iris-700">
               Start shopping
             </Link>
           ) : null}
@@ -79,29 +79,29 @@ export default function OrdersTab() {
             <li key={order.id}>
               <Link
                 to={`/account/orders/${order.id}`}
-                className="block rounded-card border border-sand-200 bg-white p-4 transition-colors hover:border-brand-300"
+                className="block rounded-card border border-border-subtle bg-card p-4 transition-colors hover:border-iris-300"
               >
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-sm font-semibold text-sand-900">{order.orderNumber}</p>
-                    <p className="mt-0.5 text-xs text-sand-500">
+                    <p className="text-sm font-semibold text-content">{order.orderNumber}</p>
+                    <p className="mt-0.5 text-xs text-content-muted">
                       {formatDate(order.createdAt)} · {order.itemCount} item{order.itemCount === 1 ? '' : 's'}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-sand-900">{formatPrice(order.total)}</span>
+                    <span className="text-sm font-semibold text-content">{formatPrice(order.total)}</span>
                     <OrderStatusBadge status={order.status} />
                   </div>
                 </div>
 
                 {/* Product preview: thumbnails + names, the order at a glance */}
                 {order.previewItems.length > 0 ? (
-                  <div className="mt-3 flex items-center gap-3 border-t border-sand-100 pt-3">
+                  <div className="mt-3 flex items-center gap-3 border-t border-ink-100 pt-3">
                     <div className="flex shrink-0 -space-x-2">
                       {order.previewItems.map((item, index) => (
                         <span
                           key={`${order.id}-${index}`}
-                          className="size-12 overflow-hidden rounded-xl border-2 border-white bg-sand-100"
+                          className="size-12 overflow-hidden rounded-md border-2 border-white bg-surface-sunken"
                         >
                           {item.imagePath ? (
                             <img
@@ -117,11 +117,11 @@ export default function OrdersTab() {
                       ))}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm text-sand-700">
+                      <p className="truncate text-sm text-ink-700">
                         {order.previewItems.map((item) => `${item.quantity}× ${item.name}`).join(', ')}
                       </p>
                       {order.moreCount > 0 ? (
-                        <p className="mt-0.5 text-xs font-semibold text-brass-600">
+                        <p className="mt-0.5 text-xs font-semibold text-primary">
                           +{order.moreCount} more item{order.moreCount === 1 ? '' : 's'}
                         </p>
                       ) : null}

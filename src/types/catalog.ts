@@ -71,6 +71,9 @@ export type ProductListItem = Pick<
   | 'ratingAvg'
   | 'ratingCount'
   | 'categoryId'
+  // Both drive the real status pill on the product card — never decorative.
+  | 'isFeatured'
+  | 'createdAt'
 > & {
   primaryImagePath: string | null
 }

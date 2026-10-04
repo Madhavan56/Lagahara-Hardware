@@ -58,8 +58,8 @@ export default function ContactPage() {
   return (
     <div className="container-page py-10 lg:py-16">
       <div className="max-w-2xl">
-        <h1 className="text-3xl font-extrabold text-sand-900 lg:text-4xl">Get in touch</h1>
-        <p className="mt-3 text-sand-600">
+        <h1 className="text-3xl font-extrabold text-content lg:text-4xl">Get in touch</h1>
+        <p className="mt-3 text-ink-600">
           Trade pricing, bulk orders, or a question about a fitting — we usually reply within a
           business day.
         </p>
@@ -68,31 +68,31 @@ export default function ContactPage() {
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_380px]">
         <div>
           {submitted ? (
-            <div className="flex flex-col items-center justify-center rounded-card border border-add-500/30 bg-add-50 p-10 text-center">
-              <CheckCircle2 className="size-10 text-add-600" />
-              <p className="mt-3 font-bold text-sand-900">Message sent</p>
-              <p className="mt-1 text-sm text-sand-600">We'll get back to you shortly.</p>
+            <div className="flex flex-col items-center justify-center rounded-card border border-success-solid/30 bg-success-surface p-10 text-center">
+              <CheckCircle2 className="size-10 text-success" />
+              <p className="mt-3 font-bold text-content">Message sent</p>
+              <p className="mt-1 text-sm text-ink-600">We'll get back to you shortly.</p>
               <button
                 type="button"
                 onClick={() => setSubmitted(false)}
-                className="mt-4 text-sm font-bold text-brass-600 hover:text-brass-700"
+                className="mt-4 text-sm font-bold text-primary hover:text-primary-hover"
               >
                 Send another message
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 rounded-card border border-sand-200 bg-white p-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 rounded-card border border-border-subtle bg-card p-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <Input label="Name" error={errors.name?.message} {...register('name')} />
                 <Input label="Email" type="email" error={errors.email?.message} {...register('email')} />
               </div>
               <Input label="Phone (optional)" type="tel" {...register('phone')} />
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-sand-800">Message</label>
+                <label className="mb-1.5 block text-sm font-medium text-ink-800">Message</label>
                 <textarea
                   {...register('message')}
                   rows={5}
-                  className="w-full rounded-xl border border-sand-300 bg-white px-3.5 py-2.5 text-sm focus:border-brass-600 focus:outline-none"
+                  className="w-full rounded-md border border-border-strong bg-card px-3.5 py-2.5 text-sm focus:border-iris-600 focus:outline-none"
                 />
                 {errors.message ? <p className="mt-1.5 text-sm text-danger">{errors.message.message}</p> : null}
               </div>
@@ -107,13 +107,13 @@ export default function ContactPage() {
         <div className="space-y-3">
           {CONTACT_CARDS.map((card) => {
             const content = (
-              <div className="flex items-start gap-3 rounded-card border border-sand-200 bg-white p-4">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-brass-100 text-brass-600">
+              <div className="flex items-start gap-3 rounded-card border border-border-subtle bg-card p-4">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-card bg-iris-100 text-primary">
                   <card.icon className="size-5" />
                 </span>
                 <div>
-                  <p className="text-xs font-semibold tracking-wide text-sand-500 uppercase">{card.label}</p>
-                  <p className="mt-0.5 text-sm font-medium text-sand-900">{card.value}</p>
+                  <p className="text-xs font-semibold tracking-wide text-content-muted uppercase">{card.label}</p>
+                  <p className="mt-0.5 text-sm font-medium text-content">{card.value}</p>
                 </div>
               </div>
             )

@@ -9,7 +9,7 @@ import { Header } from './Header'
 const EASE_EXPO: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
 /**
- * Branded loading state: a fine brass ring with the house monogram, a soft
+ * Branded loading state: a fine violet ring with the house monogram, a soft
  * expanding halo, and a breathing wordmark caption. Used for the boot veil
  * and every lazy route.
  */
@@ -19,24 +19,24 @@ function BrandedLoader() {
       <div className="relative flex items-center justify-center">
         <motion.span
           aria-hidden
-          className="absolute size-14 rounded-full border border-brass-300"
+          className="absolute size-14 rounded-pill border border-iris-300"
           animate={{ scale: [1, 1.4], opacity: [0.6, 0] }}
           transition={{ duration: 1.6, repeat: Infinity, ease: 'easeOut' }}
         />
         <motion.span
-          className="size-10 rounded-full border-[3px] border-sand-200 border-t-brass-500"
+          className="size-10 rounded-pill border-[3px] border-border-subtle border-t-iris-500"
           animate={{ rotate: 360 }}
           transition={{ duration: 0.9, repeat: Infinity, ease: 'linear' }}
         />
         <span
           aria-hidden
-          className="absolute font-display text-[0.625rem] font-extrabold tracking-widest text-brand-800"
+          className="absolute font-display text-[0.625rem] font-extrabold tracking-widest text-iris-800"
         >
           LH
         </span>
       </div>
       <motion.p
-        className="text-[0.6875rem] font-semibold tracking-[0.25em] text-sand-500 uppercase"
+        className="text-[0.6875rem] font-semibold tracking-[0.25em] text-content-muted uppercase"
         animate={{ opacity: [0.45, 1, 0.45] }}
         transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
       >
@@ -91,7 +91,7 @@ export function RootLayout() {
         {!booted ? (
           <motion.div
             key="boot-veil"
-            className="fixed inset-0 z-100 flex items-center justify-center bg-sand-50"
+            className="fixed inset-0 z-100 flex items-center justify-center bg-surface"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.35, ease: 'easeOut' } }}
           >
@@ -104,7 +104,7 @@ export function RootLayout() {
         {!isAuthRoute ? <Header /> : null}
         {authMessage && !isAuthRoute ? (
           <div className="container-page pt-4" role="status" aria-live="polite">
-            <p className="rounded-xl bg-add-50 px-4 py-3 text-sm font-semibold text-add-600">
+            <p className="rounded-md bg-success-surface px-4 py-3 text-sm font-semibold text-success">
               {authMessage}
             </p>
           </div>

@@ -1,4 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 import {
   fetchCategories,
   fetchCategoryAttributes,
@@ -158,4 +159,20 @@ export function useShippingMethods() {
     queryFn: fetchShippingMethods,
     staleTime: 5 * 60 * 1000,
   })
+}
+
+/**
+ * Category id → name, derived from the already-cached categories query. The
+ * product list projection carries `categoryId` but not the name, and the
+ * product card needs the name for its label — this avoids both an extra
+ * request and a join on every list query.
+ */
+export function useCategoryNameMap() {
+  const { data: categories } = useCategories()
+
+  return useMemo(() => {
+    const map = new Map<string, string>()
+    for (const category of categories ?? []) map.set(category.id, category.name)
+    return map
+  }, [categories])
 }

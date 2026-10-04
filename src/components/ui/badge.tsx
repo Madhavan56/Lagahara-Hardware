@@ -3,16 +3,17 @@ import type { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 
 const badgeVariants = cva(
-  'inline-flex items-center gap-1 rounded-full font-medium tracking-wide whitespace-nowrap',
+  'inline-flex items-center gap-1 rounded-pill font-bold tracking-wide whitespace-nowrap',
   {
     variants: {
       variant: {
-        neutral: 'bg-sand-100 text-sand-700',
-        brand: 'bg-brand-50 text-brand-800',
-        accent: 'bg-brass-100 text-brass-800',
-        success: 'bg-emerald-50 text-success',
-        danger: 'bg-red-50 text-danger',
-        solid: 'bg-brand-800 text-sand-50',
+        neutral: 'bg-surface-sunken text-ink-700',
+        brand: 'bg-primary-soft text-iris-700',
+        accent: 'bg-iris-100 text-iris-800',
+        success: 'bg-success-surface text-success',
+        warning: 'bg-warning-surface text-warning',
+        danger: 'bg-danger-surface text-danger',
+        solid: 'bg-primary text-on-primary',
       },
       size: {
         sm: 'px-2 py-0.5 text-[0.6875rem]',
@@ -31,3 +32,5 @@ type BadgeProps = HTMLAttributes<HTMLSpanElement> & VariantProps<typeof badgeVar
 export function Badge({ className, variant, size, ...props }: BadgeProps) {
   return <span className={cn(badgeVariants({ variant, size }), className)} {...props} />
 }
+
+export { badgeVariants }

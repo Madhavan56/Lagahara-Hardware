@@ -83,7 +83,7 @@ export default function LoginPage() {
 
         {/* Forgot password link */}
         <motion.div className="text-right" custom={2} variants={fieldVariants} initial="hidden" animate="visible">
-          <Link to="/forgot-password" className="text-sm font-medium text-brand-700 hover:text-brand-900">
+          <Link to="/forgot-password" className="text-sm font-medium text-iris-700 hover:text-iris-900">
             Forgot password?
           </Link>
         </motion.div>
@@ -97,9 +97,9 @@ export default function LoginPage() {
 
         {/* Sign up link */}
         <motion.div className="text-center" custom={4} variants={fieldVariants} initial="hidden" animate="visible">
-          <p className="text-sm text-sand-600">
+          <p className="text-sm text-ink-600">
             New here?{' '}
-            <Link to="/signup" className="font-semibold text-brand-700 hover:text-brand-900">
+            <Link to="/signup" className="font-semibold text-iris-700 hover:text-iris-900">
               Create an account
             </Link>
           </p>

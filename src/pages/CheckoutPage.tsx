@@ -2,6 +2,7 @@ import { CheckCircle2, Plus, ShieldCheck, Truck, Zap } from 'lucide-react'
 import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { AddressForm } from '@/components/account/AddressForm'
+import { PromoCodeField } from '@/components/cart/PromoCodeField'
 import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
 import { Button } from '@/components/ui/button'
 import { useAddresses, useCreateAddress } from '@/features/account/queries'
@@ -9,11 +10,13 @@ import { useAuth } from '@/features/auth/AuthProvider'
 import { useCartStore } from '@/features/cart/store'
 import { useCartLines } from '@/features/cart/useCartLines'
 import { useShippingMethods } from '@/features/catalog/queries'
+import { useCouponStore } from '@/features/coupon/store'
+import { useCoupon } from '@/features/coupon/useCoupon'
 import { useCreateOrder, useVerifyPayment } from '@/features/checkout/queries'
 import { cancelOrderById } from '@/features/checkout/api'
 import { loadRazorpay } from '@/lib/razorpay'
 import { productImageUrl } from '@/lib/supabase/client'
-import { cn, extractGst, formatEta, formatPrice } from '@/lib/utils'
+import { cn, cssToken, extractGst, formatEta, formatPrice } from '@/lib/utils'
 import type { AddressInput } from '@/types/account'
 
 /**
@@ -25,6 +28,8 @@ export default function CheckoutPage() {
   const { user } = useAuth()
   const { lines, itemCount, subtotal, isLoading: cartLoading } = useCartLines()
   const clearCart = useCartStore((state) => state.clear)
+  const coupon = useCoupon(subtotal)
+  const clearCoupon = useCouponStore((state) => state.clear)
 
   const { data: addresses = [], isLoading: addressesLoading } = useAddresses(user?.id)
   const createAddress = useCreateAddress(user?.id)
@@ -52,7 +57,10 @@ export default function CheckoutPage() {
     (sum, line) => sum + extractGst(line.product.price, line.product.gstRate) * line.quantity,
     0,
   )
-  const total = subtotal + (selectedShipping?.price ?? 0)
+  // Discount applies to goods only; shipping is never discounted. The figure
+  // shown here is a preview — create-order recomputes it from the coupon row.
+  const discountedSubtotal = Math.max(0, subtotal - coupon.discount)
+  const total = discountedSubtotal + (selectedShipping?.price ?? 0)
 
   async function discardPendingPayment(orderId: string) {
     try {
@@ -73,6 +81,7 @@ export default function CheckoutPage() {
         shippingMethodCode: activeShippingCode,
         items: lines.map((line) => ({ productId: line.product.id, quantity: line.quantity })),
         paymentMethod,
+        couponCode: coupon.applied?.code,
       })
     } catch (err) {
       setOrderError(err instanceof Error ? err.message : 'Could not place order')
@@ -82,6 +91,7 @@ export default function CheckoutPage() {
     // Cash on delivery — the function already confirmed the order.
     if (created.paymentMethod === 'cod') {
       clearCart()
+      clearCoupon()
       setPlacedOrder({ orderNumber: created.orderNumber, total: created.total, cod: true })
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
@@ -110,7 +120,7 @@ export default function CheckoutPage() {
           ? { name: address.fullName, contact: address.phone }
           : undefined,
         notes: { order_number: created.orderNumber },
-        theme: { color: '#ff6f0f' },
+        theme: { color: cssToken('--color-iris-500', '#6c4dd9') },
         modal: {
           // User closed the Razorpay sheet without paying → remove the order.
           ondismiss: () => {
@@ -127,6 +137,7 @@ export default function CheckoutPage() {
                 razorpaySignature: response.razorpay_signature,
               })
               clearCart()
+              clearCoupon()
               setPendingPayment(null)
               setPlacedOrder({ orderNumber: created!.orderNumber, total: created!.total, cod: false })
               window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -156,15 +167,15 @@ export default function CheckoutPage() {
     return (
       <div className="container-page flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
         <CheckCircle2 className="size-14 text-success" />
-        <h1 className="mt-4 font-display text-2xl font-semibold text-sand-900">
+        <h1 className="mt-4 text-h2 text-content">
           {placedOrder.cod ? 'Order confirmed — cash on delivery' : 'Payment successful — order confirmed'}
         </h1>
-        <p className="mt-2 text-sand-600">
-          Order <span className="font-medium text-sand-900">{placedOrder.orderNumber}</span> for{' '}
+        <p className="mt-2 text-ink-600">
+          Order <span className="font-medium text-content">{placedOrder.orderNumber}</span> for{' '}
           {formatPrice(placedOrder.total)} is{' '}
           {placedOrder.cod ? 'confirmed — pay in cash when it arrives.' : 'confirmed and heading to dispatch.'}
         </p>
-        <Link to="/account/orders" className="mt-6 text-sm font-medium text-brand-700 hover:text-brand-900">
+        <Link to="/account/orders" className="mt-6 text-sm font-medium text-iris-700 hover:text-iris-900">
           View your orders
         </Link>
       </div>
@@ -178,9 +189,9 @@ export default function CheckoutPage() {
   return (
     <div className="container-page py-10 lg:py-14">
       <div className="mb-8">
-        <h1 className="font-display text-3xl font-semibold text-sand-900 lg:text-4xl">Checkout</h1>
-        <p className="mt-2 flex items-center gap-1.5 text-sm text-sand-600">
-          <Zap className="size-4 fill-brass-500 text-brass-500" aria-hidden />
+        <h1 className="text-h1 text-content">Checkout</h1>
+        <p className="mt-2 flex items-center gap-1.5 text-sm text-ink-600">
+          <Zap className="size-4 fill-iris-500 text-iris-500" aria-hidden />
           {itemCount} {itemCount === 1 ? 'item' : 'items'} ready for dispatch — review and place your order below.
         </p>
       </div>
@@ -188,15 +199,15 @@ export default function CheckoutPage() {
       <div className="grid items-start gap-10 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">
           {/* Delivery address */}
-          <section aria-labelledby="checkout-address" className="rounded-panel border border-sand-200 bg-white p-5 lg:p-6">
-            <h2 id="checkout-address" className="flex items-center gap-2 text-sm font-bold tracking-wide text-sand-900 uppercase">
-              <span className="flex size-6 items-center justify-center rounded-full bg-brass-500 text-xs font-bold text-white">1</span>
+          <section aria-labelledby="checkout-address" className="rounded-panel border border-border-subtle bg-card p-5 lg:p-6">
+            <h2 id="checkout-address" className="flex items-center gap-2 text-sm font-bold tracking-wide text-content uppercase">
+              <span className="flex size-6 items-center justify-center rounded-pill bg-primary text-xs font-bold text-white">1</span>
               Delivery address
             </h2>
 
             <div className="mt-4 space-y-3">
               {addressesLoading ? (
-                <p className="text-sm text-sand-500">Loading addresses…</p>
+                <p className="text-sm text-content-muted">Loading addresses…</p>
               ) : (
                 addresses.map((address) => (
                   <label
@@ -204,8 +215,8 @@ export default function CheckoutPage() {
                     className={cn(
                       'flex cursor-pointer items-start gap-3 rounded-card border p-4 transition-colors',
                       activeAddressId === address.id
-                        ? 'border-brand-600 bg-brand-50'
-                        : 'border-sand-200 bg-white hover:border-sand-300',
+                        ? 'border-iris-600 bg-iris-50'
+                        : 'border-border-subtle bg-card hover:border-border-strong',
                     )}
                   >
                     <input
@@ -216,9 +227,9 @@ export default function CheckoutPage() {
                       className="mt-1"
                     />
                     <div className="text-sm">
-                      <p className="font-semibold text-sand-900">{address.label || address.fullName}</p>
-                      <p className="text-sand-600">{address.fullName} · {address.phone}</p>
-                      <p className="text-sand-600">
+                      <p className="font-semibold text-content">{address.label || address.fullName}</p>
+                      <p className="text-ink-600">{address.fullName} · {address.phone}</p>
+                      <p className="text-ink-600">
                         {address.line1}
                         {address.line2 ? `, ${address.line2}` : ''}, {address.city}, {address.state}{' '}
                         {address.postalCode}
@@ -253,15 +264,15 @@ export default function CheckoutPage() {
           </section>
 
           {/* Delivery speed */}
-          <section aria-labelledby="checkout-shipping" className="rounded-panel border border-sand-200 bg-white p-5 lg:p-6">
-            <h2 id="checkout-shipping" className="flex items-center gap-2 text-sm font-bold tracking-wide text-sand-900 uppercase">
-              <span className="flex size-6 items-center justify-center rounded-full bg-brass-500 text-xs font-bold text-white">2</span>
+          <section aria-labelledby="checkout-shipping" className="rounded-panel border border-border-subtle bg-card p-5 lg:p-6">
+            <h2 id="checkout-shipping" className="flex items-center gap-2 text-sm font-bold tracking-wide text-content uppercase">
+              <span className="flex size-6 items-center justify-center rounded-pill bg-primary text-xs font-bold text-white">2</span>
               Delivery speed
             </h2>
 
             <div className="mt-4 space-y-3">
               {shippingLoading ? (
-                <p className="text-sm text-sand-500">Loading shipping options…</p>
+                <p className="text-sm text-content-muted">Loading shipping options…</p>
               ) : (
                 shippingMethods.map((method) => (
                   <label
@@ -269,8 +280,8 @@ export default function CheckoutPage() {
                     className={cn(
                       'flex cursor-pointer items-start justify-between gap-3 rounded-card border p-4 transition-colors',
                       activeShippingCode === method.code
-                        ? 'border-brand-600 bg-brand-50'
-                        : 'border-sand-200 bg-white hover:border-sand-300',
+                        ? 'border-iris-600 bg-iris-50'
+                        : 'border-border-subtle bg-card hover:border-border-strong',
                     )}
                   >
                     <div className="flex items-start gap-3">
@@ -282,20 +293,20 @@ export default function CheckoutPage() {
                         className="mt-1"
                       />
                       <div>
-                        <p className="flex items-center gap-2 text-sm font-semibold text-sand-900">
+                        <p className="flex items-center gap-2 text-sm font-semibold text-content">
                           {method.etaDaysMin <= 2 ? (
-                            <Zap className="size-4 fill-brass-500 text-brass-500" aria-hidden />
+                            <Zap className="size-4 fill-iris-500 text-iris-500" aria-hidden />
                           ) : (
-                            <Truck className="size-4 text-brand-700" aria-hidden />
+                            <Truck className="size-4 text-iris-700" aria-hidden />
                           )}
                           {method.name}
                         </p>
-                        <p className="mt-1 text-sm text-sand-600">
+                        <p className="mt-1 text-sm text-ink-600">
                           {method.description || formatEta(method.etaDaysMin, method.etaDaysMax)}
                         </p>
                       </div>
                     </div>
-                    <span className="text-sm font-bold text-sand-900">
+                    <span className="text-sm font-bold text-content">
                       {method.price === 0 ? 'Free' : formatPrice(method.price)}
                     </span>
                   </label>
@@ -305,9 +316,9 @@ export default function CheckoutPage() {
           </section>
 
           {/* Items */}
-          <section aria-labelledby="checkout-items" className="rounded-panel border border-sand-200 bg-white p-5 lg:p-6">
-            <h2 id="checkout-items" className="flex items-center gap-2 text-sm font-bold tracking-wide text-sand-900 uppercase">
-              <span className="flex size-6 items-center justify-center rounded-full bg-brass-500 text-xs font-bold text-white">3</span>
+          <section aria-labelledby="checkout-items" className="rounded-panel border border-border-subtle bg-card p-5 lg:p-6">
+            <h2 id="checkout-items" className="flex items-center gap-2 text-sm font-bold tracking-wide text-content uppercase">
+              <span className="flex size-6 items-center justify-center rounded-pill bg-primary text-xs font-bold text-white">3</span>
               Review items ({itemCount})
             </h2>
 
@@ -315,8 +326,8 @@ export default function CheckoutPage() {
               {lines.map((line) => {
                 const imageUrl = productImageUrl(line.product.primaryImagePath, { width: 150 })
                 return (
-                  <li key={line.product.id} className="flex items-center gap-3 rounded-card border border-sand-200 p-3">
-                    <div className="size-14 shrink-0 overflow-hidden rounded-xl bg-sand-100">
+                  <li key={line.product.id} className="flex items-center gap-3 rounded-card border border-border-subtle p-3">
+                    <div className="size-14 shrink-0 overflow-hidden rounded-md bg-surface-sunken">
                       {imageUrl ? (
                         <img src={imageUrl} alt="" className="size-full object-cover" />
                       ) : (
@@ -324,10 +335,10 @@ export default function CheckoutPage() {
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="line-clamp-1 text-sm font-semibold text-sand-900">{line.product.name}</p>
-                      <p className="text-xs text-sand-500">{line.quantity} × {formatPrice(line.product.price)}</p>
+                      <p className="line-clamp-1 text-sm font-semibold text-content">{line.product.name}</p>
+                      <p className="text-xs text-content-muted">{line.quantity} × {formatPrice(line.product.price)}</p>
                     </div>
-                    <span className="text-sm font-bold text-sand-900">{formatPrice(line.lineTotal)}</span>
+                    <span className="text-sm font-bold text-content">{formatPrice(line.lineTotal)}</span>
                   </li>
                 )
               })}
@@ -336,31 +347,40 @@ export default function CheckoutPage() {
         </div>
 
         {/* Sticky summary with the single primary CTA */}
-        <div className="sticky top-31 rounded-panel border border-sand-200 bg-sand-50 p-6">
-          <h2 className="mb-4 text-sm font-semibold tracking-wide text-sand-900 uppercase">Order Summary</h2>
+        <div className="sticky top-31 rounded-panel border border-border-subtle bg-surface p-6">
+          <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">Order Summary</h2>
+          <div className="mb-4">
+            <PromoCodeField coupon={coupon} />
+          </div>
           <div className="space-y-2 text-sm">
-            <div className="flex justify-between text-sand-600">
+            <div className="flex justify-between text-ink-600">
               <span>Subtotal ({itemCount} items)</span>
-              <span className="text-sand-900">{formatPrice(subtotal)}</span>
+              <span className="text-content">{formatPrice(subtotal)}</span>
             </div>
-            <div className="flex justify-between text-sand-500">
+            {coupon.discount > 0 ? (
+              <div className="flex justify-between text-ink-600">
+                <span>Discount ({coupon.applied?.code})</span>
+                <span className="font-semibold text-success">−{formatPrice(coupon.discount)}</span>
+              </div>
+            ) : null}
+            <div className="flex justify-between text-content-muted">
               <span>Incl. GST</span>
               <span>{formatPrice(gstTotal, true)}</span>
             </div>
-            <div className="flex justify-between text-sand-600">
+            <div className="flex justify-between text-ink-600">
               <span>Shipping</span>
-              <span className="text-sand-900">
+              <span className="text-content">
                 {selectedShipping ? (selectedShipping.price === 0 ? 'Free' : formatPrice(selectedShipping.price)) : '—'}
               </span>
             </div>
           </div>
-          <div className="mt-4 flex justify-between border-t border-sand-200 pt-4 text-base font-semibold text-sand-900">
+          <div className="mt-4 flex justify-between border-t border-border-subtle pt-4 text-base font-semibold text-content">
             <span>Total</span>
             <span>{formatPrice(total)}</span>
           </div>
 
           {orderError ? (
-            <p className="mt-3 rounded-xl bg-danger/10 px-3 py-2 text-sm text-danger">{orderError}</p>
+            <p className="mt-3 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{orderError}</p>
           ) : null}
 
           {/* Payment method — online via the gateway, or cash on delivery */}
@@ -371,14 +391,14 @@ export default function CheckoutPage() {
               aria-checked={paymentMethod === 'razorpay'}
               onClick={() => setPaymentMethod('razorpay')}
               className={cn(
-                'rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors',
+                'rounded-md border-2 px-3 py-2.5 text-sm font-bold transition-colors',
                 paymentMethod === 'razorpay'
-                  ? 'border-brand-600 bg-brand-50 text-brand-800'
-                  : 'border-sand-200 bg-white text-sand-600 hover:border-sand-300',
+                  ? 'border-iris-600 bg-iris-50 text-iris-800'
+                  : 'border-border-subtle bg-card text-ink-600 hover:border-border-strong',
               )}
             >
               Pay online
-              <span className="mt-0.5 block text-[0.6875rem] font-medium text-sand-500">UPI · Cards · Netbanking</span>
+              <span className="mt-0.5 block text-[0.6875rem] font-medium text-content-muted">UPI · Cards · Netbanking</span>
             </button>
             <button
               type="button"
@@ -386,14 +406,14 @@ export default function CheckoutPage() {
               aria-checked={paymentMethod === 'cod'}
               onClick={() => setPaymentMethod('cod')}
               className={cn(
-                'rounded-xl border-2 px-3 py-2.5 text-sm font-bold transition-colors',
+                'rounded-md border-2 px-3 py-2.5 text-sm font-bold transition-colors',
                 paymentMethod === 'cod'
-                  ? 'border-brand-600 bg-brand-50 text-brand-800'
-                  : 'border-sand-200 bg-white text-sand-600 hover:border-sand-300',
+                  ? 'border-iris-600 bg-iris-50 text-iris-800'
+                  : 'border-border-subtle bg-card text-ink-600 hover:border-border-strong',
               )}
             >
               Cash on delivery
-              <span className="mt-0.5 block text-[0.6875rem] font-medium text-sand-500">Pay when it arrives</span>
+              <span className="mt-0.5 block text-[0.6875rem] font-medium text-content-muted">Pay when it arrives</span>
             </button>
           </div>
 
@@ -412,14 +432,14 @@ export default function CheckoutPage() {
             <button
               type="button"
               onClick={handleRetryAfterDismiss}
-              className="mt-2 w-full text-center text-xs font-semibold text-sand-500 hover:text-sand-700"
+              className="mt-2 w-full text-center text-xs font-semibold text-content-muted hover:text-ink-700"
             >
               Payment window closed — order removed, tap to continue
             </button>
           ) : null}
 
-          <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-sand-500">
-            <ShieldCheck className="size-4 text-brand-600" aria-hidden />
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-xs text-content-muted">
+            <ShieldCheck className="size-4 text-iris-600" aria-hidden />
             GST invoice · Secure Razorpay checkout
           </p>
         </div>

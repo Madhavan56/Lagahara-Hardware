@@ -36,14 +36,14 @@ export default function AdminCategoriesPage() {
   return (
     <div className="max-w-3xl">
       <div className="flex items-center justify-between">
-        <h1 className="font-display text-2xl font-semibold text-sand-900">Categories</h1>
+        <h1 className="text-h2 text-content">Categories</h1>
         <Button size="sm" leadingIcon={<Plus className="size-3.5" />} onClick={() => setCreating((v) => !v)}>
           New category
         </Button>
       </div>
 
       {creating ? (
-        <div className="mt-4 space-y-3 rounded-card border border-sand-200 bg-white p-5">
+        <div className="mt-4 space-y-3 rounded-card border border-border-subtle bg-card p-5">
           <Input label="Name" value={newName} onChange={(e) => setNewName(e.target.value)} />
           <Input label="Description (optional)" value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
           {createError ? <p className="text-sm text-danger">{createError}</p> : null}
@@ -55,10 +55,10 @@ export default function AdminCategoriesPage() {
 
       <div className="mt-6 space-y-3">
         {isLoading ? (
-          <p className="text-sm text-sand-500">Loading…</p>
+          <p className="text-sm text-content-muted">Loading…</p>
         ) : (
           categories.map((category) => (
-            <div key={category.id} className="rounded-card border border-sand-200 bg-white">
+            <div key={category.id} className="rounded-card border border-border-subtle bg-card">
               <button
                 type="button"
                 onClick={() => setExpandedId(expandedId === category.id ? null : category.id)}
@@ -66,18 +66,18 @@ export default function AdminCategoriesPage() {
                 className="flex w-full items-center justify-between p-4 text-left"
               >
                 <div>
-                  <p className="font-medium text-sand-900">{category.name}</p>
-                  <p className="text-xs text-sand-500">{category.description}</p>
+                  <p className="font-medium text-content">{category.name}</p>
+                  <p className="text-xs text-content-muted">{category.description}</p>
                 </div>
                 {expandedId === category.id ? (
-                  <ChevronUp className="size-4 text-sand-500" />
+                  <ChevronUp className="size-4 text-content-muted" />
                 ) : (
-                  <ChevronDown className="size-4 text-sand-500" />
+                  <ChevronDown className="size-4 text-content-muted" />
                 )}
               </button>
               {expandedId === category.id ? (
-                <div className="border-t border-sand-200 p-4">
-                  <p className="mb-3 text-xs font-semibold tracking-wide text-sand-500 uppercase">
+                <div className="border-t border-border-subtle p-4">
+                  <p className="mb-3 text-xs font-semibold tracking-wide text-content-muted uppercase">
                     Specification schema
                   </p>
                   <CategoryAttributeEditor categoryId={category.id} />

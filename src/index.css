@@ -1,65 +1,169 @@
 @import 'tailwindcss';
 
-@theme {
-  /* Warm neutrals — clean, bright canvas in the quick-commerce spirit */
-  --color-sand-50: #fefcfa;
-  --color-sand-100: #f7f3ed;
-  --color-sand-200: #ece5d9;
-  --color-sand-300: #d8cdbb;
-  --color-sand-400: #b5a791;
-  --color-sand-500: #8e8170;
-  --color-sand-600: #6b6053;
-  --color-sand-700: #4e463c;
-  --color-sand-800: #332e28;
-  --color-sand-900: #1f1b17;
-  --color-sand-950: #12100d;
+/*
+  Design tokens — the single source of truth for colour, shape, elevation and
+  type. Nothing in a component may hardcode a hex, radius, shadow or font;
+  everything resolves through the variables below.
 
-  /* Brand — deep pine, used for structure, headers and secondary emphasis */
-  --color-brand-50: #ecf6f2;
-  --color-brand-100: #d0e9e0;
-  --color-brand-200: #a2d3c3;
-  --color-brand-300: #6cb7a1;
-  --color-brand-400: #3c9580;
-  --color-brand-500: #1f7a66;
-  --color-brand-600: #136052;
-  --color-brand-700: #0e4c42;
-  --color-brand-800: #0b3b34;
-  --color-brand-900: #082c27;
-  --color-brand-950: #041a17;
+  Layers:
+    1. Raw ramps      — `iris` (violet primary) and `ink` (cool neutrals).
+    2. Semantic names — `surface`, `card`, `content`, `primary`, `border-*`,
+       the pastel category tones and the status colours. Components reach for
+       these; the raw ramp is used directly only when a specific step is
+       genuinely what's wanted (e.g. the deep `iris-950` footer).
 
-  /* Brass — vivid orange, the primary CTA/energy colour across the app */
-  --color-brass-50: #fff6ed;
-  --color-brass-100: #ffe9d3;
-  --color-brass-200: #ffcd9e;
-  --color-brass-300: #ffab5c;
-  --color-brass-400: #ff8a2b;
-  --color-brass-500: #ff6f0f;
-  --color-brass-600: #f05505;
-  --color-brass-700: #c73f04;
-  --color-brass-800: #9e330b;
-  --color-brass-900: #7f2c0c;
+  `static` forces every variable to be emitted even when it is only referenced
+  indirectly by another token, which the semantic layer depends on.
+*/
+@theme static {
+  /* ---------------------------------------------------------------------
+     Primary — iris. Anchored on #6C4DD9 (5.67:1 on white, so white text on a
+     500 fill clears WCAG AA). 600 is the hover and the small-text-safe shade
+     at 7.0:1.
+     --------------------------------------------------------------------- */
+  --color-iris-50: #f4f1fe;
+  --color-iris-100: #e9e3fd;
+  --color-iris-200: #d5cbfb;
+  --color-iris-300: #b8a6f6;
+  --color-iris-400: #957bee;
+  --color-iris-500: #6c4dd9;
+  --color-iris-600: #5b3bc4;
+  --color-iris-700: #4a2fa3;
+  --color-iris-800: #3c2782;
+  --color-iris-900: #2f1f63;
+  --color-iris-950: #1d1340;
 
-  /* Add — the "quick add" green, distinct from the orange brand accent */
-  --color-add-50: #eafcf1;
-  --color-add-500: #12b76a;
-  --color-add-600: #039754;
+  /* ---------------------------------------------------------------------
+     Neutrals — ink. Cool, faintly violet-cast greys: near-white page, white
+     cards, light-grey product image tiles. 500 is the muted text shade
+     (4.9:1 on the page background); 900 is body copy (15.2:1).
+     --------------------------------------------------------------------- */
+  --color-ink-50: #f7f7fb;
+  --color-ink-100: #f1f0f7;
+  --color-ink-200: #e6e4ef;
+  --color-ink-300: #cfccdc;
+  --color-ink-400: #a5a1b8;
+  --color-ink-500: #78748d;
+  --color-ink-600: #5b5771;
+  --color-ink-700: #45425a;
+  --color-ink-800: #2e2b40;
+  --color-ink-900: #1c1a2b;
+  --color-ink-950: #0f0e18;
 
-  --color-success: #12b76a;
+  /* ---------------------------------------------------------------------
+     Semantic names — what components should actually reach for.
+     --------------------------------------------------------------------- */
+  --color-surface: var(--color-ink-50);
+  --color-surface-sunken: var(--color-ink-100);
+  --color-card: #ffffff;
+  --color-border-subtle: var(--color-ink-200);
+  --color-border-strong: var(--color-ink-300);
+  --color-content: var(--color-ink-900);
+  --color-content-muted: var(--color-ink-500);
+  --color-content-subtle: var(--color-ink-400);
+  --color-primary: var(--color-iris-500);
+  --color-primary-hover: var(--color-iris-600);
+  --color-primary-soft: var(--color-iris-50);
+  --color-primary-soft-hover: var(--color-iris-100);
+  --color-on-primary: #ffffff;
+
+  /* ---------------------------------------------------------------------
+     Pastel category surfaces, each with a link/text shade verified AA on its
+     own tint (6.2:1, 6.0:1, 4.9:1, 4.5:1 respectively).
+     --------------------------------------------------------------------- */
+  --color-pastel-lavender: #efeafe;
+  --color-pastel-lavender-ink: #5b3bc4;
+  --color-pastel-sky: #e4effe;
+  --color-pastel-sky-ink: #1d4ed8;
+  --color-pastel-mint: #e2f6ee;
+  --color-pastel-mint-ink: #047857;
+  --color-pastel-peach: #ffece1;
+  --color-pastel-peach-ink: #c2410c;
+
+  /* ---------------------------------------------------------------------
+     Status pills — solid fills with white text, all AA at small sizes.
+     --------------------------------------------------------------------- */
+  --color-pill-new: #6c4dd9; /* 5.67:1 */
+  --color-pill-best: #d6336c; /* 4.62:1 */
+  --color-pill-sale: #2563eb; /* 5.17:1 */
+  --color-pill-discount: #dc2626; /* 4.83:1 */
+
+  /* Ratings. Amber is a fill colour only — never used for text. */
+  --color-star: #f5a623;
+  --color-star-empty: var(--color-ink-300);
+
+  /* Feedback. Each `-surface` is the tint, the base is the AA-safe text. */
+  --color-success: #047857;
+  --color-success-solid: #10b981;
+  --color-success-surface: #e2f6ee;
   --color-warning: #b45309;
-  --color-danger: #e11d48;
+  --color-warning-surface: #fef3e2;
+  --color-danger: #dc2626;
+  --color-danger-surface: #fdeaea;
 
+  /* ---------------------------------------------------------------------
+     Shape. Pills for buttons, search and badges; 16–24px for cards.
+     --------------------------------------------------------------------- */
+  --radius-xs: 0.5rem;
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-card: 1.25rem;
+  --radius-panel: 1.5rem;
+  --radius-hero: 2rem;
+  --radius-pill: 9999px;
+
+  /* ---------------------------------------------------------------------
+     Elevation — violet-tinted and soft; no heavy borders anywhere.
+     --------------------------------------------------------------------- */
+  --shadow-xs: 0 1px 2px rgb(60 39 130 / 0.04);
+  --shadow-card: 0 1px 2px rgb(60 39 130 / 0.04), 0 8px 24px rgb(60 39 130 / 0.06);
+  --shadow-lift: 0 4px 8px rgb(60 39 130 / 0.05), 0 16px 40px rgb(60 39 130 / 0.1);
+  --shadow-float: 0 12px 32px rgb(60 39 130 / 0.1), 0 32px 72px rgb(60 39 130 / 0.14);
+  --shadow-primary: 0 8px 24px rgb(108 77 217 / 0.32);
+
+  /* ---------------------------------------------------------------------
+     Type. Plus Jakarta Sans throughout (already loaded in index.html).
+     Tailwind's own text-xs…text-9xl are untouched; these are additions.
+     --------------------------------------------------------------------- */
   --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
 
-  --radius-card: 1.25rem;
-  --radius-panel: 1.5rem;
+  --text-hero: clamp(2.25rem, 5.5vw, 4rem);
+  --text-hero--line-height: 1.03;
+  --text-hero--font-weight: 800;
+  --text-hero--letter-spacing: -0.03em;
 
-  --shadow-card: 0 1px 2px rgb(31 27 23 / 0.05), 0 4px 16px rgb(31 27 23 / 0.07);
-  --shadow-lift: 0 2px 4px rgb(31 27 23 / 0.06), 0 12px 32px rgb(31 27 23 / 0.12);
-  --shadow-float: 0 8px 24px rgb(31 27 23 / 0.12), 0 24px 64px rgb(31 27 23 / 0.16);
+  --text-h1: clamp(1.875rem, 4vw, 2.75rem);
+  --text-h1--line-height: 1.1;
+  --text-h1--font-weight: 800;
+  --text-h1--letter-spacing: -0.025em;
+
+  --text-h2: clamp(1.375rem, 2.5vw, 1.875rem);
+  --text-h2--line-height: 1.15;
+  --text-h2--font-weight: 800;
+  --text-h2--letter-spacing: -0.02em;
+
+  --text-h3: 1.125rem;
+  --text-h3--line-height: 1.3;
+  --text-h3--font-weight: 700;
+  --text-h3--letter-spacing: -0.01em;
+
+  /* The small uppercase category label that sits above product names. */
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.2;
+  --text-label--font-weight: 700;
+  --text-label--letter-spacing: 0.14em;
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Gradients live outside @theme — they are images, not colours, and are
+   applied through the utilities defined further down. */
+:root {
+  --gradient-promo: linear-gradient(135deg, #4f6bf6 0%, #4338ca 100%);
+  --gradient-brand: linear-gradient(135deg, #7c5ce6 0%, #c44bc8 70%, #ec5f9e 100%);
+  --gradient-hero-panel: linear-gradient(135deg, #f4f1fe 0%, #eef2fe 55%, #fdf0f8 100%);
 }
 
 @keyframes sheen {
@@ -87,8 +191,8 @@
   }
 
   body {
-    background-color: var(--color-sand-50);
-    color: var(--color-sand-900);
+    background-color: var(--color-surface);
+    color: var(--color-content);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -108,14 +212,21 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brass-600);
+    outline: 2px solid var(--color-iris-600);
     outline-offset: 2px;
     border-radius: 2px;
   }
 
+  /* On dark or gradient panels the 600 ring disappears; opt into the light
+     ring by adding `focus-ring-light` to the panel or the control itself. */
+  .focus-ring-light :focus-visible,
+  .focus-ring-light:focus-visible {
+    outline-color: var(--color-iris-200);
+  }
+
   ::selection {
-    background-color: var(--color-brass-200);
-    color: var(--color-sand-950);
+    background-color: var(--color-iris-200);
+    color: var(--color-ink-950);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -148,8 +259,20 @@
   }
 }
 
-/* Signature CTA sheen — a single soft brass glint sweeping across primary
-   buttons on hover. Pure transform, GPU-composited, ~600ms. */
+@utility bg-gradient-promo {
+  background-image: var(--gradient-promo);
+}
+
+@utility bg-gradient-brand {
+  background-image: var(--gradient-brand);
+}
+
+@utility bg-gradient-hero {
+  background-image: var(--gradient-hero-panel);
+}
+
+/* Signature CTA sheen — a single soft glint sweeping across primary buttons
+   on hover. Pure transform, GPU-composited, ~600ms. */
 @utility sheen-sweep {
   position: relative;
   overflow: hidden;
@@ -175,8 +298,7 @@
   animation: sheen 0.7s var(--ease-out-soft) forwards;
 }
 
-/* Skeleton shimmer — a travelling highlight over a soft base, noticeably
-   richer than a plain opacity pulse. */
+/* Skeleton shimmer — a travelling highlight over a soft base. */
 .skeleton-shimmer {
   position: relative;
   overflow: hidden;
@@ -200,11 +322,11 @@
   justify-content: center;
   min-width: 1rem;
   height: 1rem;
-  border-radius: 9999px;
-  background-color: var(--color-sand-100);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary);
   padding: 0.25rem;
   font-size: 0.625rem;
   font-weight: 700;
   line-height: 1;
-  color: var(--color-add-600);
+  color: var(--color-on-primary);
 }
