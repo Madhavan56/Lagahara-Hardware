@@ -19,8 +19,8 @@ type FormValues = z.infer<typeof schema>
 const CONTACT_CARDS = [
   { icon: Phone, label: 'Call us', value: '+91 73737 30340', href: 'tel:+917373730340' },
   { icon: Mail, label: 'Email us', value: 'dhuraimuthukumar@hotmail.com', href: 'mailto:dhuraimuthukumar@hotmail.com' },
-  { icon: MapPin, label: 'Visit us', value: '1243, Murugan Kovil Street, Kalainyar Nagar, Thanjavur – 613 004', href: null },
-  { icon: Clock, label: 'Hours', value: 'Mon–Sat, 9 AM – 6 PM', href: null },
+  { icon: MapPin, label: 'Visit us', value: '1243, Murugan Kovil Street, Kalainyar Nagar, Thanjavur 613 004', href: null },
+  { icon: Clock, label: 'Hours', value: 'Mon to Sat, 9 AM to 6 PM', href: null },
 ]
 
 export default function ContactPage() {
@@ -28,7 +28,7 @@ export default function ContactPage() {
   const [formError, setFormError] = useState<string | null>(null)
 
   useDocumentHead({
-    title: 'Contact — Laghara Hardwares',
+    title: 'Contact | Laghara Hardwares',
     description: 'Get in touch with Laghara Hardwares for trade pricing, bulk orders, or support.',
   })
 
@@ -60,7 +60,7 @@ export default function ContactPage() {
       <div className="max-w-2xl">
         <h1 className="text-3xl font-extrabold text-content lg:text-4xl">Get in touch</h1>
         <p className="mt-3 text-ink-600">
-          Trade pricing, bulk orders, or a question about a fitting — we usually reply within a
+          Trade pricing, bulk orders, or a question about a fitting? We usually reply within a
           business day.
         </p>
       </div>

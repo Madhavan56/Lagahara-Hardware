@@ -32,7 +32,7 @@ export default function ResetPasswordPage() {
       setFormError(
         err instanceof Error
           ? err.message
-          : 'Could not update password. The reset link may have expired — request a new one.',
+          : 'Could not update password. The reset link may have expired. Request a new one.',
       )
     }
   }

@@ -1,4 +1,7 @@
-import { motion } from 'framer-motion'
+import { PackageSearch } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { StaggerList } from '@/components/motion/stagger-list'
+import { buttonVariants } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { cn } from '@/lib/utils'
@@ -47,32 +50,29 @@ export function ProductGrid({
 
   if (!products?.length) {
     return (
-      <Card size="lg" className="text-sm text-content-muted">
-        No products found.
+      <Card size="lg" variant="soft" className="flex flex-col items-center py-12 text-center">
+        <PackageSearch className="size-10 text-primary" aria-hidden />
+        <p className="mt-4 text-h3 text-content">Nothing matches yet</p>
+        <p className="mt-1 max-w-sm text-sm text-content-muted">
+          Try removing a filter or searching for a different term. You can also browse the full catalogue.
+        </p>
+        <Link to="/shop" className={cn(buttonVariants({ variant: 'outline', size: 'sm' }), 'mt-5')}>
+          Shop all
+        </Link>
       </Card>
     )
   }
 
   return (
-    <motion.div
-      initial="hidden"
-      // Fade in as the row scrolls into view rather than on mount, so grids
-      // below the fold don't animate while off screen. MotionConfig's
-      // reducedMotion="user" still disables this entirely when requested.
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.1 }}
-      variants={{ visible: { transition: { staggerChildren: 0.04 } } }}
-      className={cn(gridClass, 'transition-opacity duration-200', isFetching && 'pointer-events-none opacity-40')}
-    >
-      {products.map((product) => (
-        <motion.div
-          key={product.id}
-          variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <ProductCard product={product} />
-        </motion.div>
-      ))}
-    </motion.div>
+    <div className={cn('transition-opacity duration-(--duration-fast)', isFetching && 'pointer-events-none opacity-40')}>
+      {/* Replays the staggered fade whenever the set of products changes (filters, sort, page). */}
+      <StaggerList
+        items={products}
+        getKey={(product) => product.id}
+        replayKey={products.map((product) => product.id).join(',')}
+        className={gridClass}
+        renderItem={(product) => <ProductCard product={product} />}
+      />
+    </div>
   )
 }

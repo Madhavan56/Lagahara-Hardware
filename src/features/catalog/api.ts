@@ -59,6 +59,7 @@ function mapCategoryAttribute(row: Row): CategoryAttribute {
 function mapProductListItem(row: Row): ProductListItem {
   const images = Array.isArray(row.product_images) ? (row.product_images as Row[]) : []
   const primary = images.find((image) => image.is_primary === true) ?? images[0]
+  const secondary = images.find((image) => image !== primary)
 
   return {
     id: asString(row.id),
@@ -76,6 +77,7 @@ function mapProductListItem(row: Row): ProductListItem {
     isFeatured: row.is_featured === true,
     createdAt: asString(row.created_at),
     primaryImagePath: primary ? asNullableString(primary.storage_path) : null,
+    secondaryImagePath: secondary ? asNullableString(secondary.storage_path) : null,
   }
 }
 

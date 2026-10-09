@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
-import { motion, type Variants } from 'framer-motion'
+import { m, type Variants } from 'framer-motion'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -71,17 +71,17 @@ export default function SignupPage() {
     <AuthLayout title="Create an account" subtitle="Join Laghara for exclusive access">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Full name field */}
-        <motion.div custom={0} variants={fieldVariants} initial="hidden" animate="visible">
+        <m.div custom={0} variants={fieldVariants} initial="hidden" animate="visible">
           <Input label="Full name" autoComplete="name" error={errors.fullName?.message} {...register('fullName')} />
-        </motion.div>
+        </m.div>
 
         {/* Email field */}
-        <motion.div custom={1} variants={fieldVariants} initial="hidden" animate="visible">
+        <m.div custom={1} variants={fieldVariants} initial="hidden" animate="visible">
           <Input label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
-        </motion.div>
+        </m.div>
 
         {/* Password field */}
-        <motion.div custom={2} variants={fieldVariants} initial="hidden" animate="visible">
+        <m.div custom={2} variants={fieldVariants} initial="hidden" animate="visible">
           <Input
             label="Password"
             type="password"
@@ -90,35 +90,35 @@ export default function SignupPage() {
             error={errors.password?.message}
             {...register('password')}
           />
-        </motion.div>
+        </m.div>
 
         {/* Error message */}
         {formError ? (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
             <p className="text-sm text-danger">{formError}</p>
-          </motion.div>
+          </m.div>
         ) : null}
 
         {/* Submit button */}
-        <motion.div custom={3} variants={fieldVariants} initial="hidden" animate="visible">
+        <m.div custom={3} variants={fieldVariants} initial="hidden" animate="visible">
           <Button type="submit" block loading={isSubmitting}>
             Create account
           </Button>
-        </motion.div>
+        </m.div>
 
         {/* Sign in link */}
-        <motion.div className="text-center" custom={4} variants={fieldVariants} initial="hidden" animate="visible">
+        <m.div className="text-center" custom={4} variants={fieldVariants} initial="hidden" animate="visible">
           <p className="text-sm text-ink-600">
             Already have an account?{' '}
             <Link to="/login" className="font-semibold text-iris-700 hover:text-iris-900">
               Sign in
             </Link>
           </p>
-        </motion.div>
+        </m.div>
       </form>
     </AuthLayout>
   )

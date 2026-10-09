@@ -156,12 +156,70 @@
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Motion tokens for CSS-only transitions. Mirrors src/lib/motion.ts (the JS
+   source of truth); change both together. Kept outside @theme because
+   Tailwind v4 has no duration namespace; use as `duration-(--duration-base)`. */
+:root {
+  --duration-instant: 100ms;
+  --duration-fast: 180ms;
+  --duration-base: 280ms;
+  --duration-slow: 500ms;
+  --duration-reveal: 850ms;
+  --stagger-tight: 40ms;
+  --stagger-base: 70ms;
+}
+
+/* Fine-line icons: Lucide renders at stroke-width 2 by default, which reads
+   heavy. Thin every default-weight icon to 1.5; icons that set their own
+   weight (e.g. the bold check marks) keep it. CSS beats the SVG attribute. */
+.lucide[stroke-width='2'] {
+  stroke-width: 1.5;
+}
+
+/* Gentle float for the hero discount badge. Transform only. */
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@utility animate-bob {
+  animation: bob 3.2s var(--ease-out-soft) infinite;
+}
+
+/* Cart badge bump when the count changes. */
+@keyframes bump {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@utility animate-bump {
+  animation: bump var(--duration-slow) var(--ease-out-expo);
 }
 
 /* Gradients live outside @theme — they are images, not colours, and are
    applied through the utilities defined further down. */
 :root {
-  --gradient-promo: linear-gradient(135deg, #4f6bf6 0%, #4338ca 100%);
+  /* Promo stays on the iris ramp (one accent), with two soft light blooms
+     layered in so the panel isn't a flat 45-degree fade. */
+  --gradient-promo:
+    radial-gradient(circle at 12% 20%, rgb(255 255 255 / 0.14), transparent 45%),
+    radial-gradient(circle at 88% 90%, rgb(255 255 255 / 0.09), transparent 50%),
+    linear-gradient(135deg, var(--color-iris-600) 0%, var(--color-iris-800) 100%);
   --gradient-brand: linear-gradient(135deg, #7c5ce6 0%, #c44bc8 70%, #ec5f9e 100%);
   --gradient-hero-panel: linear-gradient(135deg, #f4f1fe 0%, #eef2fe 55%, #fdf0f8 100%);
 }
@@ -309,7 +367,7 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.55), transparent);
-  animation: shimmer 1.6s ease-in-out infinite;
+  animation: shimmer 1.6s var(--ease-out-soft) infinite;
 }
 
 .cart-badge {

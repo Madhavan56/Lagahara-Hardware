@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, m } from 'framer-motion'
 import { Minus, Plus, ShieldCheck, ShoppingBag, Trash2, Truck, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { PromoCodeField } from '@/components/cart/PromoCodeField'
@@ -8,7 +8,10 @@ import { useCartLines } from '@/features/cart/useCartLines'
 import { useCartUiStore } from '@/features/cart/uiStore'
 import { useCoupon } from '@/features/coupon/useCoupon'
 import { productImageUrl } from '@/lib/supabase/client'
+import { AnimatedNumber } from '@/components/ui/animated-number'
+import { DURATION, EASE } from '@/lib/motion'
 import { formatPrice } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 
 /** Order value that unlocks free standard shipping (matches trade-floor norm). */
 const FREE_SHIPPING_THRESHOLD = 5000
@@ -29,25 +32,25 @@ export function CartDrawer() {
     <AnimatePresence>
       {isOpen ? (
         <>
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={closeDrawer}
             className="fixed inset-0 z-50 bg-ink-950/40 backdrop-blur-sm"
           />
-          <motion.div
+          <m.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: DURATION.base, ease: EASE.expo }}
             className="fixed inset-y-0 right-0 z-50 flex w-[92%] max-w-md flex-col bg-card"
             role="dialog"
             aria-label="Cart"
           >
             <div className="flex items-center justify-between border-b border-border-subtle px-5 py-4">
               <h2 className="text-h3 text-content">
-                My Cart {itemCount ? `(${itemCount})` : ''}
+                My cart {itemCount ? `(${itemCount})` : ''}
               </h2>
               <button
                 type="button"
@@ -70,11 +73,12 @@ export function CartDrawer() {
                   )}
                 </div>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-pill bg-ink-200">
-                  <motion.div
-                    className="h-full rounded-pill bg-primary"
+                  {/* scaleX rather than width, so the bar never triggers layout. */}
+                  <m.div
+                    className="h-full origin-left rounded-pill bg-primary"
                     initial={false}
-                    animate={{ width: `${progressPct}%` }}
-                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    animate={{ scaleX: progressPct / 100 }}
+                    transition={{ duration: DURATION.slow, ease: EASE.expo }}
                   />
                 </div>
               </div>
@@ -82,7 +86,17 @@ export function CartDrawer() {
 
             <div className="flex-1 overflow-y-auto p-5">
               {isLoading ? (
-                <p className="text-sm text-content-muted">Loading…</p>
+                <div role="status" aria-label="Loading your cart" className="space-y-4">
+                  {Array.from({ length: 3 }).map((_, index) => (
+                    <div key={index} className="flex gap-3">
+                      <Skeleton className="size-18 shrink-0 rounded-md" />
+                      <div className="flex-1 space-y-2 py-1">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-3 w-1/3" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               ) : lines.length === 0 ? (
                 <div className="flex h-full flex-col items-center justify-center text-center">
                   <span className="flex size-16 items-center justify-center rounded-pill bg-primary-soft text-primary">
@@ -99,18 +113,19 @@ export function CartDrawer() {
                 </div>
               ) : (
                 <ul className="space-y-4">
-                  <AnimatePresence initial={false}>
+                  <AnimatePresence initial={false} mode="popLayout">
                     {lines.map((line) => {
                       const imageUrl = productImageUrl(line.product.primaryImagePath, { width: 150 })
                       return (
-                        <motion.li
+                        <m.li
                           key={line.product.id}
                           layout
-                          initial={{ opacity: 0, height: 0, marginTop: '-1rem' }}
-                          animate={{ opacity: 1, height: 'auto', marginTop: 0 }}
-                          exit={{ opacity: 0, height: 0, marginTop: '-1rem' }}
-                          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                          className="flex gap-3 overflow-hidden"
+                          // Transform and opacity only; `layout` slides the remaining items up.
+                          initial={{ opacity: 0, x: 24 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 24, transition: { duration: DURATION.fast } }}
+                          transition={{ duration: DURATION.base, ease: EASE.expo }}
+                          className="flex gap-3"
                         >
                           <Link
                             to={`/product/${line.product.slug}`}
@@ -178,7 +193,7 @@ export function CartDrawer() {
                             </div>
                           </div>
 
-                          <motion.span
+                          <m.span
                             key={line.lineTotal}
                             initial={{ opacity: 0, y: 4 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -186,8 +201,8 @@ export function CartDrawer() {
                             className="shrink-0 text-sm font-extrabold text-content"
                           >
                             {formatPrice(line.lineTotal)}
-                          </motion.span>
-                        </motion.li>
+                          </m.span>
+                        </m.li>
                       )
                     })}
                   </AnimatePresence>
@@ -202,7 +217,9 @@ export function CartDrawer() {
                 <dl className="space-y-1.5 text-sm">
                   <div className="flex items-center justify-between">
                     <dt className="text-content-muted">Subtotal</dt>
-                    <dd className="font-semibold text-content">{formatPrice(subtotal)}</dd>
+                    <dd className="font-semibold text-content tabular-nums">
+                      <AnimatedNumber value={subtotal} format={formatPrice} duration={DURATION.slow} />
+                    </dd>
                   </div>
                   {coupon.discount > 0 ? (
                     <div className="flex items-center justify-between">
@@ -214,7 +231,7 @@ export function CartDrawer() {
                   ) : null}
                   <div className="flex items-center justify-between">
                     <dt className="text-content-muted">Shipping</dt>
-                    {/* Real figure depends on the method chosen at checkout — no
+                    {/* Real figure depends on the method chosen at checkout; no
                         number is invented here. */}
                     <dd className="text-xs font-semibold text-content-muted">
                       Calculated at checkout
@@ -222,8 +239,8 @@ export function CartDrawer() {
                   </div>
                   <div className="flex items-center justify-between border-t border-border-subtle pt-2">
                     <dt className="font-bold text-content">Total</dt>
-                    <dd className="text-lg font-extrabold text-content">
-                      {formatPrice(estimatedTotal)}
+                    <dd className="text-lg font-extrabold text-content tabular-nums">
+                      <AnimatedNumber value={estimatedTotal} format={formatPrice} duration={DURATION.slow} />
                     </dd>
                   </div>
                 </dl>
@@ -238,7 +255,7 @@ export function CartDrawer() {
                 </Link>
 
                 <p className="text-center text-[0.6875rem] text-content-muted">
-                  Inclusive of all taxes · GST invoice provided · Payments secured by Razorpay
+                  Inclusive of all taxes, with a GST invoice. Payments secured by Razorpay.
                 </p>
 
                 <Link
@@ -250,7 +267,7 @@ export function CartDrawer() {
                 </Link>
               </div>
             ) : null}
-          </motion.div>
+          </m.div>
         </>
       ) : null}
     </AnimatePresence>

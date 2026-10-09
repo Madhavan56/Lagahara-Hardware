@@ -7,6 +7,7 @@ import { useMyOrders } from '@/features/orders/queries'
 import { productImageUrl } from '@/lib/supabase/client'
 import { cn, formatDate, formatPrice } from '@/lib/utils'
 import type { OrdersViewFilter } from '@/features/orders/api'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const TABS: { value: OrdersViewFilter; label: string }[] = [
   { value: 'active', label: 'Active orders' },
@@ -29,7 +30,13 @@ export default function OrdersTab() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-content-muted">Loading orders…</p>
+    return (
+      <div role="status" aria-label="Loading orders" className="space-y-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <Skeleton key={index} className="h-24 rounded-card" />
+        ))}
+      </div>
+    )
   }
 
   if (isError) {

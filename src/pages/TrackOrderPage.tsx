@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useOrderByNumber } from '@/features/orders/queries'
 import { formatDate, formatPrice } from '@/lib/utils'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function TrackOrderPage() {
   const { user } = useAuth()
@@ -28,7 +29,7 @@ export default function TrackOrderPage() {
 
   return (
     <div className="container-page max-w-2xl py-10 lg:py-14">
-      <h1 className="text-h1 text-content">Track Order</h1>
+      <h1 className="text-h1 text-content">Track order</h1>
       <p className="mt-2 text-ink-600">Enter your order number (e.g. DHJ-2026-001000).</p>
 
       <form
@@ -48,7 +49,12 @@ export default function TrackOrderPage() {
         </button>
       </form>
 
-      {isLoading ? <p className="mt-6 text-sm text-content-muted">Looking up order…</p> : null}
+      {isLoading ? (
+        <div role="status" aria-label="Looking up order" className="mt-6 space-y-2">
+          <Skeleton className="h-5 w-48" />
+          <Skeleton className="h-24 rounded-card" />
+        </div>
+      ) : null}
 
       {isFetched && !order ? (
         <p className="mt-6 text-sm text-danger">

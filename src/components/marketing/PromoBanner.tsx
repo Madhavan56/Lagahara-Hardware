@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { IslandIcon } from '@/components/ui/island-icon'
 import { cn } from '@/lib/utils'
 
 /**
@@ -25,23 +26,14 @@ export function PromoBanner({
   className?: string
 }) {
   return (
+    // Double-bezel: hairline tray around the gradient plate.
+    <div className={cn('rounded-[2rem] bg-ink-950/[0.03] p-1.5 ring-1 ring-ink-950/[0.06]', className)}>
     <div
       className={cn(
-        'focus-ring-light relative flex flex-col items-center gap-5 overflow-hidden rounded-panel px-6 py-8 text-center sm:flex-row sm:gap-8 sm:px-10 sm:text-left',
+        'focus-ring-light relative flex flex-col items-center gap-5 overflow-hidden rounded-[calc(2rem-0.375rem)] px-6 py-10 text-center shadow-[inset_0_1px_1px_rgb(255_255_255/0.2)] sm:flex-row sm:gap-8 sm:px-12 sm:text-left',
         gradient === 'promo' ? 'bg-gradient-promo' : 'bg-gradient-brand',
-        className,
       )}
     >
-      {/* Soft light bloom, echoing the reference banners. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-60"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at 12% 20%, rgb(255 255 255 / 0.22), transparent 45%), radial-gradient(circle at 88% 90%, rgb(255 255 255 / 0.14), transparent 50%)',
-        }}
-      />
-
       <span className="relative flex size-20 shrink-0 flex-col items-center justify-center rounded-pill bg-card text-center leading-tight shadow-card">
         <span className="text-[0.6875rem] font-bold text-content-muted">{badgeLines[0]}</span>
         <span className="text-sm font-extrabold text-primary">{badgeLines[1]}</span>
@@ -54,10 +46,12 @@ export function PromoBanner({
 
       <Link
         to={ctaTo}
-        className="relative inline-flex h-11 shrink-0 items-center rounded-pill bg-card px-6 text-sm font-bold text-primary shadow-card transition-colors hover:bg-iris-50"
+        className="group relative inline-flex h-12 shrink-0 items-center gap-3 rounded-pill bg-card pr-1.5 pl-6 text-sm font-bold text-primary shadow-card transition-[background-color,transform] duration-(--duration-base) ease-[var(--ease-fluid)] hover:bg-iris-50 active:scale-[0.98]"
       >
         {ctaLabel}
+        <IslandIcon tone="dark" className="bg-primary text-on-primary" />
       </Link>
+    </div>
     </div>
   )
 }

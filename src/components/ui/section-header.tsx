@@ -2,6 +2,7 @@ import { ArrowRight } from 'lucide-react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
+import { Reveal } from '@/components/motion/reveal'
 
 type SectionHeaderProps = {
   title: string
@@ -31,7 +32,7 @@ export function SectionHeader({
   className,
 }: SectionHeaderProps) {
   return (
-    <div className={cn('mb-5 flex items-end justify-between gap-4', className)}>
+    <Reveal className={cn('mb-5 flex items-end justify-between gap-4', className)}>
       <div className="min-w-0">
         {eyebrow ? <p className="text-label text-primary uppercase">{eyebrow}</p> : null}
         <h2 className={cn('text-h2 text-content', eyebrow && 'mt-1')}>{title}</h2>
@@ -54,6 +55,6 @@ export function SectionHeader({
           <ArrowRight className="size-4" aria-hidden />
         </Link>
       ) : null}
-    </div>
+    </Reveal>
   )
 }

@@ -1,0 +1,107 @@
+/*
+  Margin landing page tokens. Scoped to `.margin-root` so the storefront's
+  iris design system in index.css is untouched; components reach these through
+  Tailwind's `bg-(--m-paper)` style arbitrary-variable utilities.
+
+  Design read: SaaS landing for busy knowledge workers, calm and precise.
+  Dials: DESIGN_VARIANCE 7 / MOTION_INTENSITY 6 / VISUAL_DENSITY 4.
+  Accent lock: highlighter yellow (--m-mark) is the only accent and always
+  means "time you get back".
+  Shape lock: controls 6px, containers 12px, toggle switches full pill.
+*/
+.margin-root {
+  --m-paper: #f1f2f5;
+  --m-surface: #fbfbfc;
+  --m-ink: #151a24;
+  --m-muted: #555d6e;
+  --m-line: #d8dce4;
+  --m-busy: #dee3ee;
+  --m-busy-ink: #27324a;
+  --m-lock: #aeb6c7;
+  --m-mark: #f2d03b;
+  --m-mark-ink: #2b2300;
+  --m-mark-soft: #fbf1c2;
+  --m-mark-field: #f6df7a;
+  --m-shadow: rgb(21 26 36 / 0.16);
+
+  --m-display: 'Funnel Display', 'Segoe UI', system-ui, sans-serif;
+  --m-body: 'Geist Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --m-mono: 'Geist Mono Variable', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  --m-ctl: 6px;
+  --m-box: 12px;
+
+  background: var(--m-paper);
+  color: var(--m-ink);
+  font-family: var(--m-body);
+  min-height: 100dvh;
+}
+
+@media (prefers-color-scheme: dark) {
+  .margin-root {
+    --m-paper: #0e1117;
+    --m-surface: #161a22;
+    --m-ink: #e8ebf1;
+    --m-muted: #9ba3b3;
+    --m-line: #282e3a;
+    --m-busy: #242b3a;
+    --m-busy-ink: #cad3ea;
+    --m-lock: #3c4457;
+    --m-mark: #e6c430;
+    --m-mark-ink: #1d1700;
+    --m-mark-soft: #2a2715;
+    --m-mark-field: #efd261;
+    --m-shadow: rgb(0 0 0 / 0.5);
+    color-scheme: dark;
+  }
+}
+
+.margin-root :focus-visible {
+  outline: 2px solid var(--m-ink);
+  outline-offset: 3px;
+}
+
+.margin-root ::selection {
+  background: var(--m-mark);
+  color: var(--m-mark-ink);
+}
+
+.margin-root h1,
+.margin-root h2,
+.margin-root h3 {
+  font-family: var(--m-display);
+}
+
+/* Highlighter stroke behind a word, drawn in once on load. */
+.m-mark {
+  background-image: linear-gradient(var(--m-mark), var(--m-mark));
+  background-repeat: no-repeat;
+  background-position: 0 88%;
+  background-size: 100% 0.4em;
+  padding-inline: 0.05em;
+  animation: m-draw 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+@keyframes m-draw {
+  from {
+    background-size: 0% 0.4em;
+  }
+}
+
+/* Hatched fill marks events Margin will never move. */
+.m-hatch {
+  background:
+    repeating-linear-gradient(135deg, transparent 0 6px, var(--m-lock) 6px 7px),
+    var(--m-busy);
+  box-shadow: inset 0 0 0 1px var(--m-lock);
+}
+
+.m-hours {
+  background-image: linear-gradient(var(--m-line) 1px, transparent 1px);
+  background-size: 100% 25%;
+}
+
+.m-dots {
+  background-image: radial-gradient(var(--m-line) 1.2px, transparent 1.2px);
+  background-size: 16px 16px;
+}

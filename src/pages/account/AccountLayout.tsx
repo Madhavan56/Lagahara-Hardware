@@ -20,7 +20,7 @@ export default function AccountLayout() {
 
   return (
     <div className="container-page py-10 lg:py-14">
-      <h1 className="text-h1 text-content">My Account</h1>
+      <h1 className="text-h1 text-content">My account</h1>
       <p className="mt-1 text-sm text-content-muted">{user?.email}</p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[200px_1fr]">

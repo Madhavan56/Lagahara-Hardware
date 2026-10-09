@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
 import { Link } from 'react-router-dom'
 
 type AuthLayoutProps = {
@@ -16,7 +16,7 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
         <div className="absolute -right-24 -bottom-32 size-96 rounded-pill bg-pastel-peach/70 blur-3xl" />
       </div>
 
-      <motion.div
+      <m.div
         className="relative z-10 w-full max-w-sm"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -50,7 +50,7 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
         <p className="mt-5 text-center text-xs text-content-muted">
           © {new Date().getFullYear()} Laghara Hardwares · Interior & furniture materials
         </p>
-      </motion.div>
+      </m.div>
     </div>
   )
 }

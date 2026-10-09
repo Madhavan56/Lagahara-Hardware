@@ -32,7 +32,7 @@ export function formatEta(minDays: number, maxDays: number) {
   if (minDays === maxDays) {
     return minDays === 1 ? 'Next day' : `${minDays} days`
   }
-  return `${minDays}–${maxDays} days`
+  return `${minDays}-${maxDays} days`
 }
 
 export function slugify(value: string) {

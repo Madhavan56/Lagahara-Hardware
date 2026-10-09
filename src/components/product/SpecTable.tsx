@@ -2,7 +2,7 @@ import { Check, X } from 'lucide-react'
 import type { AttributeValue, CategoryAttribute } from '@/types/catalog'
 
 function formatValue(attr: CategoryAttribute, value: AttributeValue | undefined) {
-  if (value === undefined || value === null) return '—'
+  if (value === undefined || value === null) return '-'
 
   if (attr.dataType === 'boolean') {
     return value === true ? (

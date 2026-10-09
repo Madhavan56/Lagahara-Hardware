@@ -34,7 +34,7 @@ export default function CategoryPage() {
   })
 
   useDocumentHead({
-    title: category ? `${category.name} — Laghara Hardwares` : 'Category — Laghara Hardwares',
+    title: category ? `${category.name} | Laghara Hardwares` : 'Category | Laghara Hardwares',
     description: category?.description ?? undefined,
   })
 
@@ -92,7 +92,7 @@ export default function CategoryPage() {
 
       <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
         <aside className="hidden lg:block">
-          <div className="sticky top-31 max-h-[calc(100vh-9rem)] overflow-y-auto">
+          <div className="sticky top-22 max-h-[calc(100dvh-9rem)] overflow-y-auto">
             <FilterPanel
               attributes={attributes}
               filters={filters}
@@ -105,7 +105,7 @@ export default function CategoryPage() {
         </aside>
 
         <div>
-          <div className="sticky top-31 z-20 -mx-1 mb-6 flex items-center justify-between gap-3 rounded-card border border-border-subtle bg-white/95 px-4 py-2.5 shadow-card backdrop-blur-md">
+          <div className="sticky top-22 z-20 -mx-1 mb-6 flex items-center justify-between gap-3 rounded-card border border-border-subtle bg-white/95 px-4 py-2.5 shadow-card backdrop-blur-md">
             <button
               type="button"
               onClick={() => setMobileFiltersOpen(true)}

@@ -6,6 +6,7 @@ import { summarizeRatings, type ProductReviewEligibility } from '@/features/cata
 import { useSubmitProductReview } from '@/features/catalog/queries'
 import { formatDate } from '@/lib/utils'
 import type { Review } from '@/types/catalog'
+import { Skeleton } from '@/components/ui/skeleton'
 
 function StarRow({ rating }: { rating: number }) {
   return (
@@ -55,7 +56,13 @@ export function ReviewsSection({
   }
 
   if (isLoading) {
-    return <p className="text-sm text-content-muted">Loading reviews…</p>
+    return (
+      <div role="status" aria-label="Loading reviews" className="space-y-3">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <Skeleton key={index} className="h-20 rounded-card" />
+        ))}
+      </div>
+    )
   }
 
   const summary = summarizeRatings(reviews ?? [])
@@ -169,7 +176,7 @@ export function ReviewsSection({
             </div>
             {review.body ? <p className="mt-2 text-sm leading-relaxed text-ink-700">{review.body}</p> : null}
             <p className="mt-2 flex items-center gap-2 text-xs font-medium text-content-muted">
-              <span>— {review.authorName ?? 'Verified Buyer'}</span>
+              <span>{review.authorName ?? 'Verified Buyer'}</span>
               <span className="rounded-pill bg-success-surface px-2 py-0.5 text-[0.6875rem] font-bold text-success">
                 Verified purchase
               </span>

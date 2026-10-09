@@ -18,7 +18,7 @@ export default function WishlistPage() {
         </h1>
         <p className="mt-2 text-ink-600">Save products you're considering for later.</p>
         <Link to="/shop" className={`mt-6 ${buttonVariants({ variant: 'primary' })}`}>
-          Shop all products
+          Shop all
         </Link>
       </div>
     )
@@ -27,7 +27,7 @@ export default function WishlistPage() {
   return (
     <div className="container-page py-10 lg:py-14">
       <h1 className="mb-8 text-h1 text-content">
-        Your Wishlist
+        Your wishlist
       </h1>
       <ProductGrid products={products} isLoading={isLoading} isError={isError} />
     </div>

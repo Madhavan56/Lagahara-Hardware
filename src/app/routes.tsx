@@ -1,4 +1,4 @@
-import { lazy } from 'react'
+import { lazy, Suspense } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import { RootLayout } from '@/components/layout/RootLayout'
 import { AdminRoute } from '@/features/auth/AdminRoute'
@@ -15,6 +15,7 @@ const WishlistPage = lazy(() => import('@/pages/WishlistPage'))
 const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'))
 const TrackOrderPage = lazy(() => import('@/pages/TrackOrderPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
+const MarginLandingPage = lazy(() => import('@/pages/margin/MarginLandingPage'))
 
 const LoginPage = lazy(() => import('@/pages/LoginPage'))
 const SignupPage = lazy(() => import('@/pages/SignupPage'))
@@ -78,6 +79,15 @@ export const router = createBrowserRouter([
 
       { path: '*', element: <NotFoundPage /> },
     ],
+  },
+  // Standalone product landing page; sits outside RootLayout so it has its own nav and footer.
+  {
+    path: '/margin',
+    element: (
+      <Suspense fallback={null}>
+        <MarginLandingPage />
+      </Suspense>
+    ),
   },
   {
     path: '/admin',

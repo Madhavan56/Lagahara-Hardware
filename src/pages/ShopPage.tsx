@@ -34,7 +34,7 @@ export default function ShopPage() {
   return (
     <div className="container-page py-8 lg:py-12">
       <div className="mb-6">
-        <h1 className="text-h1 text-content">Shop All</h1>
+        <h1 className="text-h1 text-content">Shop all</h1>
         <p className="mt-2 text-ink-600">Every category, in one place. Jump straight to an aisle:</p>
       </div>
 
@@ -54,7 +54,7 @@ export default function ShopPage() {
       </div>
 
       {/* Sticky results toolbar */}
-      <div className="sticky top-31 z-20 -mx-1 mb-6 flex items-center justify-between gap-3 rounded-card border border-border-subtle bg-white/95 px-4 py-2.5 shadow-card backdrop-blur-md">
+      <div className="sticky top-22 z-20 -mx-1 mb-6 flex items-center justify-between gap-3 rounded-card border border-border-subtle bg-white/95 px-4 py-2.5 shadow-card backdrop-blur-md">
         <p className="text-sm font-semibold text-ink-700">
           {productsQuery.data?.total ?? 0} <span className="font-normal text-content-muted">products</span>
         </p>

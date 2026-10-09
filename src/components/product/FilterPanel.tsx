@@ -26,7 +26,7 @@ export function FilterPanel({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold tracking-wide text-content uppercase">Filters</h2>
+        <h2 className="text-base font-bold text-content">Filters</h2>
         {activeFilterCount > 0 ? (
           <button
             type="button"

@@ -1,8 +1,10 @@
-import { CheckCircle2, Plus, ShieldCheck, Truck, Zap } from 'lucide-react'
+import { Plus, ShieldCheck, Truck, Zap } from 'lucide-react'
 import { useState } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import { AddressForm } from '@/components/account/AddressForm'
 import { PromoCodeField } from '@/components/cart/PromoCodeField'
+import { CheckoutProgress, SelectedHighlight, SuccessCelebration } from '@/components/checkout/CheckoutMotion'
+import { AnimatedNumber } from '@/components/ui/animated-number'
 import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
 import { Button } from '@/components/ui/button'
 import { useAddresses, useCreateAddress } from '@/features/account/queries'
@@ -18,6 +20,7 @@ import { loadRazorpay } from '@/lib/razorpay'
 import { productImageUrl } from '@/lib/supabase/client'
 import { cn, cssToken, extractGst, formatEta, formatPrice } from '@/lib/utils'
 import type { AddressInput } from '@/types/account'
+import { Skeleton } from '@/components/ui/skeleton'
 
 /**
  * Single-page quick checkout: every decision (address, shipping, review) is
@@ -102,7 +105,7 @@ export default function CheckoutPage() {
     const rzpParams = created.razorpay
     if (!rzpParams) {
       await discardPendingPayment(created.orderId)
-      setOrderError('Payment setup failed — the order was removed. Please try again.')
+      setOrderError('Payment setup failed and the order was removed. Please try again.')
       return
     }
 
@@ -144,7 +147,7 @@ export default function CheckoutPage() {
             } catch {
               await discardPendingPayment(created!.orderId)
               setPendingPayment(null)
-              setOrderError('Payment succeeded but could not be confirmed. The order was removed — please try again.')
+              setOrderError('Payment succeeded but could not be confirmed. The order was removed. Please try again.')
             }
           })()
         },
@@ -160,20 +163,20 @@ export default function CheckoutPage() {
 
   function handleRetryAfterDismiss() {
     setPendingPayment(null)
-    setOrderError('Payment was cancelled — your order has been removed. Adjust your cart and place the order again.')
+    setOrderError('Payment was cancelled and your order has been removed. Adjust your cart and place the order again.')
   }
 
   if (placedOrder) {
     return (
       <div className="container-page flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
-        <CheckCircle2 className="size-14 text-success" />
+        <SuccessCelebration />
         <h1 className="mt-4 text-h2 text-content">
-          {placedOrder.cod ? 'Order confirmed — cash on delivery' : 'Payment successful — order confirmed'}
+          {placedOrder.cod ? 'Order confirmed, cash on delivery' : 'Payment successful, order confirmed'}
         </h1>
         <p className="mt-2 text-ink-600">
           Order <span className="font-medium text-content">{placedOrder.orderNumber}</span> for{' '}
           {formatPrice(placedOrder.total)} is{' '}
-          {placedOrder.cod ? 'confirmed — pay in cash when it arrives.' : 'confirmed and heading to dispatch.'}
+          {placedOrder.cod ? 'confirmed. Pay in cash when it arrives.' : 'confirmed and heading to dispatch.'}
         </p>
         <Link to="/account/orders" className="mt-6 text-sm font-medium text-iris-700 hover:text-iris-900">
           View your orders
@@ -192,41 +195,46 @@ export default function CheckoutPage() {
         <h1 className="text-h1 text-content">Checkout</h1>
         <p className="mt-2 flex items-center gap-1.5 text-sm text-ink-600">
           <Zap className="size-4 fill-iris-500 text-iris-500" aria-hidden />
-          {itemCount} {itemCount === 1 ? 'item' : 'items'} ready for dispatch — review and place your order below.
+          {itemCount} {itemCount === 1 ? 'item' : 'items'} ready for dispatch. Review and place your order below.
         </p>
+        <div className="mt-6 max-w-xl">
+          <CheckoutProgress addressDone={Boolean(activeAddressId)} shippingDone={Boolean(activeShippingCode)} />
+        </div>
       </div>
 
       <div className="grid items-start gap-10 lg:grid-cols-[1fr_360px]">
         <div className="space-y-6">
           {/* Delivery address */}
-          <section aria-labelledby="checkout-address" className="rounded-panel border border-border-subtle bg-card p-5 lg:p-6">
-            <h2 id="checkout-address" className="flex items-center gap-2 text-sm font-bold tracking-wide text-content uppercase">
+          <section aria-labelledby="checkout-address" className="rounded-[2rem] bg-card p-5 shadow-card ring-1 ring-ink-950/[0.06] lg:p-7">
+            <h2 id="checkout-address" className="flex items-center gap-2 text-base font-bold text-content">
               <span className="flex size-6 items-center justify-center rounded-pill bg-primary text-xs font-bold text-white">1</span>
               Delivery address
             </h2>
 
             <div className="mt-4 space-y-3">
               {addressesLoading ? (
-                <p className="text-sm text-content-muted">Loading addresses…</p>
+                <div role="status" aria-label="Loading addresses" className="space-y-3">
+                  <Skeleton className="h-22 rounded-card" />
+                  <Skeleton className="h-22 rounded-card" />
+                </div>
               ) : (
                 addresses.map((address) => (
                   <label
                     key={address.id}
                     className={cn(
-                      'flex cursor-pointer items-start gap-3 rounded-card border p-4 transition-colors',
-                      activeAddressId === address.id
-                        ? 'border-iris-600 bg-iris-50'
-                        : 'border-border-subtle bg-card hover:border-border-strong',
+                      'relative isolate flex cursor-pointer items-start gap-3 rounded-card border p-4 transition-colors active:scale-[0.99]',
+                      activeAddressId === address.id ? 'border-transparent' : 'border-border-subtle bg-card hover:border-border-strong',
                     )}
                   >
+                    {activeAddressId === address.id ? <SelectedHighlight layoutId="checkout-address" /> : null}
                     <input
                       type="radio"
                       name="address"
                       checked={activeAddressId === address.id}
                       onChange={() => setSelectedAddressId(address.id)}
-                      className="mt-1"
+                      className="relative mt-1"
                     />
-                    <div className="text-sm">
+                    <div className="relative text-sm">
                       <p className="font-semibold text-content">{address.label || address.fullName}</p>
                       <p className="text-ink-600">{address.fullName} · {address.phone}</p>
                       <p className="text-ink-600">
@@ -264,33 +272,35 @@ export default function CheckoutPage() {
           </section>
 
           {/* Delivery speed */}
-          <section aria-labelledby="checkout-shipping" className="rounded-panel border border-border-subtle bg-card p-5 lg:p-6">
-            <h2 id="checkout-shipping" className="flex items-center gap-2 text-sm font-bold tracking-wide text-content uppercase">
+          <section aria-labelledby="checkout-shipping" className="rounded-[2rem] bg-card p-5 shadow-card ring-1 ring-ink-950/[0.06] lg:p-7">
+            <h2 id="checkout-shipping" className="flex items-center gap-2 text-base font-bold text-content">
               <span className="flex size-6 items-center justify-center rounded-pill bg-primary text-xs font-bold text-white">2</span>
               Delivery speed
             </h2>
 
             <div className="mt-4 space-y-3">
               {shippingLoading ? (
-                <p className="text-sm text-content-muted">Loading shipping options…</p>
+                <div role="status" aria-label="Loading delivery options" className="space-y-3">
+                  <Skeleton className="h-18 rounded-card" />
+                  <Skeleton className="h-18 rounded-card" />
+                </div>
               ) : (
                 shippingMethods.map((method) => (
                   <label
                     key={method.id}
                     className={cn(
-                      'flex cursor-pointer items-start justify-between gap-3 rounded-card border p-4 transition-colors',
-                      activeShippingCode === method.code
-                        ? 'border-iris-600 bg-iris-50'
-                        : 'border-border-subtle bg-card hover:border-border-strong',
+                      'relative isolate flex cursor-pointer items-start justify-between gap-3 rounded-card border p-4 transition-colors active:scale-[0.99]',
+                      activeShippingCode === method.code ? 'border-transparent' : 'border-border-subtle bg-card hover:border-border-strong',
                     )}
                   >
-                    <div className="flex items-start gap-3">
+                    {activeShippingCode === method.code ? <SelectedHighlight layoutId="checkout-shipping" /> : null}
+                    <div className="relative flex items-start gap-3">
                       <input
                         type="radio"
                         name="shipping"
                         checked={activeShippingCode === method.code}
                         onChange={() => setSelectedShippingCode(method.code)}
-                        className="mt-1"
+                        className="relative mt-1"
                       />
                       <div>
                         <p className="flex items-center gap-2 text-sm font-semibold text-content">
@@ -306,7 +316,7 @@ export default function CheckoutPage() {
                         </p>
                       </div>
                     </div>
-                    <span className="text-sm font-bold text-content">
+                    <span className="relative text-sm font-bold text-content">
                       {method.price === 0 ? 'Free' : formatPrice(method.price)}
                     </span>
                   </label>
@@ -316,8 +326,8 @@ export default function CheckoutPage() {
           </section>
 
           {/* Items */}
-          <section aria-labelledby="checkout-items" className="rounded-panel border border-border-subtle bg-card p-5 lg:p-6">
-            <h2 id="checkout-items" className="flex items-center gap-2 text-sm font-bold tracking-wide text-content uppercase">
+          <section aria-labelledby="checkout-items" className="rounded-[2rem] bg-card p-5 shadow-card ring-1 ring-ink-950/[0.06] lg:p-7">
+            <h2 id="checkout-items" className="flex items-center gap-2 text-base font-bold text-content">
               <span className="flex size-6 items-center justify-center rounded-pill bg-primary text-xs font-bold text-white">3</span>
               Review items ({itemCount})
             </h2>
@@ -347,8 +357,9 @@ export default function CheckoutPage() {
         </div>
 
         {/* Sticky summary with the single primary CTA */}
-        <div className="sticky top-31 rounded-panel border border-border-subtle bg-surface p-6">
-          <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">Order Summary</h2>
+        <div className="sticky top-22 rounded-[2rem] bg-ink-950/[0.03] p-1.5 ring-1 ring-ink-950/[0.06]">
+          <div className="rounded-[calc(2rem-0.375rem)] bg-card p-6 shadow-[inset_0_1px_1px_rgb(255_255_255/0.7),0_12px_32px_-12px_rgb(60_39_130/0.12)]">
+          <h2 className="mb-4 text-base font-bold text-content">Order summary</h2>
           <div className="mb-4">
             <PromoCodeField coupon={coupon} />
           </div>
@@ -370,20 +381,20 @@ export default function CheckoutPage() {
             <div className="flex justify-between text-ink-600">
               <span>Shipping</span>
               <span className="text-content">
-                {selectedShipping ? (selectedShipping.price === 0 ? 'Free' : formatPrice(selectedShipping.price)) : '—'}
+                {selectedShipping ? (selectedShipping.price === 0 ? 'Free' : formatPrice(selectedShipping.price)) : '-'}
               </span>
             </div>
           </div>
           <div className="mt-4 flex justify-between border-t border-border-subtle pt-4 text-base font-semibold text-content">
             <span>Total</span>
-            <span>{formatPrice(total)}</span>
+            <AnimatedNumber value={total} format={formatPrice} className="tabular-nums" />
           </div>
 
           {orderError ? (
             <p className="mt-3 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{orderError}</p>
           ) : null}
 
-          {/* Payment method — online via the gateway, or cash on delivery */}
+          {/* Payment method: online via the gateway, or cash on delivery */}
           <div className="mt-5 grid grid-cols-2 gap-2" role="radiogroup" aria-label="Payment method">
             <button
               type="button"
@@ -398,7 +409,7 @@ export default function CheckoutPage() {
               )}
             >
               Pay online
-              <span className="mt-0.5 block text-[0.6875rem] font-medium text-content-muted">UPI · Cards · Netbanking</span>
+              <span className="mt-0.5 block text-[0.6875rem] font-medium text-content-muted">UPI, cards, netbanking</span>
             </button>
             <button
               type="button"
@@ -434,7 +445,7 @@ export default function CheckoutPage() {
               onClick={handleRetryAfterDismiss}
               className="mt-2 w-full text-center text-xs font-semibold text-content-muted hover:text-ink-700"
             >
-              Payment window closed — order removed, tap to continue
+              Payment window closed and the order was removed. Tap to continue.
             </button>
           ) : null}
 
@@ -442,6 +453,7 @@ export default function CheckoutPage() {
             <ShieldCheck className="size-4 text-iris-600" aria-hidden />
             GST invoice · Secure Razorpay checkout
           </p>
+          </div>
         </div>
       </div>
     </div>

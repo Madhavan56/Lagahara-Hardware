@@ -12,6 +12,7 @@ import {
   useUpdateAddress,
 } from '@/features/account/queries'
 import type { Address, AddressInput } from '@/types/account'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function AddressesTab() {
   const { user } = useAuth()
@@ -35,7 +36,13 @@ export default function AddressesTab() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-content-muted">Loading…</p>
+    return (
+      <div role="status" aria-label="Loading addresses" className="grid gap-4 sm:grid-cols-2">
+        {Array.from({ length: 2 }).map((_, index) => (
+          <Skeleton key={index} className="h-32 rounded-card" />
+        ))}
+      </div>
+    )
   }
 
   return (

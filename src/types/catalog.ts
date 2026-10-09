@@ -76,6 +76,8 @@ export type ProductListItem = Pick<
   | 'createdAt'
 > & {
   primaryImagePath: string | null
+  /** A second photo, shown on card hover when the product has one. Presentation only. */
+  secondaryImagePath?: string | null
 }
 
 export type Review = {

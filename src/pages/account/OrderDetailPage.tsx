@@ -71,7 +71,7 @@ export default function OrderDetailPage() {
       <div className="grid gap-10 lg:grid-cols-[1fr_360px]">
         <div className="space-y-8">
           <div>
-            <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">Items</h2>
+            <h2 className="mb-4 text-base font-bold text-content">Items</h2>
             <ul className="space-y-3">
               {order.items.map((item) => {
                 const imageUrl = productImageUrl(item.productImagePath, { width: 150 })
@@ -104,14 +104,14 @@ export default function OrderDetailPage() {
           </div>
 
           <div>
-            <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">Status</h2>
+            <h2 className="mb-4 text-base font-bold text-content">Status</h2>
             <OrderStatusTimeline events={order.statusEvents} />
           </div>
         </div>
 
         <div className="space-y-6">
           <div className="rounded-card border border-border-subtle bg-surface p-6">
-            <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">Summary</h2>
+            <h2 className="mb-4 text-base font-bold text-content">Summary</h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between text-ink-600">
                 <span>Subtotal</span>
@@ -155,7 +155,7 @@ export default function OrderDetailPage() {
           </div>
 
           <div className="rounded-card border border-border-subtle bg-card p-6">
-            <h2 className="mb-3 text-sm font-semibold tracking-wide text-content uppercase">
+            <h2 className="mb-3 text-base font-bold text-content">
               Shipping to
             </h2>
             <p className="text-sm text-ink-700">{order.shippingAddress.full_name}</p>

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { useProfile, useUpdateProfile } from '@/features/account/queries'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const schema = z.object({
   fullName: z.string().min(2, 'Enter your full name'),
@@ -40,7 +41,13 @@ export default function ProfileTab() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-content-muted">Loading…</p>
+    return (
+      <div role="status" aria-label="Loading profile" className="max-w-md space-y-4">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <Skeleton key={index} className="h-11 rounded-md" />
+        ))}
+      </div>
+    )
   }
 
   return (

@@ -45,8 +45,9 @@ export function Input({
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           className={cn(
-            'h-11 w-full border bg-card px-4 text-sm text-content transition-colors duration-200 placeholder:text-content-subtle',
-            'focus:border-primary focus:outline-none',
+            'h-11 w-full border bg-card px-4 text-sm text-content transition-[border-color,box-shadow] duration-(--duration-fast) placeholder:text-content-subtle',
+            // A soft violet halo grows in on focus, alongside the border colour change.
+            'focus:border-primary focus:shadow-[0_0_0_4px_rgb(108_77_217/0.14)] focus:outline-none',
             shape === 'pill' ? 'rounded-pill' : 'rounded-md',
             leadingIcon && 'pl-11',
             trailingSlot && 'pr-11',

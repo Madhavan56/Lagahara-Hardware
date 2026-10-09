@@ -21,7 +21,7 @@ export function Price({
   const showCompare = compareAt != null && compareAt > value
 
   return (
-    <span className={cn('flex flex-wrap items-baseline gap-x-2 gap-y-0.5', className)}>
+    <span className={cn('flex flex-wrap items-baseline gap-x-2 gap-y-0.5 tabular-nums', className)}>
       <span
         className={cn(
           'font-extrabold text-content',

@@ -118,7 +118,7 @@ export default function CartPage() {
         </ul>
 
         <div className="h-fit rounded-card border border-border-subtle bg-surface p-6">
-          <h2 className="mb-4 text-sm font-semibold tracking-wide text-content uppercase">
+          <h2 className="mb-4 text-base font-bold text-content">
             Order Summary
           </h2>
           <div className="mb-4">

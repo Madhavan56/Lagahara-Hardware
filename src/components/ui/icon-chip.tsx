@@ -16,7 +16,7 @@ const chipVariants = cva('inline-flex shrink-0 items-center justify-center', {
       primary: 'bg-primary-soft text-primary',
       neutral: 'bg-surface-sunken text-ink-600',
       /** For dark or gradient panels. */
-      inverse: 'bg-white/15 text-white backdrop-blur-sm',
+      inverse: 'bg-white/15 text-white',
     },
     size: {
       sm: 'size-8 [&>svg]:size-4',

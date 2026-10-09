@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
-import { motion, type Variants } from 'framer-motion'
+import { m, type Variants } from 'framer-motion'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -55,12 +55,12 @@ export default function LoginPage() {
     <AuthLayout title="Welcome back" subtitle="Sign in to access your account and orders">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Email field */}
-        <motion.div custom={0} variants={fieldVariants} initial="hidden" animate="visible">
+        <m.div custom={0} variants={fieldVariants} initial="hidden" animate="visible">
           <Input label="Email" type="email" autoComplete="email" error={errors.email?.message} {...register('email')} />
-        </motion.div>
+        </m.div>
 
         {/* Password field */}
-        <motion.div custom={1} variants={fieldVariants} initial="hidden" animate="visible">
+        <m.div custom={1} variants={fieldVariants} initial="hidden" animate="visible">
           <Input
             label="Password"
             type="password"
@@ -68,42 +68,42 @@ export default function LoginPage() {
             error={errors.password?.message}
             {...register('password')}
           />
-        </motion.div>
+        </m.div>
 
         {/* Error message */}
         {formError ? (
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
             <p className="text-sm text-danger">{formError}</p>
-          </motion.div>
+          </m.div>
         ) : null}
 
         {/* Forgot password link */}
-        <motion.div className="text-right" custom={2} variants={fieldVariants} initial="hidden" animate="visible">
+        <m.div className="text-right" custom={2} variants={fieldVariants} initial="hidden" animate="visible">
           <Link to="/forgot-password" className="text-sm font-medium text-iris-700 hover:text-iris-900">
             Forgot password?
           </Link>
-        </motion.div>
+        </m.div>
 
         {/* Submit button */}
-        <motion.div custom={3} variants={fieldVariants} initial="hidden" animate="visible">
+        <m.div custom={3} variants={fieldVariants} initial="hidden" animate="visible">
           <Button type="submit" block loading={isSubmitting}>
             Sign in
           </Button>
-        </motion.div>
+        </m.div>
 
         {/* Sign up link */}
-        <motion.div className="text-center" custom={4} variants={fieldVariants} initial="hidden" animate="visible">
+        <m.div className="text-center" custom={4} variants={fieldVariants} initial="hidden" animate="visible">
           <p className="text-sm text-ink-600">
             New here?{' '}
             <Link to="/signup" className="font-semibold text-iris-700 hover:text-iris-900">
               Create an account
             </Link>
           </p>
-        </motion.div>
+        </m.div>
       </form>
     </AuthLayout>
   )
