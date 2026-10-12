@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import { ProductGrid } from '@/components/product/ProductGrid'
 import { useProductSearch } from '@/features/catalog/queries'
+import { PageTitle } from '@/components/motion/page-title'
 
 export default function SearchPage() {
   const [searchParams] = useSearchParams()
@@ -9,9 +10,7 @@ export default function SearchPage() {
 
   return (
     <div className="container-page py-10 lg:py-14">
-      <h1 className="text-h1 text-content">
-        {query ? `Results for "${query}"` : 'Search'}
-      </h1>
+      <PageTitle className="text-h1 text-content" text={query ? `Results for "${query}"` : 'Search'} />
       <p className="mt-2 mb-8 text-ink-600">
         {query
           ? `${data?.length ?? 0} products found`

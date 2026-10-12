@@ -1,8 +1,10 @@
+import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
 import { ShoppingBag, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { ProductImagePlaceholder } from '@/components/product/ProductImagePlaceholder'
 import { QuantityStepper } from '@/components/product/QuantityStepper'
 import { PromoCodeField } from '@/components/cart/PromoCodeField'
+import { AnimatedNumber } from '@/components/ui/animated-number'
 import { buttonVariants } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useCartLines } from '@/features/cart/useCartLines'
@@ -10,12 +12,15 @@ import { useCartStore } from '@/features/cart/store'
 import { useCoupon } from '@/features/coupon/useCoupon'
 import { productImageUrl } from '@/lib/supabase/client'
 import { extractGst, formatPrice } from '@/lib/utils'
+import { PageTitle } from '@/components/motion/page-title'
+import { DURATION, EASE, STAGGER } from '@/lib/motion'
 
 export default function CartPage() {
   const { lines, subtotal, isLoading } = useCartLines()
   const setQuantity = useCartStore((state) => state.setQuantity)
   const removeItem = useCartStore((state) => state.removeItem)
   const coupon = useCoupon(subtotal)
+  const reduce = useReducedMotion()
 
   const gstTotal = lines.reduce(
     (sum, line) => sum + extractGst(line.product.price, line.product.gstRate) * line.quantity,
@@ -38,8 +43,8 @@ export default function CartPage() {
   if (lines.length === 0) {
     return (
       <div className="container-page flex min-h-[50vh] flex-col items-center justify-center py-20 text-center">
-        <span className="flex size-16 items-center justify-center rounded-pill bg-primary-soft text-primary"><ShoppingBag className="size-7" /></span>
-        <h1 className="text-h2 mt-4 text-content">Your cart is empty</h1>
+        <span className="flex size-16 animate-bob items-center justify-center rounded-pill bg-primary-soft text-primary"><ShoppingBag className="size-7" /></span>
+        <PageTitle className="text-h2 mt-4 text-content" text="Your cart is empty" accent={false} />
         <p className="mt-2 text-ink-600">Browse the catalogue and add what you need.</p>
         <Link to="/shop" className={`mt-6 ${buttonVariants({ variant: 'primary' })}`}>
           Shop all products
@@ -50,25 +55,33 @@ export default function CartPage() {
 
   return (
     <div className="container-page py-10 lg:py-14">
-      <h1 className="text-h1 mb-8 text-content">
-        Your Cart
-      </h1>
+      <PageTitle className="text-h1 mb-8 text-content" text="Your Cart" />
 
       <div className="grid gap-10 lg:grid-cols-[1fr_320px]">
         <ul className="space-y-4">
-          {lines.map((line) => {
+          {/* Lines slide in on arrival; a removed line collapses and the rest glide up. */}
+          <AnimatePresence initial={!reduce}>
+          {lines.map((line, index) => {
             const imageUrl = productImageUrl(line.product.primaryImagePath, { width: 200 })
             return (
-              <li
+              <m.li
                 key={line.product.id}
-                className="flex gap-4 rounded-card border border-border-subtle bg-card p-4"
+                layout={reduce ? false : 'position'}
+                initial={{ opacity: 0, x: -16 }}
+                animate={{ opacity: 1, x: 0, transition: { duration: DURATION.slow, delay: index * STAGGER.base, ease: EASE.expo } }}
+                exit={{ opacity: 0, x: 40, scale: 0.97, transition: { duration: DURATION.base, ease: EASE.soft } }}
+                className="flex gap-4 rounded-card border border-border-subtle bg-card p-4 transition-shadow duration-(--duration-base) hover:shadow-card"
               >
                 <Link
                   to={`/product/${line.product.slug}`}
-                  className="size-24 shrink-0 overflow-hidden rounded-sm bg-surface-sunken"
+                  className="group size-24 shrink-0 overflow-hidden rounded-sm bg-surface-sunken"
                 >
                   {imageUrl ? (
-                    <img src={imageUrl} alt="" className="size-full object-cover" />
+                    <img
+                      src={imageUrl}
+                      alt=""
+                      className="size-full object-cover transition-transform duration-(--duration-slow) ease-[var(--ease-out-expo)] group-hover:scale-110"
+                    />
                   ) : (
                     <ProductImagePlaceholder size="sm" />
                   )}
@@ -112,12 +125,18 @@ export default function CartPage() {
                     </span>
                   </div>
                 </div>
-              </li>
+              </m.li>
             )
           })}
+          </AnimatePresence>
         </ul>
 
-        <div className="h-fit rounded-card border border-border-subtle bg-surface p-6">
+        <m.div
+          initial={reduce ? false : { opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: DURATION.reveal, delay: 0.15, ease: EASE.fluid }}
+          className="h-fit rounded-card border border-border-subtle bg-surface p-6 lg:sticky lg:top-28"
+        >
           <h2 className="mb-4 text-base font-bold text-content">
             Order Summary
           </h2>
@@ -146,12 +165,13 @@ export default function CartPage() {
           </div>
           <div className="mt-4 flex justify-between border-t border-border-subtle pt-4 text-base font-semibold text-content">
             <span>Total</span>
-            <span>{formatPrice(Math.max(0, subtotal - coupon.discount))}</span>
+            {/* Counts to the new total whenever quantities or the promo code change. */}
+            <AnimatedNumber value={Math.max(0, subtotal - coupon.discount)} format={(n) => formatPrice(n)} className="tabular-nums" />
           </div>
           <Link to="/checkout" className={`mt-6 ${buttonVariants({ variant: 'primary', block: true })}`}>
             Proceed to checkout
           </Link>
-        </div>
+        </m.div>
       </div>
     </div>
   )

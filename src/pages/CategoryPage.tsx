@@ -13,6 +13,7 @@ import {
 } from '@/features/catalog/queries'
 import { useProductFilterState } from '@/features/catalog/useProductFilterState'
 import { useDocumentHead } from '@/hooks/useDocumentHead'
+import { PageTitle } from '@/components/motion/page-title'
 
 const PAGE_SIZE = 12
 
@@ -82,9 +83,7 @@ export default function CategoryPage() {
       </nav>
 
       <div className="mb-6">
-        <h1 className="text-h1 text-content">
-          {category.name}
-        </h1>
+        <PageTitle className="text-h1 text-content" text={category.name} />
         {category.description ? (
           <p className="mt-2 max-w-2xl text-ink-600">{category.description}</p>
         ) : null}

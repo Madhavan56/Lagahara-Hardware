@@ -1,4 +1,4 @@
-import { m } from 'framer-motion'
+import { m, useReducedMotion } from 'framer-motion'
 import type { ReactNode } from 'react'
 import { DURATION, EASE, RISE } from '@/lib/motion'
 
@@ -8,11 +8,12 @@ import { DURATION, EASE, RISE } from '@/lib/motion'
  * Key it on the pathname so each route plays it once.
  */
 export function PageTransition({ children }: { children: ReactNode }) {
+  const reduce = useReducedMotion()
   return (
     <m.div
-      initial={{ opacity: 0, y: RISE / 2 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: DURATION.base, ease: EASE.expo }}
+      initial={reduce ? false : { opacity: 0, y: RISE, scale: 0.995 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: DURATION.slow, ease: EASE.fluid }}
     >
       {children}
     </m.div>

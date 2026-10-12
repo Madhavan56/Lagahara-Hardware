@@ -1,5 +1,8 @@
+import { m, useReducedMotion } from 'framer-motion'
 import { LogOut } from 'lucide-react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { PageTitle } from '@/components/motion/page-title'
+import { DURATION, EASE } from '@/lib/motion'
 import { useAuth } from '@/features/auth/AuthProvider'
 import { cn } from '@/lib/utils'
 
@@ -12,6 +15,8 @@ const TABS = [
 export default function AccountLayout() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const reduce = useReducedMotion()
 
   async function handleSignOut() {
     await signOut()
@@ -20,7 +25,7 @@ export default function AccountLayout() {
 
   return (
     <div className="container-page py-10 lg:py-14">
-      <h1 className="text-h1 text-content">My account</h1>
+      <PageTitle className="text-h1 text-content" text="My account" />
       <p className="mt-1 text-sm text-content-muted">{user?.email}</p>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[200px_1fr]">
@@ -32,12 +37,23 @@ export default function AccountLayout() {
               end={tab.end}
               className={({ isActive }) =>
                 cn(
-                  'rounded-sm px-3.5 py-2.5 text-sm font-medium whitespace-nowrap transition-colors',
-                  isActive ? 'bg-iris-800 text-ink-50' : 'text-ink-700 hover:bg-surface-sunken',
+                  'relative rounded-sm px-3.5 py-2.5 text-sm font-medium whitespace-nowrap transition-colors',
+                  isActive ? 'text-ink-50' : 'text-ink-700 hover:bg-surface-sunken',
                 )
               }
             >
-              {tab.label}
+              {({ isActive }) => (
+                <>
+                  {isActive ? (
+                    <m.span
+                      layoutId="account-tab"
+                      className="absolute inset-0 rounded-sm bg-iris-800"
+                      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                    />
+                  ) : null}
+                  <span className="relative">{tab.label}</span>
+                </>
+              )}
             </NavLink>
           ))}
           <button
@@ -50,9 +66,14 @@ export default function AccountLayout() {
           </button>
         </nav>
 
-        <div>
+        <m.div
+          key={location.pathname}
+          initial={reduce ? false : { opacity: 0, x: 12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: DURATION.base, ease: EASE.expo }}
+        >
           <Outlet />
-        </div>
+        </m.div>
       </div>
     </div>
   )

@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { submitContactMessage } from '@/features/contact/api'
 import { useDocumentHead } from '@/hooks/useDocumentHead'
+import { PageTitle } from '@/components/motion/page-title'
+import { Reveal } from '@/components/motion/reveal'
+import { m } from 'framer-motion'
 
 const schema = z.object({
   name: z.string().min(2, 'Enter your name'),
@@ -58,7 +61,7 @@ export default function ContactPage() {
   return (
     <div className="container-page py-10 lg:py-16">
       <div className="max-w-2xl">
-        <h1 className="text-3xl font-extrabold text-content lg:text-4xl">Get in touch</h1>
+        <PageTitle className="text-3xl font-extrabold text-content lg:text-4xl" text="Get in touch" />
         <p className="mt-3 text-ink-600">
           Trade pricing, bulk orders, or a question about a fitting? We usually reply within a
           business day.
@@ -66,10 +69,22 @@ export default function ContactPage() {
       </div>
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_380px]">
-        <div>
+        <Reveal>
           {submitted ? (
-            <div className="flex flex-col items-center justify-center rounded-card border border-success-solid/30 bg-success-surface p-10 text-center">
-              <CheckCircle2 className="size-10 text-success" />
+            <m.div
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 22 }}
+              className="flex flex-col items-center justify-center rounded-card border border-success-solid/30 bg-success-surface p-10 text-center"
+            >
+              <m.span
+                initial={{ scale: 0, rotate: -45 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 14, delay: 0.1 }}
+                className="inline-flex"
+              >
+                <CheckCircle2 className="size-10 text-success" />
+              </m.span>
               <p className="mt-3 font-bold text-content">Message sent</p>
               <p className="mt-1 text-sm text-ink-600">We'll get back to you shortly.</p>
               <button
@@ -79,7 +94,7 @@ export default function ContactPage() {
               >
                 Send another message
               </button>
-            </div>
+            </m.div>
           ) : (
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 rounded-card border border-border-subtle bg-card p-6">
               <div className="grid gap-4 sm:grid-cols-2">
@@ -102,13 +117,13 @@ export default function ContactPage() {
               </Button>
             </form>
           )}
-        </div>
+        </Reveal>
 
         <div className="space-y-3">
-          {CONTACT_CARDS.map((card) => {
+          {CONTACT_CARDS.map((card, index) => {
             const content = (
-              <div className="flex items-start gap-3 rounded-card border border-border-subtle bg-card p-4">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-card bg-iris-100 text-primary">
+              <div className="group flex items-start gap-3 rounded-card border border-border-subtle bg-card p-4 transition-[transform,box-shadow,border-color] duration-(--duration-base) ease-[var(--ease-out-expo)] hover:-translate-y-0.5 hover:border-iris-200 hover:shadow-lift">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-card bg-iris-100 text-primary transition-transform duration-(--duration-base) ease-[var(--ease-out-expo)] group-hover:scale-110 group-hover:-rotate-6">
                   <card.icon className="size-5" />
                 </span>
                 <div>
@@ -117,12 +132,16 @@ export default function ContactPage() {
                 </div>
               </div>
             )
-            return card.href ? (
-              <a key={card.label} href={card.href} className="block transition-opacity hover:opacity-80">
-                {content}
-              </a>
-            ) : (
-              <div key={card.label}>{content}</div>
+            return (
+              <Reveal key={card.label} delay={0.08 + index * 0.07}>
+                {card.href ? (
+                  <a href={card.href} className="block">
+                    {content}
+                  </a>
+                ) : (
+                  content
+                )}
+              </Reveal>
             )
           })}
         </div>

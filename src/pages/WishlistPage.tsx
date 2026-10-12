@@ -4,6 +4,7 @@ import { ProductGrid } from '@/components/product/ProductGrid'
 import { buttonVariants } from '@/components/ui/button'
 import { useProductsByIds } from '@/features/catalog/queries'
 import { useWishlistStore } from '@/features/wishlist/store'
+import { PageTitle } from '@/components/motion/page-title'
 
 export default function WishlistPage() {
   const productIds = useWishlistStore((state) => state.productIds)
@@ -12,10 +13,8 @@ export default function WishlistPage() {
   if (productIds.length === 0) {
     return (
       <div className="container-page flex min-h-[50vh] flex-col items-center justify-center py-20 text-center">
-        <Heart className="size-12 text-ink-300" />
-        <h1 className="mt-4 text-h2 text-content">
-          Your wishlist is empty
-        </h1>
+        <Heart className="size-12 animate-bob text-ink-300" />
+        <PageTitle className="mt-4 text-h2 text-content" text="Your wishlist is empty" accent={false} />
         <p className="mt-2 text-ink-600">Save products you're considering for later.</p>
         <Link to="/shop" className={`mt-6 ${buttonVariants({ variant: 'primary' })}`}>
           Shop all
@@ -26,9 +25,7 @@ export default function WishlistPage() {
 
   return (
     <div className="container-page py-10 lg:py-14">
-      <h1 className="mb-8 text-h1 text-content">
-        Your wishlist
-      </h1>
+      <PageTitle className="mb-8 text-h1 text-content" text="Your wishlist" />
       <ProductGrid products={products} isLoading={isLoading} isError={isError} />
     </div>
   )

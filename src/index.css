@@ -211,6 +211,44 @@
   animation: bump var(--duration-slow) var(--ease-out-expo);
 }
 
+/* Endless category ticker under the hero. The track holds two copies of the
+   list, so moving it by half its width loops seamlessly. Pauses on hover. */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@utility animate-marquee {
+  animation: marquee 38s linear infinite;
+}
+
+/* Slow drifting light blooms behind the hero. Radial gradients, not blur
+   filters, so they cost almost nothing to paint while the page scrolls. */
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(6%, -8%, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-5%, 6%, 0) scale(0.95);
+  }
+}
+
+@utility animate-drift {
+  animation: drift 18s var(--ease-out-soft) infinite;
+}
+
+@utility animate-drift-slow {
+  animation: drift 26s var(--ease-out-soft) infinite reverse;
+}
+
 /* Gradients live outside @theme — they are images, not colours, and are
    applied through the utilities defined further down. */
 :root {

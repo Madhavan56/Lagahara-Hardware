@@ -7,6 +7,8 @@ import { SortSelect } from '@/components/product/SortSelect'
 import { useCategories, useProductsPage } from '@/features/catalog/queries'
 import { useProductFilterState } from '@/features/catalog/useProductFilterState'
 import { cn } from '@/lib/utils'
+import { PageTitle } from '@/components/motion/page-title'
+import { StaggerList } from '@/components/motion/stagger-list'
 
 const PAGE_SIZE = 12
 
@@ -34,24 +36,29 @@ export default function ShopPage() {
   return (
     <div className="container-page py-8 lg:py-12">
       <div className="mb-6">
-        <h1 className="text-h1 text-content">Shop all</h1>
+        <PageTitle className="text-h1 text-content" text="Shop all" />
         <p className="mt-2 text-ink-600">Every category, in one place. Jump straight to an aisle:</p>
       </div>
 
-      <div className="mb-8 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
-        {categories.map((category) => (
+      <StaggerList
+        items={categories}
+        getKey={(category) => category.id}
+        className="mb-8 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7"
+        itemClassName="h-full"
+        maxStaggered={14}
+        renderItem={(category) => (
           <Link
             key={category.id}
             to={`/category/${category.slug}`}
-            className="group rounded-md border border-border-subtle bg-card px-3.5 py-2.5 text-sm font-semibold text-ink-700 shadow-card transition-all hover:-translate-y-0.5 hover:border-iris-400 hover:text-iris-800 hover:shadow-lift"
+            className="group block h-full rounded-md border border-border-subtle bg-card px-3.5 py-2.5 text-sm font-semibold text-ink-700 shadow-card transition-all hover:-translate-y-0.5 hover:border-iris-400 hover:text-iris-800 hover:shadow-lift"
           >
             {category.name}
             <span className="mt-0.5 block text-[0.6875rem] font-medium text-content-subtle transition-colors group-hover:text-primary">
               Browse →
             </span>
           </Link>
-        ))}
-      </div>
+        )}
+      />
 
       {/* Sticky results toolbar */}
       <div className="sticky top-22 z-20 -mx-1 mb-6 flex items-center justify-between gap-3 rounded-card border border-border-subtle bg-white/95 px-4 py-2.5 shadow-card backdrop-blur-md">

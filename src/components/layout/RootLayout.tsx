@@ -4,6 +4,7 @@ import { Outlet, ScrollRestoration, useLocation, useNavigate } from 'react-route
 import { CartDrawer } from '@/components/cart/CartDrawer'
 import { Toaster } from '@/components/ui/toast'
 import { PageTransition } from '@/components/motion/page-transition'
+import { BackToTop, ScrollProgress } from '@/components/motion/scroll-extras'
 import { EASE } from '@/lib/motion'
 import { Footer } from './Footer'
 import { Header } from './Header'
@@ -83,6 +84,7 @@ export function RootLayout() {
       >
         Skip to content
       </a>
+      {!isAuthRoute ? <ScrollProgress /> : null}
       {!isAuthRoute ? <Header /> : null}
       {authMessage && !isAuthRoute ? (
         <div className="container-page pt-4" role="status" aria-live="polite">
@@ -100,6 +102,7 @@ export function RootLayout() {
       </main>
       {!isAuthRoute ? <Footer /> : null}
       {!isAuthRoute ? <CartDrawer /> : null}
+      {!isAuthRoute ? <BackToTop /> : null}
       <Toaster />
       <ScrollRestoration />
     </div>
