@@ -14,7 +14,9 @@
     "generate:sitemap": "tsx scripts/generate-sitemap.ts",
     "apply:real-images": "tsx scripts/apply-real-images.ts",
     "apply:category-images": "tsx scripts/apply-category-product-images.ts",
-    "remove:placeholder-images": "tsx scripts/remove-placeholder-images.ts"
+    "remove:placeholder-images": "tsx scripts/remove-placeholder-images.ts",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "test:admin-security": "tsx scripts/admin-security-test.ts"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",

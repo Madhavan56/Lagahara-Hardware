@@ -32,7 +32,7 @@ const TONE_INK = {
  * bottom-right corner.
  */
 export function CategoryTile({ category, featured = false }: { category: Category; featured?: boolean }) {
-  const tile = getCategoryTile(category.slug)
+  const tile = getCategoryTile(category.slug, category)
   const visual = getCategoryVisual(category.slug)
   const [imageFailed, setImageFailed] = useState(false)
 

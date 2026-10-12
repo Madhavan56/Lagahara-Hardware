@@ -8,6 +8,9 @@ export type Category = {
   name: string
   description: string | null
   imageUrl: string | null
+  /** Admin-uploaded tile photo in the product-images bucket; overrides the bundled photo. */
+  imagePath: string | null
+  imageAlt: string | null
   sortOrder: number
 }
 
@@ -51,6 +54,11 @@ export type Product = {
   attributes: Record<string, AttributeValue>
   isActive: boolean
   isFeatured: boolean
+  /** Sheet goods get the sq ft calculator; dimensions are in feet. */
+  isSheetProduct: boolean
+  sheetLengthFt: number | null
+  sheetWidthFt: number | null
+  wastagePercent: number
   ratingAvg: number
   ratingCount: number
   createdAt: string

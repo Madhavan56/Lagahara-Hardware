@@ -130,6 +130,8 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          image_alt: string | null
+          image_path: string | null
           image_url: string | null
           is_active: boolean
           name: string
@@ -141,6 +143,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          image_alt?: string | null
+          image_path?: string | null
           image_url?: string | null
           is_active?: boolean
           name: string
@@ -152,6 +156,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          image_alt?: string | null
+          image_path?: string | null
           image_url?: string | null
           is_active?: boolean
           name?: string
@@ -440,9 +446,9 @@ export type Database = {
       }
       orders: {
         Row: {
-          created_at: string
           coupon_code: string | null
           coupon_id: string | null
+          created_at: string
           currency: string
           customer_email: string | null
           customer_name: string | null
@@ -463,6 +469,7 @@ export type Database = {
           shipping_method_id: string | null
           shipping_method_name: string
           status: Database["public"]["Enums"]["order_status"]
+          stock_committed: boolean
           subtotal: number
           tax_amount: number
           total: number
@@ -470,9 +477,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          created_at?: string
           coupon_code?: string | null
           coupon_id?: string | null
+          created_at?: string
           currency?: string
           customer_email?: string | null
           customer_name?: string | null
@@ -493,6 +500,7 @@ export type Database = {
           shipping_method_id?: string | null
           shipping_method_name: string
           status?: Database["public"]["Enums"]["order_status"]
+          stock_committed?: boolean
           subtotal: number
           tax_amount?: number
           total: number
@@ -500,9 +508,9 @@ export type Database = {
           user_id: string
         }
         Update: {
-          created_at?: string
           coupon_code?: string | null
           coupon_id?: string | null
+          created_at?: string
           currency?: string
           customer_email?: string | null
           customer_name?: string | null
@@ -523,6 +531,7 @@ export type Database = {
           shipping_method_id?: string | null
           shipping_method_name?: string
           status?: Database["public"]["Enums"]["order_status"]
+          stock_committed?: boolean
           subtotal?: number
           tax_amount?: number
           total?: number
@@ -530,6 +539,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "orders_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "orders_shipping_method_id_fkey"
             columns: ["shipping_method_id"]
@@ -589,17 +605,21 @@ export type Database = {
           id: string
           is_active: boolean
           is_featured: boolean
+          is_sheet_product: boolean
           low_stock_threshold: number
           name: string
           price: number
           rating_avg: number
           rating_count: number
           search_vector: unknown
+          sheet_length_ft: number | null
+          sheet_width_ft: number | null
           sku: string
           slug: string
           stock_quantity: number
           unit_label: string
           updated_at: string
+          wastage_percent: number
         }
         Insert: {
           attributes?: Json
@@ -612,17 +632,21 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_featured?: boolean
+          is_sheet_product?: boolean
           low_stock_threshold?: number
           name: string
           price: number
           rating_avg?: number
           rating_count?: number
           search_vector?: unknown
+          sheet_length_ft?: number | null
+          sheet_width_ft?: number | null
           sku: string
           slug: string
           stock_quantity?: number
           unit_label?: string
           updated_at?: string
+          wastage_percent?: number
         }
         Update: {
           attributes?: Json
@@ -635,17 +659,21 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_featured?: boolean
+          is_sheet_product?: boolean
           low_stock_threshold?: number
           name?: string
           price?: number
           rating_avg?: number
           rating_count?: number
           search_vector?: unknown
+          sheet_length_ft?: number | null
+          sheet_width_ft?: number | null
           sku?: string
           slug?: string
           stock_quantity?: number
           unit_label?: string
           updated_at?: string
+          wastage_percent?: number
         }
         Relationships: [
           {
@@ -817,13 +845,37 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_admins: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+        }[]
+      }
+      admin_reorder_product_images: {
+        Args: { p_image_ids: string[]; p_product_id: string }
+        Returns: undefined
+      }
+      admin_set_primary_image: {
+        Args: { p_image_id: string }
+        Returns: undefined
+      }
+      admin_set_user_role: {
+        Args: {
+          p_email: string
+          p_role: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: undefined
+      }
       cancel_order: {
         Args: { p_order_id: string }
         Returns: {
-          created_at: string
-          currency: string
           coupon_code: string | null
           coupon_id: string | null
+          created_at: string
+          currency: string
           customer_email: string | null
           customer_name: string | null
           customer_note: string | null
@@ -843,6 +895,7 @@ export type Database = {
           shipping_method_id: string | null
           shipping_method_name: string
           status: Database["public"]["Enums"]["order_status"]
+          stock_committed: boolean
           subtotal: number
           tax_amount: number
           total: number
@@ -856,6 +909,13 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      coupon_discount_for: {
+        Args: {
+          p_coupon: Database["public"]["Tables"]["coupons"]["Row"]
+          p_subtotal: number
+        }
+        Returns: number
+      }
       is_admin: { Args: never; Returns: boolean }
       next_order_number: { Args: never; Returns: string }
       search_products: {
@@ -865,19 +925,19 @@ export type Database = {
           rank: number
         }[]
       }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       validate_coupon: {
         Args: { p_code: string; p_subtotal: number }
         Returns: {
-          valid: boolean
-          reason: string | null
-          coupon_id: string | null
-          code: string | null
-          description: string | null
+          code: string
+          coupon_id: string
+          description: string
           discount_amount: number
+          reason: string
+          valid: boolean
         }[]
       }
-      show_limit: { Args: never; Returns: number }
-      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       attribute_data_type: "text" | "number" | "boolean" | "select"

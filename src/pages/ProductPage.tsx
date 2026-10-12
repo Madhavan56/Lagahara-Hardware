@@ -12,6 +12,7 @@ import { Price } from '@/components/ui/price'
 import { Rating } from '@/components/ui/rating'
 import { StatusPill } from '@/components/ui/status-pill'
 import { Skeleton } from '@/components/ui/skeleton'
+import { SheetCalculator } from '@/components/product/SheetCalculator'
 import { useCartStore } from '@/features/cart/store'
 import { useAuth } from '@/features/auth/AuthProvider'
 import {
@@ -268,6 +269,23 @@ export default function ProductPage() {
             </button>
           </div>
 
+          {product.isSheetProduct && product.sheetLengthFt && product.sheetWidthFt && !outOfStock ? (
+            <SheetCalculator
+              className="mt-6"
+              product={{
+                name: product.name,
+                price: product.price,
+                sheetLengthFt: product.sheetLengthFt,
+                sheetWidthFt: product.sheetWidthFt,
+                wastagePercent: product.wastagePercent,
+                stockQuantity: product.stockQuantity,
+              }}
+              onAddToCart={(sheets) => {
+                addToCart(product.id, sheets, product.stockQuantity)
+                showToast({ title: 'Added to cart', description: `${sheets} × ${product.name}` })
+              }}
+            />
+          ) : null}
         </div>
       </div>
 

@@ -11,19 +11,29 @@ import {
   deleteProductImage,
   deleteReview,
   fetchAdminOrders,
+  fetchAdmins,
+  fetchDashboard,
   fetchAdminProduct,
   fetchAdminProducts,
   fetchAdminReviews,
   fetchContactMessages,
+  removeCategoryImage,
+  reorderProductImages,
   setMessageRead,
   setPrimaryImage,
+  setProductActive,
+  setUserRole,
   setReviewApproval,
   updateCategory,
   updateCategoryAttribute,
+  updateCategoryImageAlt,
+  updateImageAlt,
+  updateLowStockThreshold,
   updateOrderStatus,
   updateProduct,
   updateShippingMethod,
   updateStock,
+  uploadCategoryImage,
   uploadProductImage,
   type CategoryAttributeInput,
   type ProductWriteInput,
@@ -34,6 +44,8 @@ const keys = {
   product: (id: string) => ['admin', 'product', id] as const,
   orders: (status?: OrderStatus) => ['admin', 'orders', status ?? 'all'] as const,
   reviews: ['admin', 'reviews'] as const,
+  admins: ['admin', 'admins'] as const,
+  dashboard: ['admin', 'dashboard'] as const,
 }
 
 export function useAdminProducts(search?: string) {
@@ -75,6 +87,17 @@ export function useDeleteProduct() {
   })
 }
 
+export function useSetProductActive() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) => setProductActive(id, isActive),
+    onSuccess: (_data, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'products'] })
+      queryClient.invalidateQueries({ queryKey: keys.product(id) })
+    },
+  })
+}
+
 export function useUpdateStock() {
   const queryClient = useQueryClient()
   return useMutation({
@@ -83,39 +106,110 @@ export function useUpdateStock() {
   })
 }
 
-export function useUploadProductImage(productId: string) {
+export function useUpdateLowStockThreshold() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({
-      categorySlug,
-      file,
-      sortOrder,
-      isPrimary,
-    }: {
+    mutationFn: ({ id, threshold }: { id: string; threshold: number }) => updateLowStockThreshold(id, threshold),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['admin', 'products'] }),
+  })
+}
+
+function useInvalidateProduct(productId: string) {
+  const queryClient = useQueryClient()
+  return () => {
+    queryClient.invalidateQueries({ queryKey: keys.product(productId) })
+    queryClient.invalidateQueries({ queryKey: ['admin', 'products'] })
+  }
+}
+
+export function useUploadProductImage(productId: string) {
+  const invalidate = useInvalidateProduct(productId)
+  return useMutation({
+    mutationFn: (input: {
       categorySlug: string
-      file: File
+      file: Blob
       sortOrder: number
       isPrimary: boolean
-    }) => uploadProductImage(productId, categorySlug, file, sortOrder, isPrimary),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.product(productId) }),
+      altText: string | null
+    }) => uploadProductImage({ productId, ...input }),
+    onSettled: invalidate,
   })
 }
 
 export function useDeleteProductImage(productId: string) {
-  const queryClient = useQueryClient()
+  const invalidate = useInvalidateProduct(productId)
   return useMutation({
-    mutationFn: ({ imageId, storagePath }: { imageId: string; storagePath: string }) =>
-      deleteProductImage(imageId, storagePath),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.product(productId) }),
+    mutationFn: (image: { id: string; storagePath: string }) => deleteProductImage(image),
+    onSettled: invalidate,
   })
 }
 
 export function useSetPrimaryImage(productId: string) {
+  const invalidate = useInvalidateProduct(productId)
+  return useMutation({
+    mutationFn: (imageId: string) => setPrimaryImage(imageId),
+    onSettled: invalidate,
+  })
+}
+
+export function useReorderProductImages(productId: string) {
+  const invalidate = useInvalidateProduct(productId)
+  return useMutation({
+    mutationFn: (imageIds: string[]) => reorderProductImages(productId, imageIds),
+    onSettled: invalidate,
+  })
+}
+
+export function useUpdateImageAlt(productId: string) {
+  const invalidate = useInvalidateProduct(productId)
+  return useMutation({
+    mutationFn: ({ imageId, altText }: { imageId: string; altText: string | null }) => updateImageAlt(imageId, altText),
+    onSettled: invalidate,
+  })
+}
+
+export function useUploadCategoryImage() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (imageId: string) => setPrimaryImage(productId, imageId),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.product(productId) }),
+    mutationFn: (input: Parameters<typeof uploadCategoryImage>[0]) => uploadCategoryImage(input),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['categories'] }),
   })
+}
+
+export function useRemoveCategoryImage() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ categoryId, path }: { categoryId: string; path: string }) => removeCategoryImage(categoryId, path),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['categories'] }),
+  })
+}
+
+export function useUpdateCategoryImageAlt() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ categoryId, altText }: { categoryId: string; altText: string | null }) =>
+      updateCategoryImageAlt(categoryId, altText),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ['categories'] }),
+  })
+}
+
+export function useAdmins() {
+  return useQuery({ queryKey: keys.admins, queryFn: fetchAdmins })
+}
+
+export function useSetUserRole() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ email, role }: { email: string; role: 'admin' | 'customer' }) => setUserRole(email, role),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: keys.admins })
+      queryClient.invalidateQueries({ queryKey: ['profile'] })
+    },
+  })
+}
+
+export function useDashboard() {
+  return useQuery({ queryKey: keys.dashboard, queryFn: fetchDashboard, refetchInterval: 60_000 })
 }
 
 export function useCreateCategory() {

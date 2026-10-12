@@ -17,5 +17,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["scripts/seed-catalog.ts"]
+  "include": ["scripts/seed-catalog.ts", "scripts/admin-security-test.ts", "tests"]
 }

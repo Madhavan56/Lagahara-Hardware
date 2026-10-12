@@ -1,3 +1,5 @@
+import { productImageUrl } from '@/lib/supabase/client'
+
 /**
  * Category tile imagery, kept out of components so it's swappable in one place.
  *
@@ -55,44 +57,61 @@ export const CATEGORY_TILES: Record<string, CategoryTile> = {
   plywood: tile('plywood', 'Plywood sheet showing its layered cross-section', 'lavender'),
   'mica-laminates': tile(
     'mica-laminates',
-    'Decorative laminate sheet with a stone-pattern finish',
+    'White marble-pattern laminate surface with grey veining',
     'sky',
   ),
   'kitchen-hardware': tile('kitchen-hardware', 'Modern fitted kitchen with handleless cabinetry', 'mint'),
   'wardrobe-hardware': tile(
     'wardrobe-hardware',
-    'Bedroom wardrobe with mirrored sliding doors and internal storage',
+    'Built-in white wardrobes with glass-panel doors in a bright bedroom',
     'peach',
   ),
   hinges: tile('hinges', 'Soft-close hinge fitted to a kitchen cabinet door', 'lavender'),
-  'drawer-systems': tile('drawer-systems', 'Pair of drawer slide rails, extended view', 'sky'),
+  'drawer-systems': tile('drawer-systems', 'Open kitchen drawer with a wooden cutlery organiser', 'sky'),
   'drawer-channels': tile(
     'drawer-channels',
     'Drawer slide rails with mounting wheel detail',
     'mint',
   ),
-  'handles-knobs': tile('handles-knobs', 'Collection of brass door handles and knobs', 'peach'),
+  'handles-knobs': tile('handles-knobs', 'Brushed steel lever handle with keyed lock', 'peach'),
   'sliding-systems': tile(
     'sliding-systems',
     'Living room with large sliding glass doors opening to a patio',
     'lavender',
   ),
-  'locks-security': tile('locks-security', 'Brass security latch fitted to a door', 'sky'),
+  'locks-security': tile('locks-security', 'Multi-point security door lock with lever handle and key', 'sky'),
   'aluminium-profiles': tile('aluminium-profiles', 'Stacked extruded aluminium profiles', 'mint'),
   'interior-hardware': tile(
     'interior-hardware',
-    'Assorted hand tools and fittings on a workshop wall',
+    'Sorted compartments of steel wood screws',
     'peach',
   ),
   'furniture-accessories': tile(
     'furniture-accessories',
-    'Carpentry workshop with furniture being assembled',
+    'Small wooden drawer unit with ceramic knobs',
     'lavender',
   ),
 }
 
 const DEFAULT_TILE: CategoryTile = { tone: 'lavender', fallbackTint: TONE_TINT.lavender }
 
-export function getCategoryTile(slug: string): CategoryTile {
-  return CATEGORY_TILES[slug] ?? DEFAULT_TILE
+/**
+ * An admin-uploaded photo (categories.image_path) wins over the bundled one,
+ * served through Supabase image transforms at the same two widths.
+ */
+export function getCategoryTile(
+  slug: string,
+  uploaded?: { imagePath: string | null; imageAlt: string | null },
+): CategoryTile {
+  const base = CATEGORY_TILES[slug] ?? DEFAULT_TILE
+  if (!uploaded?.imagePath) return base
+  const at = (width: number) => productImageUrl(uploaded.imagePath, { width, quality: 80 }) ?? ''
+  return {
+    ...base,
+    photo: {
+      src: at(960),
+      srcSet: `${at(480)} 480w, ${at(960)} 960w`,
+      alt: uploaded.imageAlt ?? base.photo?.alt ?? '',
+    },
+  }
 }

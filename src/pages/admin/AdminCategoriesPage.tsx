@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { CategoryAttributeEditor } from '@/components/admin/CategoryAttributeEditor'
+import { CategoryImageField } from '@/components/admin/CategoryImageField'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useCreateCategory } from '@/features/admin/queries'
@@ -77,7 +78,9 @@ export default function AdminCategoriesPage() {
               </button>
               {expandedId === category.id ? (
                 <div className="border-t border-border-subtle p-4">
-                  <p className="mb-3 text-xs font-semibold tracking-wide text-content-muted uppercase">
+                  <p className="mb-3 text-xs font-semibold tracking-wide text-content-muted uppercase">Tile image</p>
+                  <CategoryImageField category={category} />
+                  <p className="mt-6 mb-3 text-xs font-semibold tracking-wide text-content-muted uppercase">
                     Specification schema
                   </p>
                   <CategoryAttributeEditor categoryId={category.id} />

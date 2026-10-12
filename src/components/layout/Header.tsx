@@ -1,7 +1,8 @@
 import { AnimatePresence, m, useReducedMotion } from 'framer-motion'
-import { ArrowRight, Clock3, Heart, Search, ShoppingBag, Truck, User } from 'lucide-react'
+import { ArrowRight, Clock3, Heart, Search, ShieldCheck, ShoppingBag, Truck, User } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useIsAdmin } from '@/features/auth/useIsAdmin'
 import { useCartCount } from '@/features/cart/store'
 import { useCartUiStore } from '@/features/cart/uiStore'
 import { useCategories } from '@/features/catalog/queries'
@@ -39,6 +40,7 @@ export function Header() {
   const openCartDrawer = useCartUiStore((state) => state.openDrawer)
   const scrolled = useScrollHeader()
   const reduce = useReducedMotion()
+  const { isAdmin } = useIsAdmin()
 
   useEffect(() => {
     setMobileOpen(false)
@@ -186,6 +188,11 @@ export function Header() {
                   </m.span>
                 ) : null}
               </Link>
+              {isAdmin ? (
+                <Link to="/admin" className={cn(ICON_BUTTON, 'hidden sm:block')} aria-label="Admin dashboard" title="Admin">
+                  <ShieldCheck className="size-5" />
+                </Link>
+              ) : null}
               <Link to="/account" className={ICON_BUTTON} aria-label="Account">
                 <User className="size-5" />
               </Link>
@@ -297,6 +304,11 @@ export function Header() {
                   <Link to="/wishlist" className="inline-flex items-center gap-2 py-2 text-sm font-bold text-ink-800 sm:hidden">
                     <Heart className="size-4" /> Wishlist{wishlistCount > 0 ? ` (${wishlistCount})` : ''}
                   </Link>
+                  {isAdmin ? (
+                    <Link to="/admin" className="ml-4 inline-flex items-center gap-2 py-2 text-sm font-bold text-primary">
+                      <ShieldCheck className="size-4" /> Admin
+                    </Link>
+                  ) : null}
                 </m.div>
               </nav>
 

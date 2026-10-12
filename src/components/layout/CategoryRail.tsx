@@ -25,7 +25,7 @@ export function CategoryRail() {
     <nav aria-label="Shop categories" className="border-b border-border-subtle bg-card">
       <div className="container-page flex gap-4 overflow-x-auto py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {categories.map((category) => {
-          const tile = getCategoryTile(category.slug)
+          const tile = getCategoryTile(category.slug, category)
           const imageFailed = failedSlugs.has(category.slug)
           return (
             <Link

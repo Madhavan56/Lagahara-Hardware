@@ -37,6 +37,8 @@ function mapCategory(row: Row): Category {
     name: asString(row.name),
     description: asNullableString(row.description),
     imageUrl: asNullableString(row.image_url),
+    imagePath: asNullableString(row.image_path),
+    imageAlt: asNullableString(row.image_alt),
     sortOrder: asNumber(row.sort_order),
   }
 }
@@ -115,6 +117,10 @@ function mapProduct(row: Row): Product {
     attributes,
     isActive: row.is_active === true,
     isFeatured: row.is_featured === true,
+    isSheetProduct: row.is_sheet_product === true,
+    sheetLengthFt: row.sheet_length_ft == null ? null : asNumber(row.sheet_length_ft),
+    sheetWidthFt: row.sheet_width_ft == null ? null : asNumber(row.sheet_width_ft),
+    wastagePercent: row.wastage_percent == null ? 10 : asNumber(row.wastage_percent),
     ratingAvg: asNumber(row.rating_avg),
     ratingCount: asNumber(row.rating_count),
     createdAt: asString(row.created_at),
@@ -153,7 +159,7 @@ function mapShippingMethod(row: Row): ShippingMethod {
 export async function fetchCategories(): Promise<Category[]> {
   const { data, error } = await supabase
     .from('categories')
-    .select('id, slug, name, description, image_url, sort_order')
+    .select('id, slug, name, description, image_url, image_path, image_alt, sort_order')
     .eq('is_active', true)
     .order('sort_order')
 
@@ -164,7 +170,7 @@ export async function fetchCategories(): Promise<Category[]> {
 export async function fetchCategoryBySlug(slug: string): Promise<Category | null> {
   const { data, error } = await supabase
     .from('categories')
-    .select('id, slug, name, description, image_url, sort_order')
+    .select('id, slug, name, description, image_url, image_path, image_alt, sort_order')
     .eq('slug', slug)
     .eq('is_active', true)
     .maybeSingle()
@@ -214,7 +220,7 @@ export async function fetchNewArrivals(limit = 8): Promise<ProductListItem[]> {
 }
 
 const PRODUCT_DETAIL_SELECT =
-  'id, category_id, slug, sku, name, brand, description, price, compare_at_price, gst_rate, unit_label, stock_quantity, low_stock_threshold, attributes, is_active, is_featured, rating_avg, rating_count, created_at, product_images(id, storage_path, alt_text, sort_order, is_primary)'
+  'id, category_id, slug, sku, name, brand, description, price, compare_at_price, gst_rate, unit_label, stock_quantity, low_stock_threshold, attributes, is_active, is_featured, is_sheet_product, sheet_length_ft, sheet_width_ft, wastage_percent, rating_avg, rating_count, created_at, product_images(id, storage_path, alt_text, sort_order, is_primary)'
 
 export async function fetchProductBySlug(slug: string): Promise<Product | null> {
   const { data, error } = await supabase
